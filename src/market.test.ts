@@ -5,7 +5,7 @@ describe('Shared market refill threshold',()=>{
  it('depletes from ten to four without refilling, then immediately refills to ten at three',()=>{
   let s=createGame();const reserve=[...s.market.draw];
   for(let count=9;count>=4;count--){s=reduce(s,{type:'market',index:0,mode:'deny',player:'h0',debug:true});expect(s.market.face).toHaveLength(count);expect(s.market.draw).toEqual(reserve);}
-  const survivors=s.market.face.slice(1),denied=s.market.face[0];s=reduce(s,{type:'market',index:0,mode:'deny',player:'h0',debug:true});expect(s.market.face).toHaveLength(10);expect(s.market.face.slice(0,3)).toEqual(survivors);expect(s.market.draw).toHaveLength(23);expect(s.market.denied).toContain(denied);expect(s.market.face).not.toContain(denied);expect(parseSave(JSON.stringify(s))).toEqual(s);
+  const survivors=s.market.face.slice(1),denied=s.market.face[0];s=reduce(s,{type:'market',index:0,mode:'deny',player:'h0',debug:true});expect(s.market.face).toHaveLength(10);expect(s.market.face.slice(0,3)).toEqual(survivors);expect(s.market.draw).toHaveLength(25);expect(s.market.denied).toContain(denied);expect(s.market.face).not.toContain(denied);expect(parseSave(JSON.stringify(s))).toEqual(s);
  });
  it('refills within the acquisition action without advancing phase or turn',()=>{
   let s=createGame();s.phase='night';s.turn=0;s.players[4].hand=['d-3'];s.market.face=['dm-0','hm-0','hm-1','hm-2'];s.market.draw=Array.from({length:8},(_,i)=>`hm-${i+3}`);s=reduce(s,{type:'play',index:0});s=reduce(s,{type:'market',index:0,mode:'acquire',player:'dracula'});expect(s.market.face).toHaveLength(10);expect(s.players[4].discard).toContain('dm-0');expect(s.market.draw).toHaveLength(1);expect(s.phase).toBe('night');expect(s.turn).toBe(0);expect(s.played).toBe(true);

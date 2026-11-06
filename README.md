@@ -36,9 +36,9 @@ node node_modules/vite/bin/vite.js build
 
 Select the active player in Player desk, play an action or pass where permitted, resolve its choices, then end the turn. Discovery pauses normal play for combat. Select each participant to choose a combat card or no card. Dracula selects damage remainder recipients and any escape destination through his view.
 
-Enable Debug mode to inspect hidden information and construct test situations. The prototype supports personal decks, a shared market, Hunter travel and investigations, hidden Dracula swaps, encounters, a seven-day calendar, weekly/Ally Darkness and Dracula victory, combat, recovery, equipment, consumable Items, location allies and selected character abilities. Some cards remain placeholders; consult the rules reference before testing an effect.
+Enable Debug mode to inspect hidden information and construct test situations. The prototype supports personal decks, a shared market, Hunter travel and investigations, hidden Dracula swaps, encounters, a seven-day calendar, weekly/Ally Darkness and Dracula victory, combat, recovery, equipment, consumable Items, four distinct location Allies, equipped counters that can be trashed to remove them, permanent city closure, and selected character abilities. Some cards remain placeholders; consult the rules reference before testing an effect.
 
-Each action autosaves in the browser. Export JSON before resetting if you want an independent snapshot. Saves contain hidden information and use schema version 6, with migrations for earlier versions. This is a solo testing interface; selecting players is not a secure hot-seat handoff.
+Each action autosaves in the browser. Export JSON before resetting if you want an independent snapshot. Saves contain hidden information and use schema version 7, with migrations for earlier versions. This is a solo testing interface; selecting players is not a secure hot-seat handoff.
 
 ## Project structure
 
@@ -50,3 +50,11 @@ Each action autosaves in the browser. Export JSON before resetting if you want a
 - `src/*.test.ts`: automated rule tests and scenario examples.
 
 Documentation records the current implementation without making unresolved design decisions permanent. No AI opponents or multiplayer networking are implemented.
+
+## Ally update
+
+The market now has 31 Hunter and 11 Dracula cards: Smelling Salts and Renfield were added. Great Wolf replaces the Wolf Pack name; Wraith replaces Dark Familiar. See RULES.md for each persistent benefit and counter.
+
+Hunters reveal Allies by being at their city. Use the equipped counter’s “Trash … to remove …” button to spend the standard Day/Night action. Wraith shares with one other Ally and resolves its mandatory movement/private bottom-card choice before Dracula’s Night action. Renfield adds an encounter to his own city each Night. A city emptied of encounters closes permanently, removes its Allies and cannot receive more encounters.
+
+Version 7 saves preserve pending Wraith choices. Older saves migrate their Ally slots and empty cities, and add the two new cards to the market reserve once. They do not replay beginning-of-Night effects. JSON snapshots still contain hidden information.

@@ -2,7 +2,7 @@ export const cities = ['London','Paris','Prague','Madrid','Munich','Vienna','Mar
 
 export const hunters = ['Lord Godalming','Jonathan Harker','Van Helsing','Dr. Seward','Mina Harker'];
 
-export type Card = { id:string; name:string; side:'hunter'|'dracula'; timing:('day'|'night')[]; description:string; travel?:number; healing?:number; strength?:number; selfDamage?:number; equipment?:boolean; item?:boolean; removesAllyType?:string; escape?:'mist'|'bats'; ally?:{type:string;strength:number} };
+export type Card = { id:string; name:string; side:'hunter'|'dracula'; timing:('day'|'night')[]; description:string; travel?:number; healing?:number; strength?:number; selfDamage?:number; equipment?:boolean; item?:boolean; removesAllyType?:string; removesAlly?:string; maxHP?:number; encounterReduction?:number; victoryDamage?:number; escape?:'mist'|'bats'; ally?:{type:string;strength:number;victoryDamage?:number} };
 
 const make = (id:string,name:string,side:Card['side'],description:string):Card => ({id,name,side,timing:['day','night'],description});
 
@@ -80,3 +80,28 @@ cards['hm-10'].description='Restore yourself to maximum HP, then trash this card
 cards['hm-7'].item=true;cards['hm-7'].equipment=false;delete cards['hm-7'].strength;cards['hm-7'].healing=2;cards['hm-7'].description='Item: heal yourself for 2 HP, then trash this card. On acquisition, use immediately without an extra action or place in discard for later. Cannot revive a knocked-out Hunter.';
 
 cards['hm-28'].strength=2;cards['hm-28'].selfDamage=1;cards['hm-28'].description='Final Stand: +2 combat strength; take 1 damage. If this reaches 0 HP, still participate fully and be knocked out only after combat concludes.';
+
+
+// Unique persistent equipment and the four current minions.
+hunterMarket.push(add('hm-salts','Smelling Salts','hunter'));
+draculaMarket.push(add('dm-renfield','Renfield','dracula'));
+cards['dm-5'].name='Great Wolf';
+cards['dm-6'].name='Wraith';
+cards['hm-0'].strength=undefined;cards['hm-0'].victoryDamage=1;
+cards['hm-0'].description='Equipment: when you participate in a winning showdown, deal 1 additional damage to Dracula. At Vampire Bride’s city, spend a Day or Night action and trash this equipped Stake to remove her.';
+cards['hm-3'].strength=1;
+cards['hm-3'].description='Equipment: +1 combat strength. At Great Wolf’s city, spend a Day or Night action and trash this equipped Rifle to remove it.';
+cards['hm-2'].strength=undefined;cards['hm-2'].encounterReduction=1;
+cards['hm-2'].description='Equipment: reduce your encounter damage by 1 (minimum 0). At Wraith’s city, spend a Day or Night action and trash this equipped Crucifix to banish it.';
+cards['hm-salts'].equipment=true;cards['hm-salts'].maxHP=1;
+cards['hm-salts'].description='Equipment: +1 maximum and current HP when equipped. Keep the maximum bonus while equipped; losing it caps current HP at the new maximum. At Renfield’s city, spend a Day or Night action and trash these equipped Salts to remove him.';
+for(const id of hunterMarket){delete cards[id].removesAllyType;delete cards[id].removesAlly;}
+for(const [equipment,ally] of [['hm-0','dm-4'],['hm-3','dm-5'],['hm-2','dm-6'],['hm-salts','dm-renfield']])cards[equipment].removesAlly=ally;
+cards['dm-4'].ally={type:'Vampire',strength:0,victoryDamage:2};
+cards['dm-5'].ally={type:'Beast',strength:2};
+cards['dm-6'].ally={type:'Supernatural',strength:0};
+cards['dm-renfield'].ally={type:'Human',strength:0};
+cards['dm-4'].description='Ally: at this city, when Dracula wins by strength, add 2 total damage to the Hunters. No bonus on a tie. +1 Darkness while deployed. Removed by trashing Wooden Stake.';
+cards['dm-5'].description='Ally: +2 Dracula combat strength at this city. +1 Darkness while deployed. Removed by trashing Hunting Rifle.';
+cards['dm-6'].description='Ally: at the beginning of Dracula’s Night turn, move one orthogonal connection to an open city; privately look at its bottom encounter and leave it there or move it to the top. May share a city with another Ally. +1 Darkness; no combat bonus. Removed by trashing Crucifix.';
+cards['dm-renfield'].description='Ally: +2 Dracula maximum and current HP on deployment (normally up to 12). At the beginning of each Dracula Night turn, add a basic encounter to Renfield’s city and shuffle. +1 Darkness; no combat bonus. Removed by trashing Smelling Salts. Losing Renfield caps Dracula’s HP at his base maximum.';

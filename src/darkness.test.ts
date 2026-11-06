@@ -54,7 +54,7 @@ describe('calendar and Darkness',()=>{
  });
  it('migrates version 5 using elapsed weeks and deployed Allies without duplicate awards',()=>{
   const old:any=createGame();old.version=5;delete old.eventDarkness;old.round=15;old.locations[8].ally={card:'dm-4',revealed:false};
-  const s=parseSave(JSON.stringify(old));expect(s.version).toBe(6);expect(darkness(s).total).toBe(7);expect(calendar(s).week).toBe(3);expect(parseSave(JSON.stringify(s))).toEqual(s);
+  const s=parseSave(JSON.stringify(old));expect(s.version).toBe(7);expect(darkness(s).total).toBe(7);expect(calendar(s).week).toBe(3);expect(parseSave(JSON.stringify(s))).toEqual(s);
   old.round=22;expect(parseSave(JSON.stringify(old)).winner).toBe('dracula');
   old.winner='hunters';old.players[4].damage=10;expect(parseSave(JSON.stringify(old)).winner).toBe('hunters');
  });
