@@ -238,7 +238,7 @@ Each Hunter receives the following two signature cards. Implemented effects belo
 | Mina Harker | Psychic Connection | Implemented: another conscious Hunter at Mina's city discards one random hand card; then learn whether Dracula is in Mina's city or any surrounding city, including diagonals. Requires an eligible other Hunter with a hand card; does not reveal the exact city. |
 | Mina Harker | Shared Vision | Implemented: privately examine the top encounter of any other nonempty city; return it to the top or bottom without resolving it. |
 
-Any conscious Hunter may trade instead of their standard card play. They must share a city with another conscious Hunter, have at least two hand cards, and choose one to discard. Exchange a different remaining hand card for one card from the partner's hand. Equipped cards are not traded. The partner needs at least one hand card; this does not consume the partner's later scheduled turn.
+Any conscious Hunter may trade instead of their standard card play. They must share a city with another conscious Hunter and discard one hand card as the cost. Then exchange one different remaining hand card OR one equipped item for one hand card OR equipped item belonging to the partner. Both Hunters may offer equipped equipment. The initiator needs a hand card for the discard cost and something else to trade; the partner may have only equipped equipment and no hand cards. Received equipment offers immediate equipping or placement in discard; with full slots, choose a replacement and discard or trash it as normal. Non-equipment received goes to hand. Equipment leaving its owner loses its bonuses; immediate equipping applies bonuses to the new owner. This uses the initiator's standard action but does not consume the partner's later scheduled turn.
 
 ## 10. Market card reference
 
@@ -249,7 +249,7 @@ One copy of each listed card starts in the combined market pool. Placeholder car
 | # | Card | Current implementation |
 |---|---|---|
 | 1 | Wooden Stake | Equipment: +1 damage on Hunter victory; trash using an action to remove Vampire Bride. |
-| 2 | Holy Water | Equipment, +1 combat. |
+| 2 | Holy Water | Equipment: +2 combat strength, then trash after contributing to the showdown; alternatively trash as an action to remove any one revealed ally at your city. |
 | 3 | Crucifix | Equipment: reduce encounter damage by 1; trash using an action to remove Wraith. |
 | 4 | Hunting Rifle | Equipment: +1 combat; trash using an action to remove Great Wolf. |
 | 5 | Silver Dagger | Equipment, +2 combat. |
@@ -259,7 +259,7 @@ One copy of each listed card starts in the combined market pool. Placeholder car
 | 9 | Garlic Wreath | Equipment, +1 combat. |
 | 10 | Reinforced Coat | Equipment, +1 combat. Damage prevention planned. |
 | 11 | Medical Supplies | Implemented healing action: restore self to full HP, then trash. Item classification open. Replaces the original First Aid entry. |
-| 12 | Medical Assistance | Placeholder; intended healing for multiple Hunters. |
+| 12 | Medical Kit (second copy) | Item: heal 2 and trash; immediate-use acquisition option. Replaces Medical Assistance. |
 | 13 | Rest and Recovery | Placeholder; intended healing and a draw. |
 | 14 | Train Ticket | Implemented: move up to 2 connections. |
 | 15 | Express Train | Implemented: move up to 3 connections. |
@@ -339,3 +339,15 @@ Read this document before proposing or implementing rule changes in another proj
 When a rule change is accepted, update this document, the relevant data/engine/UI, and meaningful rule tests together. Mark a change as planned until implemented; record implementation discrepancies explicitly rather than silently turning them into design decisions. Keep the balance table and card reference current. Advance the review date when checking a new revision.
 
 Source references: `src/data.ts` contains card definitions and defaults; `src/engine.ts` contains rule resolution; `src/main.tsx` contains player views and choices; `src/*.test.ts` contains automated rule examples. If code conflicts with this document, flag and reconcile the discrepancy before relying on the behavior as an agreed rule.
+
+### Public health display
+
+Dracula’s current and maximum HP are public information, shown in a health bar beside the Darkness tracker for every player view. This display does not reveal Dracula’s location. The maximum includes active ally effects such as Renfield.
+
+Medical Assistance has been replaced by a second Medical Kit with identical Item behavior. The Hunter market pool contains two Medical Kits; the total pool size is unchanged. Existing Medical Assistance cards become Medical Kits using the same saved card ID.
+
+Holy Water is consumable Equipment, not an Item: it occupies a slot, grants +2 strength when its Hunter participates in a showdown, and is permanently trashed on combat resolution regardless of the outcome. It is not consumed merely by discovering Dracula or choosing cards. Instead of using it in combat, a Hunter may spend their unused Day or Night action and trash it to remove one chosen revealed Dracula ally at their current city. This works against any ally, including Wraith in a shared slot, and removes its Darkness contribution.
+
+### Combat card selection order
+
+Participating Hunters choose their combat card (or no card) in this fixed order: Lord Godalming, Jonathan Harker, Dr. Seward, Van Helsing, Mina Harker. Skip characters not selected for the game, knocked out, or not participating in that city. Dracula chooses after the participating Hunters. The player desk follows the next chooser automatically. The engine rejects out-of-order selections, and each choice is locked once made. This ordering is independent of the selected Hunter turn order.

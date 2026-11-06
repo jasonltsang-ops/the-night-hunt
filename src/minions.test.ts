@@ -14,8 +14,8 @@ function showdown(s:State,count:number){
  return reduce(s,{type:'resolveCombat'});
 }
 describe('minion powers and equipped counters',()=>{
- it.each([['dm-4','hm-0'],['dm-5','hm-3'],['dm-6','hm-2'],['dm-renfield','hm-salts']])('reveals %s beneath a Hunter and permits only its matching equipped counter', (ally,equipment)=>{
-  let s=deploy(ally,0);expect(alliesAt(s,0)[0].revealed).toBe(true);s=hunterTurn(s,0);s.players[0].equipment=['hm-1'];expect(()=>reduce(s,{type:'sacrificeEquipment',index:0})).toThrow();
+ it.each([['dm-4','hm-0'],['dm-5','hm-3'],['dm-6','hm-2'],['dm-renfield','hm-salts']])('reveals %s beneath a Hunter and permits its matching equipped counter and rejects unrelated equipment', (ally,equipment)=>{
+  let s=deploy(ally,0);expect(alliesAt(s,0)[0].revealed).toBe(true);s=hunterTurn(s,0);s.players[0].equipment=['hm-4'];expect(()=>reduce(s,{type:'sacrificeEquipment',index:0})).toThrow();
   s.players[0].equipment=[equipment];expect(removableEquipment(s)).toHaveLength(1);const original=structuredClone(s);s=reduce(s,{type:'sacrificeEquipment',index:0});
   expect(alliesAt(s,0)).toEqual([]);expect(darkness(s).allies).toBe(0);expect(s.played).toBe(true);expect(s.players[0].equipment).toEqual([]);expect(s.players[0].discard).not.toContain(equipment);expect(original.players[0].equipment).toEqual([equipment]);expect(parseSave(JSON.stringify(s))).toEqual(s);
  });

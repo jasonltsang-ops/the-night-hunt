@@ -3,3 +3,10 @@
 .map-ally{margin:6px 0;font-size:11px;color:#d6b695;line-height:1.35}.map-ally>span{display:block}.city .map-ally small{font-size:9px;margin:1px 0 0;color:#a3adbd}
 
 .darkness{border-left:4px solid #ae95c9}.darkness progress{width:100%;height:16px;accent-color:#ae95c9}
+
+.turn-equipment{font-size:12px;line-height:1.4;margin:-6px 0 12px;color:#a8b1c1}
+
+.log{list-style:none;padding-left:0}
+
+
+.public-trackers{margin:20px 0}.dracula-health{border-left:4px solid #d17783}.dracula-health progress{display:block;width:100%;height:16px;accent-color:#d17783;margin-bottom:14px}

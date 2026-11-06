@@ -2,7 +2,7 @@ export const cities = ['London','Paris','Prague','Madrid','Munich','Vienna','Mar
 
 export const hunters = ['Lord Godalming','Jonathan Harker','Van Helsing','Dr. Seward','Mina Harker'];
 
-export type Card = { id:string; name:string; side:'hunter'|'dracula'; timing:('day'|'night')[]; description:string; travel?:number; healing?:number; strength?:number; selfDamage?:number; equipment?:boolean; item?:boolean; removesAllyType?:string; removesAlly?:string; maxHP?:number; encounterReduction?:number; victoryDamage?:number; escape?:'mist'|'bats'; ally?:{type:string;strength:number;victoryDamage?:number} };
+export type Card = { id:string; name:string; side:'hunter'|'dracula'; timing:('day'|'night')[]; description:string; travel?:number; healing?:number; strength?:number; selfDamage?:number; equipment?:boolean; trashAfterCombat?:boolean; removesAnyAlly?:boolean; item?:boolean; removesAllyType?:string; removesAlly?:string; maxHP?:number; encounterReduction?:number; victoryDamage?:number; escape?:'mist'|'bats'; ally?:{type:string;strength:number;victoryDamage?:number} };
 
 const make = (id:string,name:string,side:Card['side'],description:string):Card => ({id,name,side,timing:['day','night'],description});
 
@@ -105,3 +105,10 @@ cards['dm-4'].description='Ally: at this city, when Dracula wins by strength, ad
 cards['dm-5'].description='Ally: +2 Dracula combat strength at this city. +1 Darkness while deployed. Removed by trashing Hunting Rifle.';
 cards['dm-6'].description='Ally: at the beginning of Dracula’s Night turn, move one orthogonal connection to an open city; privately look at its bottom encounter and leave it there or move it to the top. May share a city with another Ally. +1 Darkness; no combat bonus. Removed by trashing Crucifix.';
 cards['dm-renfield'].description='Ally: +2 Dracula maximum and current HP on deployment (normally up to 12). At the beginning of each Dracula Night turn, add a basic encounter to Renfield’s city and shuffle. +1 Darkness; no combat bonus. Removed by trashing Smelling Salts. Losing Renfield caps Dracula’s HP at his base maximum.';
+
+// Medical Assistance becomes a second copy of the Medical Kit Item.
+cards['hm-11']={...cards['hm-7'],id:'hm-11'};
+
+cards['hm-1'].equipment=true;cards['hm-1'].strength=2;cards['hm-1'].trashAfterCombat=true;cards['hm-1'].removesAnyAlly=true;cards['hm-1'].description='Equipment: +2 combat strength when participating in a showdown, then trash permanently. Alternatively, use a Day or Night action and trash it to remove any one revealed Dracula ally at your city.';
+
+export const combatOrder=['Lord Godalming','Jonathan Harker','Dr. Seward','Van Helsing','Mina Harker'] as const;
