@@ -12,7 +12,7 @@ One player controls Dracula. Four Hunters are selected from Lord Godalming, Jona
 
 Hunters win by reducing Dracula to 0 HP in combat. Merely discovering Dracula no longer wins the game; it starts a showdown.
 
-Dracula's intended victory is reaching 10 Darkness. Darkness generation and this victory condition are **planned**, not implemented. The current prototype has no Dracula victory condition.
+Dracula wins immediately at **10 total Darkness**. Total Darkness is accumulated weekly/event points plus one point per Ally currently deployed. When an Ally is removed or defeated, its point is lost; it never generates a recurring weekly point. Reaching the target ends normal play, so removing an Ally afterwards cannot undo a victory.
 
 | Value | Current setting |
 |---|---:|
@@ -24,7 +24,9 @@ Dracula's intended victory is reaching 10 Darkness. Darkness generation and this
 | Equipment capacity | 2 per Hunter |
 | Ordinary or Damaging Encounter damage when investigated by Day | 1 |
 | Ordinary or Damaging Encounter damage when investigated at Night | 2 |
-| Intended Darkness victory target | 10, not active |
+| Darkness victory target | 10 |
+| Darkness per completed week | 3 |
+| Darkness per Ally currently in play | 1 |
 
 These values are provisional and primarily defined in `src/data.ts`.
 
@@ -69,6 +71,10 @@ Dracula starts with nine cards:
 Shuffle personal decks and draw three. Delaying Encounter is no longer in Dracula's starting deck; old saves convert it to Damaging Encounter. Call of the Night is still a placeholder.
 
 ## 4. Turns, timing and drawing
+
+The game starts **Week 1, day 1 (Sunday), Day phase**, at zero Darkness. One full Day/Night round is one calendar day. After the final scheduled Night turn (including a pass or recovery turn), advance the day. After Saturday (day 7), advance to the next week's Sunday and add **3 accumulated Darkness**. There is no starting award on Week 1 Sunday. Combat and unresolved choices must finish before the calendar advances. Without Allies or events, Dracula reaches 12 Darkness and wins on Week 5 Sunday, after 28 complete days.
+
+The display separates accumulated Darkness (weekly points plus event points) from Ally Darkness. Event resolution has a shared engine hook, but individual event effects and point values remain planned. Old saves migrate their existing round to the matching calendar date, count elapsed weeks, and include deployed Allies; a previously completed Hunter victory is preserved.
 
 1. **Day:** each Hunter in selected-player order, then Dracula.
 2. **Night:** Dracula, then each Hunter in the same order.
@@ -269,15 +275,15 @@ One copy of each listed card starts in the combined market pool. Placeholder car
 | 7 | Dark Familiar | Supernatural ally, +2 strength at attached city. |
 | 8 | Deadly Ambush | Placeholder. |
 | 9 | Lost in Darkness | Placeholder. |
-| 10 | Gathering Darkness | Placeholder; no Darkness generation yet. |
+| 10 | Gathering Darkness | Placeholder; its event effect and Darkness amount are not assigned yet. |
 
 ### Location allies
 
 Dracula acquires an ally into discard, then plays it by Day or Night as a standard action. Attach it face-down to any city without an ally. One ally per city. The card leaves Dracula's personal deck and remains attached to that city.
 
-Hunters can see that an ally exists, but not its identity until revealed; Dracula and Debug views can inspect it. Discovering Dracula at that city automatically reveals the ally, which adds its bonus. All three implemented allies currently provide **+2**, superseding the original 3/2/1 values. Allies stay attached through combat and Dracula's escape.
+Hunters can see that an ally exists, but not its identity until revealed; Dracula and Debug views can inspect it. Discovering Dracula at that city automatically reveals the ally, which adds its bonus. All three implemented allies currently provide **+2**, superseding the original 3/2/1 values. Allies stay attached through combat and Dracula's escape. Each deployed Ally contributes **1 Darkness**, regardless of whether it is revealed or shares Dracula's city. Acquiring an Ally or holding one pending placement contributes nothing. Removing an Ally subtracts its one point without reducing accumulated weekly/event Darkness.
 
-Hunter investigation of an ally instead of the encounter pile, equipment sacrifice to remove allies, and distinct ally powers are **planned**. The equipment's displayed removal types are design metadata, not functioning removal actions. The engine currently has only the three market ally cards; expansion to nine allies is not implemented.
+Hunter investigation of an ally instead of the encounter pile, equipment sacrifice to remove allies, and distinct ally powers are **planned**. Debug mode offers Ally removal for testing the Darkness decrease; this is not a normal Hunter action. The equipment's displayed removal types are design metadata, not functioning removal actions. The engine currently has only the three market ally cards; expansion to nine allies is not implemented.
 
 ## 11. Hidden information and playtest tools
 
@@ -289,7 +295,7 @@ The interface is a solo testing tool, not a secure role boundary: a tester can s
 
 ## 12. Planned mechanics and open decisions
 
-- **Darkness:** generation, pacing and Dracula's actual victory check; target 10 is provisional.
+- **Darkness:** calendar, weekly generation, deployed-Ally contributions, and the victory check are implemented. Specific event effects/amounts and balance testing remain planned; target 10 is provisional.
 - **Call of the Night:** original intention is to draft a Vampire from a separate supply and shuffle it into a chosen city; neither supply nor resolution exists yet.
 - **Consecration:** Heavenly Host, cleared-city requirement, and final-hiding restrictions remain planned. No city is currently consecrated by the engine.
 - **Card completion:** placeholder signatures, travel, healing, investigation and Dracula market cards need finalized effects and implementations.

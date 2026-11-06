@@ -47,7 +47,7 @@ describe('Encounters and Shadow Passage',()=>{
   s.phase='night';s.turn=0;s.players[4].hand=['d-2'];s=reduce(s,{type:'play',index:0});s=reduce(s,{type:'swap',moveDracula:true,from:4,to:5,fromIndex:s.locations[4].deck.indexOf('dracula'),toIndex:0});expect(visibleDraculaLocation(s,'dracula')).toBe(5);expect(visibleDraculaLocation(s,'h0')).toBe(null);s=reduce(s,{type:'advance'});expect(visibleDraculaLocation(s,'dracula')).toBe(null);
  });
  it('migrates old saves and rejects malformed encounter saves',()=>{
-  const s=createGame(undefined,4);const old={...s,version:2};const migrated=parseSave(JSON.stringify(old));expect(migrated.version).toBe(5);expect(migrated.players[0].city).toBe(s.players[0].city);expect(migrated.locations.every(l=>l.deck.length===5)).toBe(true);
+  const s=createGame(undefined,4);const old={...s,version:2};const migrated=parseSave(JSON.stringify(old));expect(migrated.version).toBe(6);expect(migrated.players[0].city).toBe(s.players[0].city);expect(migrated.locations.every(l=>l.deck.length===5)).toBe(true);
   s.locations[0].deck.push('dracula');expect(()=>parseSave(JSON.stringify(s))).toThrow();
  });
 });

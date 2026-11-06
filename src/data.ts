@@ -57,7 +57,7 @@ cards['dm-0'].escape='mist';cards['dm-0'].description='Choose as your combat car
 cards['dm-1'].escape='bats';cards['dm-1'].description='Choose as your combat card. If Dracula survives, optionally escape up to two connections after combat. Final destination is public.';
 
 // Location allies share one prototype bonus, with types retained for future effects.
-for(const [id,type] of [['dm-4','Vampire'],['dm-5','Beast'],['dm-6','Supernatural']] as const){cards[id].ally={type,strength:2};cards[id].timing=['day','night'];cards[id].description='Play by Day or Night: attach face-down to any city with no ally. Grants Dracula +2 strength in combat at that city. One ally per city.';}
+for(const [id,type] of [['dm-4','Vampire'],['dm-5','Beast'],['dm-6','Supernatural']] as const){cards[id].ally={type,strength:2};cards[id].timing=['day','night'];cards[id].description='Play by Day or Night: attach face-down to any city with no ally. Grants Dracula +2 strength in combat at that city and +1 Darkness while deployed. Removing it loses that Darkness point. One ally per city.';}
 
 cards['signature-0-0'].description='Acquire two Hunter cards from the shared market into your discard pile. You cannot deny or replace cards. If fewer than two Hunter cards are available, acquire as many as possible.';
 

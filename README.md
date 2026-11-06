@@ -36,9 +36,9 @@ node node_modules/vite/bin/vite.js build
 
 Select the active player in Player desk, play an action or pass where permitted, resolve its choices, then end the turn. Discovery pauses normal play for combat. Select each participant to choose a combat card or no card. Dracula selects damage remainder recipients and any escape destination through his view.
 
-Enable Debug mode to inspect hidden information and construct test situations. The prototype supports personal decks, a shared market, Hunter travel and investigations, hidden Dracula swaps, encounters, combat, recovery, equipment, consumable Items, location allies and selected character abilities. Some cards remain placeholders; consult the rules reference before testing an effect.
+Enable Debug mode to inspect hidden information and construct test situations. The prototype supports personal decks, a shared market, Hunter travel and investigations, hidden Dracula swaps, encounters, a seven-day calendar, weekly/Ally Darkness and Dracula victory, combat, recovery, equipment, consumable Items, location allies and selected character abilities. Some cards remain placeholders; consult the rules reference before testing an effect.
 
-Each action autosaves in the browser. Export JSON before resetting if you want an independent snapshot. Saves contain hidden information and use schema version 5, with migrations for earlier versions. This is a solo testing interface; selecting players is not a secure hot-seat handoff.
+Each action autosaves in the browser. Export JSON before resetting if you want an independent snapshot. Saves contain hidden information and use schema version 6, with migrations for earlier versions. This is a solo testing interface; selecting players is not a secure hot-seat handoff.
 
 ## Project structure
 
