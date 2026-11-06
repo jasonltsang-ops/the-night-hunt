@@ -1,0 +1,6 @@
+node_modules/
+dist/
+*.tsbuildinfo
+*.log
+.pnpm-store/
+*-preview.png
