@@ -4,7 +4,7 @@ import {createGame,investigationReview,parseSave,reduce} from './engine';
 
 it.each([['hm-17b',0],['hm-18b',4]] as const)('places the unchosen card correctly after %s',(id,position)=>{
  const s=createGame(undefined,8);
- s.locations[0].deck.unshift('damaging');
+ s.locations[0].deck.sort();s.locations[0].deck.unshift('damaging');
  s.players[0].hand=[id];
  const pending=parseSave(JSON.stringify(reduce(s,{type:'play',index:0})));
  expect(investigationReview(pending,'h0')).toEqual(['damaging','encounter']);
@@ -32,6 +32,7 @@ it('Local Rumors privately reviews four cards and shuffles without resolving one
 it('Coordinated Search offers one optional follow-up if another Hunter is present',()=>{
  const s=createGame(undefined,8);
  s.players[0].hand=['hm-20'];
+ s.locations[0].deck.sort();
  const pending=reduce(s,{type:'play',index:0});
  expect(pending.players[0].damage).toBe(1);
  const stopped=reduce(pending,{type:'resolveInvestigation',repeat:false});
@@ -47,7 +48,7 @@ it('Coordinated Search offers one optional follow-up if another Hunter is presen
 it('Uncover Conspiracy discards Savage Attack harmlessly and starts a showdown on Dracula',()=>{
  let s=createGame(undefined,0);
  s.players[0].hand=['hm-22'];
- s.locations[0].deck.unshift('damaging');
+ s.locations[0].deck.sort();s.locations[0].deck.unshift('damaging');
  const discarded=reduce(s,{type:'play',index:0});
  expect(discarded.locations[0].resolved).toEqual(['damaging']);
  expect(discarded.players[0].damage).toBe(0);

@@ -10,7 +10,7 @@ export const cards:Record<string,Card> = {};
 
 function add(id:string,name:string,side:Card['side'],description='Effect reserved for a later stage.') { cards[id]=make(id,name,side,description); return id; }
 
-add('travel','Ready the Carriage','hunter','Move one adjacent city.'); add('supply','Work the Market','hunter',''); add('investigate','Investigate','hunter','Reveal and resolve the top encounter at your city.'); add('combat','Combat','hunter','Combat bonus +2 (Stage 4).');
+add('travel','Ready the Carriage','hunter','Move one adjacent city.'); add('supply','Visit the Market','hunter',''); add('investigate','Investigate','hunter','Reveal and resolve the top encounter at your city.'); add('combat','Combat','hunter','Combat bonus +2 (Stage 4).');
 
 export const signatures = [['Family Fortune',"Lucy’s Revenge"],['Methodical Search','Urgent Dispatch'],['Correspondence','Vampire Lore'],['Medical Expertise','Wax Cylinders'],['Hypnosis','Rally the Hunters']].map((pair,i)=>pair.map((name,j)=>add(`signature-${i}-${j}`,name,'hunter')));
 
@@ -21,6 +21,9 @@ export const retiredDraculaCards=['dm-2','dm-3','dm-7','dm-8','dm-9'];
 export const draculaMarket = ['Escape as Mist','Escape as Bats','Escape as Bats','False Trail','Vampire Bride','Wolf Pack','Dark Familiar','Deadly Ambush','Lost in Darkness','Gathering Darkness'].flatMap((name,i)=>retiredDraculaCards.includes(`dm-${i}`)?[]:[add(`dm-${i}`,name,'dracula')]);
 
 ['Savage Attack','Delaying Encounter','Shadow Passage','Dark Influence','Call of the Night','Brush with Darkness'].forEach((name,i)=>add(`d-${i}`,name,'dracula'));
+
+add('d-fog','Fog','dracula','Day: place in your city or an adjacent open city. Night: place in any open city. Announce the city and shuffle its pile. When investigated, the Hunter discards a random card. Remove Fog by Day or shuffle it back at Night.');
+export const encounterNames={encounter:'Brush with Darkness',dracula:'Dracula',damaging:'Savage Attack',fog:'Fog'};
 
 export const defaults = { handSize:3, hunterHP:4, draculaHP:10, darknessTarget:10, hunterBase:1, draculaBase:3, basicCombat:1, brushDamage:1, savageDamage:2 };
 
@@ -102,8 +105,8 @@ cards['signature-4-1'].description='Move another conscious Hunter one connection
 
 cards['d-2'].description='Night: first choose whether to move Dracula. If yes, swap Dracula from his actual city with a card in an orthogonally adjacent city. If no, swap non-Dracula cards between any two distinct cities. Shuffle both piles; publicly announce only the cities.';
 
-export const workTheMarketText={day:'Acquire 1 Hunter card or deny 1 Dracula card.',night:'Trash 1 face-up card and refill its slot.'};
-cards.supply.description='Day: '+workTheMarketText.day+' Night: '+workTheMarketText.night;
+export const visitTheMarketText={day:'Acquire 1 Hunter card or deny 1 Dracula card.',night:'Trash 1 face-up card and refill its slot.'};
+cards.supply.description='Day: '+visitTheMarketText.day+' Night: '+visitTheMarketText.night;
 
 // Intended sacrifice targets; ally removal is pending implementation.
 for(const [id,type] of [['hm-0','Vampire'],['hm-1','Undead'],['hm-2','Supernatural'],['hm-3','Beast']] as const)cards[id].removesAllyType=type;

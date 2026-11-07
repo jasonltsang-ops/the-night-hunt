@@ -8,7 +8,7 @@ function setup(phase:'day'|'night'='day',received='hm-18'){
  s.players[2].hand=['signature-2-0','travel',received];
  s.players[1].city=7;
  s.players[1].hand=[received];
- return s;
+ return reduce(s,{type:'stack',city:0,card:'encounter'});
 }
 
 it.each(['day','night'] as const)('trades across the map and allows only the received copy by %s',phase=>{

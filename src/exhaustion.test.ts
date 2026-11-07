@@ -23,6 +23,7 @@ it('awards encounter exhaustion Darkness and immediately checks victory',()=>{
  s.players[0].damage=3;
  s.players[0].hand=['investigate','hm-13'];
  s.players[0].equipment=['hm-4'];
+ s=reduce(s,{type:'stack',city:0,card:'encounter'});
  s=reduce(s,{type:'play',index:0});
  expect(s.winner).toBe('dracula');
  expect(darkness(s).total).toBe(10);

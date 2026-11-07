@@ -42,7 +42,15 @@ One connection takes you to an orthogonally adjacent city, directly above, below
 
 Each selected Hunter chooses their starting city first, in selected-player order. Hunters may share a city without a limit. After all four positions are chosen and visible, Dracula chooses his hidden starting city last. Dracula may choose any city, including one occupied by Hunters. This does not itself trigger combat. All city encounter piles are finalized and shuffled after Dracula chooses, then the first Hunter's Day turn begins. Setup choices do not consume actions. Starting-location setup is saved so it can be resumed; ongoing saves keep their existing positions.
 
-Each city receives four ordinary encounters. Add Dracula's identity card to his starting city and a fifth ordinary encounter to each other city. Shuffle each city independently. Every city starts with five cards: **44 Brush with Darkness encounters and exactly one Dracula identity across the map**. There are no separate decoy identity cards in the current implementation.
+Build each city's starting encounter pile as follows.
+
+| Cities | Brush with Darkness | Fog | Savage Attack | Total |
+|---|---:|---:|---:|---:|
+| London, Prague, Marseille, Athens | 4 | 1 | 0 | 5 |
+| Madrid, Vienna, Paris, Rome | 4 | 0 | 1 | 5 |
+| Munich | 2 | 1 | 1 | 4 |
+
+Dracula secretly replaces one Brush with Darkness in his chosen starting city with his identity card. Shuffle each city's pile independently. The map starts with 44 cards in total, including exactly one Dracula identity.
 
 A city **becomes permanently consecrated when its encounter pile reaches 0**. Remove all Allies there immediately and lose their Darkness contributions. New encounters and Allies cannot be placed there by any source, including Ready the Carriage at Night, Renfield, Savage Attack or Wraith movement. Hunters can still travel through or stop there, without adding a Night encounter from Ready the Carriage. Consecrated locations cannot host Dracula or be swap/escape destinations.
 
@@ -57,7 +65,7 @@ Each Hunter starts with nine cards:
 | Card | Copies |
 |---|---:|
 | Ready the Carriage | 2 |
-| Work the Market | 2 |
+| Visit the Market | 2 |
 | Investigate | 2 |
 | A Lucky Find | 1 |
 | First character-specific card | 1 |
@@ -67,12 +75,13 @@ Dracula starts with nine cards:
 
 | Card | Copies |
 |---|---:|
-| Savage Attack | 4 |
+| Savage Attack | 2 |
+| Fog | 2 |
 | Shadow Passage | 2 |
 | Dark Influence | 2 |
 | Call of the Night | 1 |
 
-Shuffle personal decks and draw three. Delaying Encounter is no longer in Dracula's starting deck; old saves convert it to Savage Attack. Call of the Night grants a bonus Night-effect card play by Day, or heals 1 HP by Night.
+Shuffle personal decks and draw three. The retired card named Delaying Encounter still converts to Savage Attack when loading older saves. Call of the Night grants a bonus Night-effect card play by Day, or heals 1 HP by Night.
 
 ## 4. Turns, timing and drawing
 
@@ -88,7 +97,7 @@ Each scheduled turn permits one standard card play. Resolve its choices before e
 
 Hunters may pass voluntarily even with playable cards. A Hunter can instead trade or trash equipped counter-equipment to remove an Ally, as described below. Dracula must play an eligible standard-action card when one is available, or pass when no eligible card is available. Combat-only cards are held for combat, not played as standard actions.
 
-Most implemented action cards are eligible by Day and Night. **Shadow Passage is Night only.** Work the Market works in both phases but has different effects. Other card timing remains configurable and provisional. Additional-play effects are not implemented yet.
+Most implemented action cards are eligible by Day and Night. **Shadow Passage is Night only.** Visit the Market works in both phases but has different effects. Other card timing remains configurable and provisional. Additional-play effects are not implemented yet.
 
 ## 5. Shared market and card ownership
 
@@ -98,16 +107,16 @@ Acquisition removes a face-up card and normally places it in the acquiring playe
 
 The display depletes across turns and rounds. **When a removal leaves three or fewer cards, immediately refill toward ten**, even mid-turn. Keep the remaining face-up cards. Refill only as far as available cards permit. Dawn and round changes do not refill the market.
 
-Denied or trashed cards leave the game permanently and never recycle. A market replacement discard, if present, can be reshuffled when the reserve is exhausted. Work the Market at Night replaces its selected slot first, then applies the usual refill check. If three or fewer face-up cards remain, refill toward ten immediately. Debug replacement is a testing tool.
+Denied or trashed cards leave the game permanently and never recycle. A market replacement discard, if present, can be reshuffled when the reserve is exhausted. Visit the Market at Night replaces its selected slot first, then applies the usual refill check. If three or fewer face-up cards remain, refill toward ten immediately. Debug replacement is a testing tool.
 
-### Work the Market — Hunter
+### Visit the Market — Hunter
 
 | Timing | Choose one effect |
 |---|---|
 | Day | Acquire 1 Hunter card or deny 1 Dracula card. |
 | Night | Trash 1 face-up card and refill its slot. |
 
-If the display is completely empty, Work the Market resolves with no market change. If a card remains, its applicable choice must be resolved.
+If the display is completely empty, Visit the Market resolves with no market change. If a card remains, its applicable choice must be resolved.
 
 ### Dark Influence — Dracula
 
@@ -145,6 +154,10 @@ Playable by Day or Night. Place one new hidden Savage Attack into a chosen city:
 
 Publicly announce the chosen city and shuffle its entire pile, including Dracula if present. The played personal action card goes to Dracula's discard; a separate encounter token is added to the city. This cannot replenish an empty or consecrated pile and does not move Dracula. When investigated, it deals 2 damage.
 
+### Fog — Dracula
+
+Fog uses the same placement rules as Savage Attack. When investigated, the investigating Hunter discards one random card from their remaining hand if they have one. Fog deals no damage. By Day, discard Fog from the city pile. At Night, shuffle it back into that city pile.
+
 ### Shadow Passage — Dracula
 
 Night only. First privately choose whether to move Dracula:
@@ -175,7 +188,7 @@ Unholy Strength, Mesmerize, and Pride of Dracula go to discard after play. Unhol
 
 ### Hunter exhaustion and recovery
 
-At 0 HP, a Hunter is Exhausted. Dracula gains 1 permanent accumulated Darkness each time a Hunter becomes Exhausted. Count each exhaustion once; a recovered Hunter can award another point if Exhausted again. Existing saves start this counter at zero, without retroactive awards. For Reckless Assault, award the point when deferred exhaustion takes effect after combat; an already resolved Hunter victory remains a Hunter victory. Permanently remove all their equipment and all non-basic cards in their hand, draw and discard. Basic cards are Ready the Carriage, Work the Market, Investigate and A Lucky Find. Keep their city position. They cannot act or participate in new combat while Exhausted.
+At 0 HP, a Hunter is Exhausted. Dracula gains 1 permanent accumulated Darkness each time a Hunter becomes Exhausted. Count each exhaustion once; a recovered Hunter can award another point if Exhausted again. Existing saves start this counter at zero, without retroactive awards. For Reckless Assault, award the point when deferred exhaustion takes effect after combat; an already resolved Hunter victory remains a Hunter victory. Permanently remove all their equipment and all non-basic cards in their hand, draw and discard. Basic cards are Ready the Carriage, Visit the Market, Investigate and A Lucky Find. Keep their city position. They cannot act or participate in new combat while Exhausted.
 
 Their next scheduled Day or Night turn is spent recovering. At the start of their following scheduled turn, they return at full HP; if their hand is empty, draw up to the normal hand size. Healing cannot revive a Exhausted Hunter or bypass recovery. Reckless Assault has the explicit delayed-exhaustion exception above.
 

@@ -33,6 +33,6 @@ it('finishes a Shared Vision already in progress in an older save',()=>{
  s.played=true;
  s.pendingVision={player:mina.id,city:1};
  const restored=parseSave(JSON.stringify(s));
- expect(visionPeek(restored,mina.id)).toBe('encounter');
+ expect(visionPeek(restored,mina.id)).toBe(s.locations[1].deck[0]);
  expect(reduce(restored,{type:'visionReturn',position:'top'}).pendingVision).toBeNull();
 });

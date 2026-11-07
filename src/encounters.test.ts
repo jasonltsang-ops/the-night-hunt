@@ -2,18 +2,25 @@ import {describe,it,expect} from 'vitest';
 import {createGame,reduce,parseSave,draculaLocation,visibleDraculaLocation} from './engine';
 
 describe('Encounters and Shadow Passage',()=>{
- it('sets up four encounters plus Dracula or a fifth encounter, shuffled at every city',()=>{
+ it('sets up each city’s encounter mix and replaces one Brush with Dracula',()=>{
   for(let city=0;city<9;city++){
    const s=createGame(undefined,city);
-   expect(s.locations.every(l=>l.deck.length===5&&l.resolved.length===0)).toBe(true);
-   expect(s.locations.flatMap(l=>l.deck).filter(c=>c==='encounter')).toHaveLength(44);
+   expect(s.locations.map(l=>l.deck.length)).toEqual([5,5,5,5,4,5,5,5,5]);
+   expect(s.locations.every(l=>l.resolved.length===0)).toBe(true);
+   s.locations.forEach((location,i)=>{
+    expect(location.deck.filter(c=>c==='fog')).toHaveLength([0,2,4,6,8].includes(i)?1:0);
+    expect(location.deck.filter(c=>c==='damaging')).toHaveLength([1,3,4,5,7].includes(i)?1:0);
+    expect(location.deck.filter(c=>c==='encounter')).toHaveLength((i===4?2:4)-(city===i?1:0));
+   });
+   expect(parseSave(JSON.stringify(s))).toEqual(s);
+   expect(s.locations.flatMap(l=>l.deck).filter(c=>c==='encounter')).toHaveLength(33);
    expect(s.locations.flatMap(l=>l.deck).filter(c=>c==='dracula')).toHaveLength(1);
    expect(draculaLocation(s)).toBe(city);
   }
  });
  it.each([['day',1],['night',1]] as const)('investigates the actual Hunter location during %s, dealing %i damage', (phase,damage)=>{
   let s=createGame(undefined,8);s.phase=phase;s.turn=phase==='day'?0:1;s.players[0].city=1;s.players[0].hand=['investigate'];
-  const before=structuredClone(s);s=reduce(s,{type:'play',index:0});
+  s=reduce(s,{type:'stack',city:1,card:'encounter'});const before=structuredClone(s);s=reduce(s,{type:'play',index:0});
   expect(s.players[0].damage).toBe(damage);expect(s.locations[1].deck).toHaveLength(4);expect(s.locations[1].resolved).toEqual(['encounter']);expect(s.locations[0].deck).toHaveLength(5);expect(s.players[0].discard).toContain('investigate');expect(before.players[0].damage).toBe(0);expect(s.winner).toBe(null);
   expect(parseSave(JSON.stringify(s))).toEqual(s);
  });
@@ -23,12 +30,12 @@ describe('Encounters and Shadow Passage',()=>{
  });
  it('resolves an empty deck without damage or extra cards',()=>{
   let s=createGame(undefined,8);s.config.hunterHP=10;for(let i=0;i<6;i++)s=reduce(s,{type:'investigate',player:'h0',debug:true});
-  expect(s.players[0].damage).toBe(5);expect(s.locations[0].deck).toEqual([]);expect(s.log.at(-1)).toContain('deck is empty');
+  expect(s.players[0].damage).toBe(4);expect(s.locations[0].deck).toEqual([]);expect(s.log.at(-1)).toContain('deck is empty');
  });
  it('swaps Dracula with an adjacent encounter and announces only the city pair',()=>{
   let s=createGame(undefined,0);s.phase='night';s.turn=0;s.players[4].hand=['d-2'];s=reduce(s,{type:'play',index:0});expect(s.pendingSwap).toBe(true);expect(s.players[4].discard).toContain('d-2');expect(()=>reduce(s,{type:'advance'})).toThrow('Resolve Shadow Passage');
   const index=s.locations[0].deck.indexOf('dracula');const n=reduce(s,{type:'swap',moveDracula:true,from:0,to:1,fromIndex:index,toIndex:0});
-  expect(draculaLocation(n)).toBe(1);expect(n.players[4].city).toBe(1);expect(draculaLocation(s)).toBe(0);expect(n.pendingSwap).toBe(false);expect(n.locations.every(l=>l.deck.length===5)).toBe(true);expect(n.log.at(-1)).toBe('Shadow Passage: cards swapped between London and Paris; both decks shuffled.');expect(parseSave(JSON.stringify(n))).toEqual(n);
+  expect(draculaLocation(n)).toBe(1);expect(n.players[4].city).toBe(1);expect(draculaLocation(s)).toBe(0);expect(n.pendingSwap).toBe(false);expect(n.locations.map(l=>l.deck.length)).toEqual([5,5,5,5,4,5,5,5,5]);expect(n.log.at(-1)).toBe('Shadow Passage: cards swapped between London and Paris; both decks shuffled.');expect(parseSave(JSON.stringify(n))).toEqual(n);
   expect(()=>reduce(n,{type:'swap',moveDracula:false,from:0,to:1,fromIndex:0,toIndex:0})).toThrow();
  });
  it('supports bluff swaps, validates adjacency and selected cards, and rejects empty decks',()=>{
@@ -46,8 +53,16 @@ describe('Encounters and Shadow Passage',()=>{
   let s=createGame(undefined,4);s.phase=phase;s.turn=phase==='day'?4:0;expect(visibleDraculaLocation(s,'dracula')).toBe(4);for(const hunter of s.players.slice(0,4))expect(visibleDraculaLocation(s,hunter.id)).toBe(null);expect(visibleDraculaLocation(s,'h0',true)).toBe(4);
   s.phase='night';s.turn=0;s.players[4].hand=['d-2'];s=reduce(s,{type:'play',index:0});s=reduce(s,{type:'swap',moveDracula:true,from:4,to:5,fromIndex:s.locations[4].deck.indexOf('dracula'),toIndex:0});expect(visibleDraculaLocation(s,'dracula')).toBe(5);expect(visibleDraculaLocation(s,'h0')).toBe(null);s=reduce(s,{type:'advance'});expect(visibleDraculaLocation(s,'dracula')).toBe(null);
  });
+ it('preserves the original city decks when loading an ongoing game',()=>{
+  const s=createGame(undefined,4);
+  delete s.mixedStartingEncounters;
+  s.locations.forEach((location,i)=>{
+   location.deck=['encounter','encounter','encounter','encounter',i===4?'dracula':'encounter'];
+  });
+  expect(parseSave(JSON.stringify(s))).toEqual(s);
+ });
  it('migrates old saves and rejects malformed encounter saves',()=>{
-  const s=createGame(undefined,4);const old={...s,version:2};const migrated=parseSave(JSON.stringify(old));expect(migrated.version).toBe(7);expect(migrated.players[0].city).toBe(s.players[0].city);expect(migrated.locations.every(l=>l.deck.length===5)).toBe(true);
+  const s=createGame(undefined,4);const old={...s,version:2};const migrated=parseSave(JSON.stringify(old));expect(migrated.version).toBe(7);expect(migrated.players[0].city).toBe(s.players[0].city);expect(migrated.locations.map(l=>l.deck.length)).toEqual([5,5,5,5,4,5,5,5,5]);
   s.locations[0].deck.push('dracula');expect(()=>parseSave(JSON.stringify(s))).toThrow();
  });
 });

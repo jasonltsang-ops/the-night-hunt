@@ -1,7 +1,7 @@
 import {describe,it,expect} from 'vitest';
 import {active,createGame,parseSave,reduce} from './engine';
 
-describe('Work the Market with an exhausted market',()=>{
+describe('Visit the Market with an exhausted market',()=>{
  it('resolves without a target, preserves the save, and allows the next turn',()=>{
   const s=createGame();s.players[0].hand=['supply'];
   s.market.denied.push(...s.market.face,...s.market.draw);s.market.face=[];s.market.draw=[];
@@ -16,7 +16,7 @@ describe('Work the Market with an exhausted market',()=>{
  it.each(['hm-0','dm-0'])('still requires resolving the last available card %s',id=>{
   const s=createGame();s.players[0].hand=['supply'];s.market.face=[id];s.market.draw=[];
   const n=reduce(s,{type:'play',index:0});expect(n.pendingSupply).toBe(true);
-  expect(()=>reduce(n,{type:'advance'})).toThrow('Resolve Work the Market');
+  expect(()=>reduce(n,{type:'advance'})).toThrow('Resolve Visit the Market');
   const done=reduce(n,{type:'market',index:0,mode:id==='hm-0'?'acquire':'deny',player:'h0'});
   expect(done.pendingSupply).toBe(false);expect(active(reduce(done,{type:'advance'})).id).toBe('h1');
  });
