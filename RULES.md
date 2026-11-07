@@ -38,7 +38,7 @@ These values are provisional and primarily defined in `src/data.ts`.
 | Madrid | Munich | Vienna |
 | Marseille | Rome | Athens |
 
-One connection takes you to an orthogonally adjacent city, directly above, below, left, or right on the map. Hypnosis has its own proximity rule that includes diagonals.
+One connection takes you to an orthogonally adjacent city, directly above, below, left, or right on the map. An adjacent city is one connection away. Hypnosis has its own proximity rule that includes diagonals.
 
 Each selected Hunter chooses their starting city first, in selected-player order. Hunters may share a city without a limit. After all four positions are chosen and visible, Dracula chooses his hidden starting city last. Dracula may choose any city, including one occupied by Hunters. This does not itself trigger combat. All city encounter piles are finalized and shuffled after Dracula chooses, then the first Hunter's Day turn begins. Setup choices do not consume actions. Starting-location setup is saved so it can be resumed; ongoing saves keep their existing positions.
 
@@ -97,7 +97,7 @@ Each scheduled turn permits one standard card play. Resolve its choices before e
 
 Hunters may pass voluntarily even with playable cards. A Hunter can instead trade or trash equipped counter-equipment to remove an Ally, as described below. Dracula must play an eligible standard-action card when one is available, or pass when no eligible card is available. Combat-only cards are held for combat, not played as standard actions.
 
-Most implemented action cards are eligible by Day and Night. **Shadow Passage is Night only.** Visit the Market works in both phases but has different effects. Other card timing remains configurable and provisional. Additional-play effects are not implemented yet.
+Most implemented action cards are eligible by Day and Night. Visit the Market works in both phases but has different effects. Other card timing remains configurable and provisional. Additional-play effects are not implemented yet.
 
 ## 5. Shared market and card ownership
 
@@ -113,8 +113,8 @@ Denied or trashed cards leave the game permanently and never recycle. A market r
 
 | Timing | Choose one effect |
 |---|---|
-| Day | Acquire 1 Hunter card or deny 1 Dracula card. |
-| Night | Trash 1 face-up card and refill its slot. |
+| Day | Acquire 1 Hunter card or trash 1 Dracula card. |
+| Night | Trash 1 card and refill its slot. |
 
 If the display is completely empty, Visit the Market resolves with no market change. If a card remains, its applicable choice must be resolved.
 
@@ -122,8 +122,8 @@ If the display is completely empty, Visit the Market resolves with no market cha
 
 | Timing | Choose one effect |
 |---|---|
-| Day | Permanently deny one Hunter card. |
-| Night | Acquire one Dracula card OR permanently deny one Hunter card. |
+| Day | Trash 1 Hunter card from the market. |
+| Night | Acquire 1 Dracula card or trash 1 Hunter card from the market. |
 
 This is one market action; the earlier replace-then-acquire design is superseded. With no legal target, the card resolves without a market change.
 
@@ -149,7 +149,7 @@ Reveal and remove the top encounter at the acting Hunter's current city. Brush w
 
 Playable by Day or Night. Place one new hidden Savage Attack into a chosen city:
 
-- **Day:** Dracula's actual city or an open orthogonally adjacent city.
+- **Day:** An open city within one connection of Dracula, including his current city.
 - **Night:** any open city.
 
 Publicly announce the chosen city and shuffle its entire pile, including Dracula if present. The played personal action card goes to Dracula's discard; a separate encounter token is added to the city. This cannot replenish an empty or consecrated pile and does not move Dracula. When investigated, it deals 2 damage.
@@ -160,10 +160,12 @@ Fog uses the same placement rules as Savage Attack. When investigated, the inves
 
 ### Shadow Passage — Dracula
 
-Night only. First privately choose whether to move Dracula:
+**Day.** Privately view the top encounter of any nonempty city. Leave it on top or shuffle that pile.
+
+**Night.** First privately choose whether to move Dracula:
 
 - **Move:** select Dracula's identity in his actual city and swap it with one selected card from an orthogonally adjacent city.
-- **Bluff:** swap two non-Dracula cards between any two distinct cities. These cities need not be adjacent; Dracula stays where he is.
+- **Bluff:** swap one non-Dracula card from each of two adjacent cities. Dracula stays where he is.
 
 Both selected piles must be open and contain a card. Shuffle both after the swap. Publicly announce only the two involved cities, not the selected cards, whether Dracula moved, or his destination. The played Shadow Passage card goes to personal discard. The engine derives Dracula's true location from his identity card.
 

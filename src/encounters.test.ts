@@ -40,14 +40,14 @@ describe('Encounters and Shadow Passage',()=>{
  });
  it('supports bluff swaps, validates adjacency and selected cards, and rejects empty decks',()=>{
   let s=createGame(undefined,8);s.phase='night';s.turn=0;s.players[4].hand=['d-2'];s=reduce(s,{type:'play',index:0});
-  expect(draculaLocation(reduce(s,{type:'swap',moveDracula:false,from:0,to:4,fromIndex:0,toIndex:0}))).toBe(8);
-  expect(draculaLocation(reduce(s,{type:'swap',moveDracula:false,from:2,to:3,fromIndex:0,toIndex:0}))).toBe(8);
+  expect(()=>reduce(s,{type:'swap',moveDracula:false,from:0,to:4,fromIndex:0,toIndex:0})).toThrow('adjacent');
+  expect(draculaLocation(reduce(s,{type:'swap',moveDracula:false,from:2,to:5,fromIndex:0,toIndex:0}))).toBe(8);
   expect(()=>reduce(s,{type:'swap',moveDracula:false,from:0,to:1,fromIndex:5,toIndex:0})).toThrow('available');
   const n=reduce(s,{type:'swap',moveDracula:false,from:0,to:1,fromIndex:0,toIndex:0});expect(draculaLocation(n)).toBe(8);
   s.locations[0].resolved.push(...s.locations[0].deck);s.locations[0].deck=[];expect(()=>reduce(s,{type:'swap',moveDracula:false,from:0,to:1,fromIndex:0,toIndex:0})).toThrow('available');
  });
- it('restricts Shadow Passage to Dracula at Night and permits a Day pass with no eligible cards',()=>{
-  let s=createGame();s.turn=4;s.players[4].hand=['d-2'];expect(()=>reduce(s,{type:'play',index:0})).toThrow('Card cannot be played now.');expect(reduce(s,{type:'advance'}).phase).toBe('night');s.phase='night';s.turn=0;s=reduce(s,{type:'play',index:0});expect(s.pendingSwap).toBe(true);s.phase='day';s.turn=4;expect(()=>reduce(s,{type:'swap',moveDracula:false,from:0,to:1,fromIndex:0,toIndex:0})).toThrow();
+ it('keeps the Night swap action unavailable by Day',()=>{
+  let s=createGame();s.turn=4;s.players[4].hand=['d-2'];expect(reduce(s,{type:'play',index:0}).pendingVision?.shadow).toBe(true);s.phase='night';s.turn=0;s=reduce(s,{type:'play',index:0});expect(s.pendingSwap).toBe(true);s.phase='day';s.turn=4;expect(()=>reduce(s,{type:'swap',moveDracula:false,from:0,to:1,fromIndex:0,toIndex:0})).toThrow();
  });
  it.each(['day','night'] as const)('shows Dracula his actual location during his %s turn, hiding it from Hunters',phase=>{
   let s=createGame(undefined,4);s.phase=phase;s.turn=phase==='day'?4:0;expect(visibleDraculaLocation(s,'dracula')).toBe(4);for(const hunter of s.players.slice(0,4))expect(visibleDraculaLocation(s,hunter.id)).toBe(null);expect(visibleDraculaLocation(s,'h0',true)).toBe(4);

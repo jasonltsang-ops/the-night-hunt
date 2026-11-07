@@ -77,9 +77,10 @@ export function matchView(s:State,side:Side,revision:number):MatchView{
  state.locations.forEach((location,city)=>{
   location.resolved=location.resolved.map(()=> 'encounter');
   if(!(side==='dracula'&&s.pendingSwap)&&!escapeCities.includes(city))location.deck=location.deck.map((card,index)=>{
-   const reviewing=side==='hunter'&&((city===actor.city&&index<reviewCount)||(city===s.pendingVision?.city&&index===0));
+   const reviewing=side==='hunter'&&((city===actor.city&&index<reviewCount)||(!s.pendingVision?.shadow&&city===s.pendingVision?.city&&index===0));
    const wraithPeek=side==='dracula'&&s.pendingWraith?.stage==='peek'&&s.pendingWraith.city===city&&index===location.deck.length-1;
-   return reviewing||wraithPeek?card:'encounter';
+   const shadowPeek=side==='dracula'&&s.pendingVision?.shadow&&s.pendingVision.city===city&&index===0;
+   return reviewing||wraithPeek||shadowPeek?card:'encounter';
   });
   if(side==='hunter'){
    if(location.ally&&!location.ally.revealed)location.ally.card='dm-4';
@@ -93,7 +94,7 @@ export function matchView(s:State,side:Side,revision:number):MatchView{
   if(state.pendingAlly)state.pendingAlly='dm-4';
   state.pendingWraith=null;
  }
- if(side==='dracula'&&state.pendingVision)state.pendingVision.city=null;
+ if(state.pendingVision&&((side==='dracula')!==!!state.pendingVision.shadow))state.pendingVision.city=null;
  const filter=(entries:string[])=>entries.flatMap(entry=>publicEntry(entry,side)??[]);
  state.log=filter(state.log);
  if(state.latestResolution)state.latestResolution.entries=filter(state.latestResolution.entries);
