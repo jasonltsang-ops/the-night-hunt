@@ -58,3 +58,5 @@ The market now has 31 Hunter and 11 Dracula cards: Smelling Salts and Renfield w
 Hunters reveal Allies by being at their city. Use the equipped counter’s “Trash … to remove …” button to spend the standard Day/Night action. Wraith shares with one other Ally and resolves its mandatory movement/private bottom-card choice before Dracula’s Night action. Renfield adds an encounter to his own city each Night. A city emptied of encounters closes permanently, removes its Allies and cannot receive more encounters.
 
 Version 7 saves preserve pending Wraith choices. Older saves migrate their Ally slots and empty cities, and add the two new cards to the market reserve once. They do not replay beginning-of-Night effects. JSON snapshots still contain hidden information.
+
+New games now begin with starting-city selection: four selected Hunters choose first, then Dracula chooses secretly after seeing their positions. Shared starting cities are allowed. Existing ongoing saves keep their positions; use New game / reset to try the new setup.

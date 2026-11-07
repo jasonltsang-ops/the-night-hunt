@@ -6,15 +6,15 @@ function deploy(card:string,city=8,state=createGame(undefined,4)){
 function hunterTurn(s:State,city=8){s.turn=0;s.phase='day';s.played=false;s.players[0].city=city;s.players[0].hand=[];return reduce(s,{type:'city',player:'h0',city});}
 function empty(s:State,city:number,leave=0){const l=s.locations[city];l.resolved.push(...l.deck.splice(leave));}
 function night(s:State){s.turn=4;s.phase='day';s.played=true;return reduce(s,{type:'advance'});}
-function showdown(s:State,count:number){
+function showdown(s:State,count:number,combatCard?:string){
  s.phase='day';s.turn=0;s.played=false;s.players.forEach(p=>p.hand=[]);
  s.players.slice(0,4).forEach((p,i)=>p.city=i<count?4:0);
- s.players[0].hand=['investigate'];s=reduce(s,{type:'stack',city:4,card:'dracula'});s=reduce(s,{type:'play',index:0});
- for(const id of [...s.combat!.hunters,'dracula'])s=reduce(s,{type:'combatCard',player:id,index:-1});
+ s.players[0].hand=combatCard?['investigate',combatCard]:['investigate'];s=reduce(s,{type:'stack',city:4,card:'dracula'});s=reduce(s,{type:'play',index:0});
+ for(const id of [...s.combat!.hunters,'dracula'])s=reduce(s,{type:'combatCard',player:id,index:id==='h0'&&combatCard?0:-1});
  return reduce(s,{type:'resolveCombat'});
 }
 describe('minion powers and equipped counters',()=>{
- it.each([['dm-4','hm-0'],['dm-5','hm-3'],['dm-6','hm-2'],['dm-renfield','hm-salts']])('reveals %s beneath a Hunter and permits its matching equipped counter and rejects unrelated equipment', (ally,equipment)=>{
+ it.each([['dm-5','hm-3'],['dm-6','hm-2'],['dm-renfield','hm-salts']])('reveals %s beneath a Hunter and permits its matching equipped counter and rejects unrelated equipment', (ally,equipment)=>{
   let s=deploy(ally,0);expect(alliesAt(s,0)[0].revealed).toBe(true);s=hunterTurn(s,0);s.players[0].equipment=['hm-4'];expect(()=>reduce(s,{type:'sacrificeEquipment',index:0})).toThrow();
   s.players[0].equipment=[equipment];expect(removableEquipment(s)).toHaveLength(1);const original=structuredClone(s);s=reduce(s,{type:'sacrificeEquipment',index:0});
   expect(alliesAt(s,0)).toEqual([]);expect(darkness(s).allies).toBe(0);expect(s.played).toBe(true);expect(s.players[0].equipment).toEqual([]);expect(s.players[0].discard).not.toContain(equipment);expect(original.players[0].equipment).toEqual([equipment]);expect(parseSave(JSON.stringify(s))).toEqual(s);
@@ -28,23 +28,36 @@ describe('minion powers and equipped counters',()=>{
  });
  it('Smelling Salts grants a persistent fifth HP, caps instead of damaging on loss, and is lost on knockout',()=>{
   let s=createGame();s.players[0].damage=2;s.players[0].hand=['hm-salts'];s=reduce(s,{type:'play',index:0});expect(maxHP(s,s.players[0])).toBe(5);expect(hp(s,s.players[0])).toBe(3);
-  s.played=false;s.players[0].equipment.push('hm-4');s.players[0].hand=['hm-5'];s=reduce(s,{type:'play',index:0,replaceIndex:0,replacedDestination:'trash'});expect(maxHP(s,s.players[0])).toBe(4);expect(hp(s,s.players[0])).toBe(3);
+  s.played=false;s.players[0].equipment.push('hm-4');s.players[0].hand=['hm-9'];s=reduce(s,{type:'play',index:0,replaceIndex:0,replacedDestination:'trash'});expect(maxHP(s,s.players[0])).toBe(4);expect(hp(s,s.players[0])).toBe(3);
   s.players[0].equipment=['hm-salts'];s.players[0].damage=4;expect(hp(s,s.players[0])).toBe(1);hurt(s,s.players[0],1);expect(s.players[0].equipment).toEqual([]);expect(hp(s,s.players[0])).toBe(0);expect(s.players[0].damage).toBe(4);expect(parseSave(JSON.stringify(s))).toEqual(s);
  });
  it('immediate acquisition grants the Salts HP bonus, and replacement at full health caps to four',()=>{
   let s=createGame();s.players[0].hand=['supply'];s.market.face=['hm-salts'];s=reduce(s,{type:'play',index:0});s=reduce(s,{type:'market',index:0,player:'h0',mode:'acquire',destination:'equipment'});expect(hp(s,s.players[0])).toBe(5);
-  s.played=false;s.players[0].equipment.push('hm-4');s.players[0].hand=['hm-5'];s=reduce(s,{type:'play',index:0,replaceIndex:0,replacedDestination:'discard'});expect(hp(s,s.players[0])).toBe(4);expect(s.players[0].discard).toContain('hm-salts');
+  s.played=false;s.players[0].equipment.push('hm-4');s.players[0].hand=['hm-9'];s=reduce(s,{type:'play',index:0,replaceIndex:0,replacedDestination:'discard'});expect(hp(s,s.players[0])).toBe(4);expect(s.players[0].discard).toContain('hm-salts');
  });
- it.each([['day',0],['night',1]] as const)('Crucifix reduces ordinary and damaging encounter damage at %s, not combat damage', (phase,damage)=>{
-  for(const card of ['encounter','damaging'] as const){let s=createGame(undefined,4);s.phase=phase;s.turn=phase==='day'?0:1;s.players[0].equipment=['hm-2'];s.players[0].hand=['investigate'];if(card==='damaging')s.locations[0].deck.unshift('damaging');else s=reduce(s,{type:'stack',city:0,card:'encounter'});s=reduce(s,{type:'play',index:0});expect(s.players[0].damage).toBe(damage);}
+ it.each(['day','night'] as const)('Crucifix reduces both encounter types during %s and does not reduce combat damage', phase=>{
+  for(const card of ['encounter','damaging'] as const){let s=createGame(undefined,4);s.phase=phase;s.turn=phase==='day'?0:1;s.players[0].equipment=['hm-2'];s.players[0].hand=['investigate'];if(card==='damaging')s.locations[0].deck.unshift('damaging');else s=reduce(s,{type:'stack',city:0,card:'encounter'});s=reduce(s,{type:'play',index:0});expect(s.players[0].damage).toBe(card==='damaging'?1:0);}
   let s=createGame(undefined,4);s.players[0].equipment=['hm-2'];s=showdown(s,1);s=reduce(s,{type:'allocateDamage',extra:[]});expect(s.players[0].damage).toBe(2);
  });
- it('Stake adds damage only on an actual Hunter victory and contributes no strength',()=>{
-  let s=createGame(undefined,4);s.players[0].equipment=['hm-0'];s=showdown(s,4);expect(s.log.at(-1)).toContain('Hunters 4, Dracula 3');expect(s.players[4].damage).toBe(2);
-  s=createGame(undefined,4);s.players[0].equipment=['hm-0'];s=showdown(s,3);expect(s.players[4].damage).toBe(0);expect(s.combat).toBe(null);
+ it.each([1,3,4])('Stake adds 2 Strength and is trashed with %i Hunters',count=>{
+  const s=showdown(createGame(undefined,4),count,'hm-0');
+  expect(s.log.at(-1)).toContain(`Hunters ${count+2}, Dracula 3`);
+  expect(s.players[4].damage).toBe(count-1);
+  expect(s.players[0].hand).not.toContain('hm-0');
+  expect(s.players[0].discard).not.toContain('hm-0');
+  expect(parseSave(JSON.stringify(s))).toEqual(s);
  });
- it('Bride adds two total damage only at her city on a strict Dracula win; ties cause none',()=>{
-  let s=deploy('dm-4',4);s=showdown(s,1);expect(s.combat?.draculaStrength).toBe(3);expect(s.combat?.damage).toBe(4);s=reduce(s,{type:'allocateDamage',extra:[]});expect(s.players[0].recovery).toBe('waiting');
+ it('can trash a Stake from hand to remove Vampire Bride but not another Ally',()=>{
+  let s=hunterTurn(deploy('dm-4',0),0);
+  s.locations[0].wraith={card:'dm-6',revealed:true};
+  s.players[0].hand=['hm-0'];
+  expect(()=>reduce(s,{type:'play',index:0,ally:'dm-6'})).toThrow();
+  s=reduce(s,{type:'play',index:0,ally:'dm-4'});
+  expect(alliesAt(s,0).map(a=>a.card)).toEqual(['dm-6']);
+  expect(s.players[0].discard).not.toContain('hm-0');
+ });
+ it('Bride adds three total damage only at her city on a strict Dracula win; ties cause none',()=>{
+  let s=deploy('dm-4',4);s=showdown(s,1);expect(s.combat?.draculaStrength).toBe(3);expect(s.combat?.damage).toBe(5);s=reduce(s,{type:'allocateDamage',extra:[]});expect(s.players[0].recovery).toBe('waiting');
   s=showdown(deploy('dm-4',4),3);expect(s.players.slice(0,4).every(p=>p.damage===0)).toBe(true);
   s=showdown(deploy('dm-4',8),1);expect(s.combat?.damage).toBe(2);
  });

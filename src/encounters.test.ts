@@ -11,7 +11,7 @@ describe('Encounters and Shadow Passage',()=>{
    expect(draculaLocation(s)).toBe(city);
   }
  });
- it.each([['day',1],['night',2]] as const)('investigates the actual Hunter location during %s, dealing %i damage', (phase,damage)=>{
+ it.each([['day',1],['night',1]] as const)('investigates the actual Hunter location during %s, dealing %i damage', (phase,damage)=>{
   let s=createGame(undefined,8);s.phase=phase;s.turn=phase==='day'?0:1;s.players[0].city=1;s.players[0].hand=['investigate'];
   const before=structuredClone(s);s=reduce(s,{type:'play',index:0});
   expect(s.players[0].damage).toBe(damage);expect(s.locations[1].deck).toHaveLength(4);expect(s.locations[1].resolved).toEqual(['encounter']);expect(s.locations[0].deck).toHaveLength(5);expect(s.players[0].discard).toContain('investigate');expect(before.players[0].damage).toBe(0);expect(s.winner).toBe(null);

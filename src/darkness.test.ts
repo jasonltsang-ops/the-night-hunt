@@ -38,7 +38,7 @@ describe('calendar and Darkness',()=>{
   let s=createGame();s.players[4].discard.push('dm-5');expect(darkness(s).allies).toBe(0);
   s=deploy(s,8);s.phase='day';s.turn=0;s.played=false;
   for(let day=0;day<7;day++)s=endDay(s);
-  expect(darkness(s)).toEqual({weekly:3,events:0,accumulated:3,allies:1,total:4});
+  expect(darkness(s)).toEqual({weekly:3,events:0,exhaustions:0,accumulated:3,allies:1,total:4});
   s=reduce(s,{type:'removeAlly',city:8,debug:true});expect(darkness(s).total).toBe(3);
   expect(()=>removeLocationAlly(s,8)).toThrow('with an ally');
  });
