@@ -22,6 +22,11 @@ it.each(['day','night'] as const)('draws two before choosing a discard during %s
  expect(s.players[3].discard).toEqual([assessment,'combat']);
  expect(s.pendingAssessment).toBeUndefined();
  expect(()=>reduce(s,{type:'assessmentDiscard',index:0})).toThrow();
+ expect(()=>reduce(s,{type:'play',index:0})).toThrow('drawn with Clinical Assessment');
+ const played=reduce(parseSave(JSON.stringify(s)),{type:'play',index:1});
+ expect(played.players[3].hand).toEqual(['travel']);
+ expect(played.players[3].discard).toContain('investigate');
+ expect(()=>reduce(played,{type:'play',index:0})).toThrow();
 });
 
 it('cannot draw the played copy when the deck and discard are empty',()=>{

@@ -28,12 +28,12 @@ describe('minion powers and equipped counters',()=>{
  });
  it('Smelling Salts grants a persistent fifth HP, caps instead of damaging on loss, and is lost on knockout',()=>{
   let s=createGame();s.players[0].damage=2;s.players[0].hand=['hm-salts'];s=reduce(s,{type:'play',index:0});expect(maxHP(s,s.players[0])).toBe(5);expect(hp(s,s.players[0])).toBe(3);
-  s.played=false;s.players[0].equipment.push('hm-4');s.players[0].hand=['hm-9'];s=reduce(s,{type:'play',index:0,replaceIndex:0,replacedDestination:'trash'});expect(maxHP(s,s.players[0])).toBe(4);expect(hp(s,s.players[0])).toBe(3);
+  s.played=false;s.players[0].hand=['hm-9'];s=reduce(s,{type:'play',index:0,replaceIndex:0,replacedDestination:'trash'});expect(maxHP(s,s.players[0])).toBe(4);expect(hp(s,s.players[0])).toBe(3);
   s.players[0].equipment=['hm-salts'];s.players[0].damage=4;expect(hp(s,s.players[0])).toBe(1);hurt(s,s.players[0],1);expect(s.players[0].equipment).toEqual([]);expect(hp(s,s.players[0])).toBe(0);expect(s.players[0].damage).toBe(4);expect(parseSave(JSON.stringify(s))).toEqual(s);
  });
  it('immediate acquisition grants the Salts HP bonus, and replacement at full health caps to four',()=>{
   let s=createGame();s.players[0].hand=['supply'];s.market.face=['hm-salts'];s=reduce(s,{type:'play',index:0});s=reduce(s,{type:'market',index:0,player:'h0',mode:'acquire',destination:'equipment'});expect(hp(s,s.players[0])).toBe(5);
-  s.played=false;s.players[0].equipment.push('hm-4');s.players[0].hand=['hm-9'];s=reduce(s,{type:'play',index:0,replaceIndex:0,replacedDestination:'discard'});expect(hp(s,s.players[0])).toBe(4);expect(s.players[0].discard).toContain('hm-salts');
+  s.played=false;s.players[0].hand=['hm-9'];s=reduce(s,{type:'play',index:0,replaceIndex:0,replacedDestination:'discard'});expect(hp(s,s.players[0])).toBe(4);expect(s.players[0].discard).toContain('hm-salts');
  });
  it.each(['day','night'] as const)('Crucifix reduces both encounter types during %s and does not reduce combat damage', phase=>{
   for(const card of ['encounter','damaging'] as const){let s=createGame(undefined,4);s.phase=phase;s.turn=phase==='day'?0:1;s.players[0].equipment=['hm-2'];s.players[0].hand=['investigate'];if(card==='damaging')s.locations[0].deck.unshift('damaging');else s=reduce(s,{type:'stack',city:0,card:'encounter'});s=reduce(s,{type:'play',index:0});expect(s.players[0].damage).toBe(card==='damaging'?1:0);}

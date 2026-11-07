@@ -55,7 +55,7 @@ cards['d-5'].description='Encounter: deals 1 damage when investigated.';
 cards['d-0'].description='Day: add a Savage Attack to your city or an orthogonally adjacent city. Night: add it to any city. Announce that city and shuffle its encounter deck. Deals 2 damage when investigated.';
 
 cards.travel.timing=['day','night'];
-cards.travel.description='Move one connection. At Night, add one basic encounter to the destination and shuffle its entire encounter deck.';
+cards.travel.description='Move one connection. At Night, shuffle a Brush with Darkness into the destination if it is open. Or Wait and Prepare: stay here and draw 1 card.';
 
 cards.combat.name='A Lucky Find';
 cards.combat.timing=['day','night'];
@@ -82,8 +82,8 @@ cards['hm-9'].discardStrength=2;
 cards['hm-9'].description='+1 Str, or discard for +2 Str in this showdown.';
 for(const [id,strength] of [['combat',1],['signature-0-1',3],['signature-2-1',2],['hm-25',1],['hm-26',2]] as const){cards[id].strength=strength;if(id!=='combat')cards[id].description='Keep in hand: +'+strength+' strength in combat. Conditional effects remain deferred; signature values are provisional.';}
 cards.combat.description='On your turn: heal 1 HP. During combat: contribute +1 strength as your one combat card.';
-cards['dm-0'].escape='mist';cards['dm-0'].description='Choose as your combat card. If Dracula survives, optionally escape one connection after combat. Destination stays secret.';
-cards['dm-1'].escape='bats';cards['dm-1'].description='Choose as your combat card. If Dracula survives, optionally escape up to two connections after combat. Final destination is public.';
+cards['dm-0'].escape='mist';cards['dm-0'].description='Choose as your combat card. If Dracula survives, optionally escape one connection after combat. Destination stays secret. Night action: move 1 connection secretly.';
+cards['dm-1'].escape='bats';cards['dm-1'].description='Choose as your combat card. If Dracula survives, optionally escape up to two connections after combat. Final destination is public. Day action: move 1 connection secretly.';
 
 // Location allies share one prototype bonus, with types retained for future effects.
 for(const [id,type] of [['dm-4','Vampire'],['dm-5','Beast'],['dm-6','Supernatural']] as const){cards[id].ally={type,strength:2};cards[id].timing=['day','night'];cards[id].description='Play by Day or Night: attach face-down to any city with no ally. Grants Dracula +2 strength in combat at that city and +1 Darkness while deployed. Removing it loses that Darkness point. One ally per city.';}
@@ -95,7 +95,7 @@ cards['signature-4-0'].description='Choose another conscious Hunter at your city
 cards['signature-3-0'].healing=2;cards['signature-3-0'].description='Heal yourself or another conscious Hunter at your city for 2 HP, up to full health. Cannot revive a Exhausted Hunter or skip recovery.';
 
 cards['signature-2-0'].description='Day or Night. Exchange one card from your hand with a conscious Hunter anywhere. You may immediately play the exact card you received if it is legal this phase.';
-cards['signature-3-1'].description='Draw two cards, then choose one card from your hand to discard. Play by Day or Night.';
+cards['signature-3-1'].description='Draw two cards, then discard one from your hand. You may immediately play one of the cards you drew. Play by Day or Night.';
 cards['signature-4-1'].description='Privately examine the top encounter of any other city, then return it to the top or bottom of that city’s encounter pile without resolving it.';
 
 cards['d-2'].description='Night: first choose whether to move Dracula. If yes, swap Dracula from his actual city with a card in an orthogonally adjacent city. If no, swap non-Dracula cards between any two distinct cities. Shuffle both piles; publicly announce only the cities.';

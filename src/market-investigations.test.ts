@@ -78,3 +78,18 @@ it('adds only the second Uncover Conspiracy to saves with the previous investiga
  expect([...n.market.face,...n.market.draw]).not.toContain('hm-17b');
  expect(parseSave(JSON.stringify(n))).toEqual(n);
 });
+
+it('resumes Coordinated Search after a showdown it starts',()=>{
+ let s=createGame(undefined,0);
+ s.players[0].hand=['hm-20'];
+ s=reduce(s,{type:'stack',city:0,card:'dracula'});
+ s=reduce(s,{type:'play',index:0});
+ expect(s.pendingInvestigation).toBe('hm-20');
+ for(const player of ['h0','h1','h3','h2','dracula']){
+  s=reduce(s,{type:'combatCard',player,index:-1});
+ }
+ s=reduce(s,{type:'resolveCombat'});
+ expect(s.combat).toBeNull();
+ expect(s.pendingInvestigation).toBe('hm-20');
+ expect(reduce(s,{type:'resolveInvestigation',repeat:false}).pendingInvestigation).toBeUndefined();
+});

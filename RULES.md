@@ -21,7 +21,7 @@ Dracula wins immediately at **10 total Darkness**. Total Darkness is accumulated
 | Dracula maximum HP | 10; 12 while Renfield is deployed |
 | Dracula base combat strength | 3 |
 | Opening hand / end-of-round draw | 3 cards |
-| Equipment capacity | 2 per Hunter |
+| Equipment capacity | 1 per Hunter |
 | Brush with Darkness damage | 1 |
 | Savage Attack damage | 2 |
 | Darkness victory target | 10 |
@@ -126,7 +126,7 @@ Acquire two Hunter market cards, one at a time. Denial is not permitted. Normal 
 
 ### Hunter Travel
 
-Travel by Carriage works by Day or Night: move the Hunter one connection. This becomes their actual location for investigations, combat and other effects.
+Travel by Carriage works by Day or Night: move the Hunter one connection. This becomes their actual location for investigations, combat and other effects. Alternatively, **Wait and Prepare**: stay in your current city and draw one card, then discard Travel by Carriage. This uses the card play, grants no additional play, and adds no encounter.
 
 At Night, after using Travel by Carriage to enter an open city, add one ordinary encounter to the destination and shuffle the entire destination pile, including Dracula if present. No immediate damage is dealt. Travel by Carriage adds nothing by Day.
 
@@ -156,7 +156,7 @@ Both selected piles must be open and contain a card. Shuffle both after the swap
 
 ## 7. Combat, damage and exhaustion
 
-Discovering Dracula pauses normal play. All conscious Hunters at that city participate. Each participating Hunter contributes base strength 1, bonuses from up to two equipped items, and optionally one eligible combat card from hand. Dracula contributes base strength 3, Great Wolf’s +2 bonus if it is at the combat city, and optionally one eligible combat card from hand. Every participant chooses a card or explicitly chooses no card.
+Discovering Dracula pauses normal play. All conscious Hunters at that city participate. Each participating Hunter contributes base strength 1, bonuses from one equipped item, and optionally one eligible combat card from hand. Dracula contributes base strength 3, Great Wolf’s +2 bonus if it is at the combat city, and optionally one eligible combat card from hand. Every participant chooses a card or explicitly chooses no card.
 
 Sum each side's strength. Dracula wins ties, but ties deal zero showdown damage. Otherwise, the losing side takes damage equal to the strength difference, plus 3 damage if Dracula wins at Vampire Bride’s city. Played combat cards go to their owners' discards unless another rule removes them.
 
@@ -196,9 +196,9 @@ Swap Dracula's revealed identity with a chosen card in the destination pile, the
 
 ### Equipment
 
-Hunters have two persistent equipment slots. On acquiring equipment, choose to equip it immediately without another action or put it in personal discard. Equipment in hand can be equipped using a standard card play.
+On acquiring equipment, choose to equip it immediately without another action or put it in personal discard. Equipment in hand can be equipped using a standard card play.
 
-When replacing equipped equipment, choose which old item to replace and whether to discard or permanently trash it. This choice applies both when acquiring and when equipping from hand. Equipment stays attached between turns and combats until removed, replaced or lost through exhaustion.
+Each Hunter has one equipment slot. When replacing the equipped card, choose whether to discard or permanently trash it. Older saves keep the first equipped card and move extra equipment to discard. This choice applies both when acquiring and when equipping from hand. Equipment stays attached between turns and combats until removed, replaced or lost through exhaustion.
 
 ### Counter-equipment
 
@@ -236,7 +236,7 @@ Each Hunter receives the following two signature cards. Implemented effects belo
 | Van Helsing | Correspondence | Day or Night. Exchange one hand card each with another conscious Hunter anywhere on the map. You may immediately play the exact card you received if legal this phase, or keep it in hand and end your turn. Discard Correspondence after play. |
 | Van Helsing | Vampire Lore | Partial: +2 combat; signature value provisional, target-specific condition not implemented. |
 | Dr. Seward | Medical Expertise | Implemented: heal yourself or another conscious Hunter at your city for 2 HP, capped at maximum. Cannot revive or skip recovery. |
-| Dr. Seward | Clinical Assessment | Day or Night. Draw two cards, then choose one card from your hand to discard. Draw as many as available. If your hand is empty after drawing, skip the discard. Clinical Assessment enters the discard after drawing. |
+| Dr. Seward | Clinical Assessment | Day or Night. Draw two cards, then choose one card from your hand to discard. You may immediately play one eligible card you drew and kept. Draw as many as available. If your hand is empty after drawing, skip the discard. Clinical Assessment enters the discard after drawing. |
 | Mina Harker | Psychic Connection | Implemented: another conscious Hunter at Mina's city discards one random hand card; then learn whether Dracula is in Mina's city or any surrounding city, including diagonals. Requires an eligible other Hunter with a hand card; does not reveal the exact city. |
 | Mina Harker | Shared Vision | Implemented: privately examine the top encounter of any other nonempty city; return it to the top or bottom without resolving it. |
 
@@ -285,8 +285,8 @@ One copy of each listed card starts in the combined market pool. Placeholder car
 
 | # | Card | Current implementation |
 |---|---|---|
-| 1 | Escape as Mist | Combat escape; one connection, destination hidden. |
-| 2 | Escape as Bats | Combat escape; up to two connections, destination public. |
+| 1 | Escape as Mist | Combat escape or Night action. Move one connection and keep the destination hidden. |
+| 2 | Escape as Bats | Combat escape up to two connections with the destination announced. As a Day action, move one connection secretly. |
 | 3 | Vampire Bride | +3 total damage on a strict Dracula combat victory at her city. |
 | 4 | Great Wolf | +2 Dracula strength in combat at its city. |
 | 5 | Wraith | Beginning-of-Night movement and private bottom-encounter control; shares a city with another Ally. |

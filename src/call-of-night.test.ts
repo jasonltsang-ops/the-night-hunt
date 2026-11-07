@@ -63,7 +63,7 @@ it.each([0,1,5])('Night play heals up to one HP with %i damage',damage=>{
  expect(s.played).toBe(true);
 });
 it('finishes without a bonus when no eligible card remains',()=>{
- let s=setup(['d-4','dm-0']);
+ let s=setup(['d-4','dm-1']);
  s=reduce(s,{type:'play',index:0});
  expect(s.nightPlay).toBeUndefined();
  expect(()=>reduce(s,{type:'advance'})).not.toThrow();
