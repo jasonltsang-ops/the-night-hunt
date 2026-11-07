@@ -23,6 +23,11 @@ export const draculaMarket = ['Escape as Mist','Escape as Bats','Escape as Bats'
 ['Savage Attack','Delaying Encounter','Shadow Passage','Dark Influence','Call of the Night','Brush with Darkness'].forEach((name,i)=>add(`d-${i}`,name,'dracula'));
 
 add('d-fog','Fog','dracula','Day: place in your city or an adjacent open city. Night: place in any open city. Announce the city and shuffle its pile. When investigated, the Hunter discards a random card. Remove Fog by Day or shuffle it back at Night.');
+export const startingEncounterMix = cities.map((city,i)=>({
+ encounter:city==='Munich'?3:4,
+ fog:[0,2,4,6,8].includes(i)?1:0,
+ damaging:[1,3,4,5,7].includes(i)?1:0,
+}));
 export const encounterNames={encounter:'Brush with Darkness',dracula:'Dracula',damaging:'Savage Attack',fog:'Fog'};
 
 export const defaults = { handSize:3, hunterHP:4, draculaHP:10, darknessTarget:10, hunterBase:1, draculaBase:3, basicCombat:1, brushDamage:1, savageDamage:2 };

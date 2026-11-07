@@ -48,9 +48,9 @@ Build each city's starting encounter pile as follows.
 |---|---:|---:|---:|---:|
 | London, Prague, Marseille, Athens | 4 | 1 | 0 | 5 |
 | Madrid, Vienna, Paris, Rome | 4 | 0 | 1 | 5 |
-| Munich | 2 | 1 | 1 | 4 |
+| Munich | 3 | 1 | 1 | 5 |
 
-Dracula secretly replaces one Brush with Darkness in his chosen starting city with his identity card. Shuffle each city's pile independently. The map starts with 44 cards in total, including exactly one Dracula identity.
+Dracula secretly replaces one Brush with Darkness in his chosen starting city with his identity card. Shuffle each city's pile independently. Show the starting mixes during city selection. Once play begins, show only the remaining card counts. The map starts with 45 cards in total, including exactly one Dracula identity.
 
 A city **becomes permanently consecrated when its encounter pile reaches 0**. Remove all Allies there immediately and lose their Darkness contributions. New encounters and Allies cannot be placed there by any source, including Ready the Carriage at Night, Renfield, Savage Attack or Wraith movement. Hunters can still travel through or stop there, without adding a Night encounter from Ready the Carriage. Consecrated locations cannot host Dracula or be swap/escape destinations.
 

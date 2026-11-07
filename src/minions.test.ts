@@ -70,7 +70,7 @@ describe('minion powers and equipped counters',()=>{
   s=deploy('dm-renfield');s=hunterTurn(s);s.players[0].equipment=['hm-salts'];s=reduce(s,{type:'sacrificeEquipment',index:0});expect(hp(s,s.players[4])).toBe(10);
  });
  it('Renfield adds exactly one basic encounter at his own city on Night entry, without healing or consuming the action',()=>{
-  let s=deploy('dm-renfield',8);s.players[4].damage=3;s=night(s);expect(active(s).id).toBe('dracula');expect(s.locations[8].deck).toHaveLength(6);expect(s.locations[4].deck).toHaveLength(4);expect(s.addedBasicEncounters).toBe(1);expect(hp(s,s.players[4])).toBe(9);expect(s.played).toBe(false);s=parseSave(JSON.stringify(s));expect(s.locations[8].deck).toHaveLength(6);s.players[4].hand=[];s=reduce(s,{type:'advance'});expect(s.locations[8].deck).toHaveLength(6);
+  let s=deploy('dm-renfield',8);s.players[4].damage=3;s=night(s);expect(active(s).id).toBe('dracula');expect(s.locations[8].deck).toHaveLength(6);expect(s.locations[4].deck).toHaveLength(5);expect(s.addedBasicEncounters).toBe(1);expect(hp(s,s.players[4])).toBe(9);expect(s.played).toBe(false);s=parseSave(JSON.stringify(s));expect(s.locations[8].deck).toHaveLength(6);s.players[4].hand=[];s=reduce(s,{type:'advance'});expect(s.locations[8].deck).toHaveLength(6);
  });
 });
 describe('permanent closure and Wraith',()=>{
