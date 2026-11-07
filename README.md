@@ -49,7 +49,7 @@ Each action autosaves in the browser. Export JSON before resetting if you want a
 - `src/style.css`: interface styling.
 - `src/*.test.ts`: automated rule tests and scenario examples.
 
-Documentation records the current implementation without making unresolved design decisions permanent. No AI opponents or multiplayer networking are implemented.
+Documentation records the current implementation without making unresolved design decisions permanent. AI opponents remain outside the prototype.
 
 ## Ally update
 
@@ -60,3 +60,18 @@ Hunters reveal Allies by being at their city. Use the equipped counter’s “Tr
 Version 7 saves preserve pending Wraith choices. Older saves migrate their Ally slots and empty cities, and add the two new cards to the market reserve once. They do not replay beginning-of-Night effects. JSON snapshots still contain hidden information.
 
 New games now begin with starting-city selection: four selected Hunters choose first, then Dracula chooses secretly after seeing their positions. Shared starting cities are allowed. Existing ongoing saves keep their positions; use New game / reset to try the new setup.
+
+## Two-player online playtest
+
+Open the [hosted playtest](https://the-night-hunt-playtest.ornatehelix2.chatgpt.site/) or run one shared game server and give both players its browser URL. Dracula selects **Play online**, chooses four Hunters, and creates the match. Copy the **Hunter invitation** to your friend, who controls all four Hunters. The invitation grants access to that seat. Keep it between the players.
+
+For a test on one computer, open the invite in a second browser profile. For two devices on the same network, serve the game on the host’s network address:
+
+```bash
+npm run build
+npm run preview -- --host 0.0.0.0 --port 5174
+```
+
+Open the Network URL printed by the server on the host before creating the match, so the invitation uses an address both devices can reach. Both devices use the same server. For internet play, use the hosted preview or run a multiplayer server behind HTTPS.
+
+Hosted matches save in Sites storage. Local server matches save in `.night-hunt-matches/`. Browsers remember their seat on that host. Solo games keep their existing browser saves. The multiplayer prototype runs on one server instance.

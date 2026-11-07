@@ -1,0 +1,5 @@
+CREATE TABLE matches (
+ id TEXT PRIMARY KEY NOT NULL,
+ revision INTEGER NOT NULL,
+ room_json TEXT NOT NULL
+);

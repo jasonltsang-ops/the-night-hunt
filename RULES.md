@@ -8,7 +8,7 @@ This is the shared rules reference for development and playtesting across projec
 
 ## 1. Players, objectives and balance
 
-One player controls Dracula. Four Hunters are selected from Lord Godalming, Jonathan Harker, Van Helsing, Dr. Seward and Mina Harker. The current interface supports one person controlling everyone; AI and network multiplayer are not implemented.
+One player controls Dracula. Four Hunters are selected from Lord Godalming, Jonathan Harker, Van Helsing, Dr. Seward and Mina Harker. Solo play supports one person controlling everyone. In two-player online play, one player controls Dracula and one controls all four Hunters.
 
 Hunters win by reducing Dracula to 0 HP in combat. Merely discovering Dracula no longer wins the game; it starts a showdown.
 
@@ -315,7 +315,7 @@ Hunter views conceal Dracula's location and city-pile identities. During Dracula
 
 Debug mode reveals city piles, Dracula's location, personal decks and market reserves. It supports forced draws, personal card addition/removal, Hunter relocation, investigations, putting existing encounters on top, market manipulation, phase advancement, reset and save/load. Debug actions bypass normal rules; hidden debug logs are not public action information.
 
-The interface is a solo testing tool, not a secure role boundary: a tester can select another player's view. Local saves and JSON exports contain hidden information. Hot-seat handoffs and authenticated multiplayer privacy are not implemented. Each action autosaves; JSON export/import provides separate snapshots.
+In solo play, a tester can select another player’s view. Local saves and JSON exports contain hidden information. Online play uses separate seat invitations and server-filtered views. The server validates and saves each online action. Solo actions autosave in the browser, and JSON export/import provides separate snapshots.
 
 ## 12. Planned mechanics and open decisions
 
@@ -329,7 +329,7 @@ The interface is a solo testing tool, not a secure role boundary: a tester can s
 - **Consecrated cities:** permanent consecration, automatic Ally removal and blocked encounter placement are implemented. Hunter travel remains permitted; Dracula swaps/escapes and Wraith movement cannot enter consecrated cities.
 - **Card timing and extra plays:** timing outside explicit phase rules is provisional; extra-play cards need their own action accounting.
 - **Dracula survival:** current same-city identity reshuffle after combat is a provisional continuation rule.
-- **City abilities, secure hot-seat handoffs, networking and AI:** not implemented; AI and networking remain outside current scope.
+- **City abilities, secure hot-seat handoffs, and AI:** remain outside the current prototype.
 
 ## 13. Maintaining this reference
 

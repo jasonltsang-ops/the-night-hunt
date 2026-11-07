@@ -4,3 +4,4 @@ dist/
 *.log
 .pnpm-store/
 *-preview.png
+.night-hunt-matches/
