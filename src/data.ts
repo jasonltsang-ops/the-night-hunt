@@ -10,9 +10,9 @@ export const cards:Record<string,Card> = {};
 
 function add(id:string,name:string,side:Card['side'],description='Effect reserved for a later stage.') { cards[id]=make(id,name,side,description); return id; }
 
-add('travel','Travel by Carriage','hunter','Move one adjacent city.'); add('supply','Supply','hunter','Acquire one Hunter market card OR permanently deny one Dracula market card.'); add('investigate','Investigate','hunter','Reveal and resolve the top encounter at your city.'); add('combat','Combat','hunter','Combat bonus +2 (Stage 4).');
+add('travel','Ready the Carriage','hunter','Move one adjacent city.'); add('supply','Work the Market','hunter','Acquire one Hunter market card OR permanently deny one Dracula market card.'); add('investigate','Investigate','hunter','Reveal and resolve the top encounter at your city.'); add('combat','Combat','hunter','Combat bonus +2 (Stage 4).');
 
-export const signatures = [['Family Fortune',"Lucy’s Revenge"],['Methodical Search','Urgent Dispatch'],['Correspondence','Vampire Lore'],['Medical Expertise','Clinical Assessment'],['Psychic Connection','Shared Vision']].map((pair,i)=>pair.map((name,j)=>add(`signature-${i}-${j}`,name,'hunter')));
+export const signatures = [['Family Fortune',"Lucy’s Revenge"],['Methodical Search','Urgent Dispatch'],['Correspondence','Vampire Lore'],['Medical Expertise','Wax Cylinders'],['Hypnosis','Rally the Hunters']].map((pair,i)=>pair.map((name,j)=>add(`signature-${i}-${j}`,name,'hunter')));
 
 export const retiredHunterCards = ['hm-5','hm-8','hm-10','hm-12c','hm-13b','hm-15b','hm-16','hm-20b','hm-23','hm-24','hm-27','hm-28','hm-29'];
 export const hunterMarket = ['Wooden Stake','Holy Water','Crucifix','Hunting Rifle','Silver Dagger','Blessed Blade','Reinforced Coat of Arms','Medical Kit','Garlic Wreath','Pistol','Medical Kit','Medical Assistance','First Aid','Fast Horse','Travel by Train','Group Passage','Emergency Transit','Thorough Search','Careful Investigation','Local Rumors','Coordinated Search','Planned Ambush','Uncover Conspiracy','Sacred Investigation','Determined Assault','Coordinated Strike','Vampire Slayer','Defensive Formation','Final Stand','Prepared Ambush'].flatMap((name,i)=>retiredHunterCards.includes(`hm-${i}`)?[]:[add(`hm-${i}`,name,'hunter')]);
@@ -81,7 +81,9 @@ cards['hm-21'].description='Combat: cancel Dracula’s combat card, deal 2 damag
 cards['hm-9'].discardStrength=2;
 cards['hm-9'].description='+1 Str, or discard for +2 Str in this showdown.';
 for(const [id,strength] of [['combat',1],['signature-0-1',3],['signature-2-1',2],['hm-25',1],['hm-26',2]] as const){cards[id].strength=strength;if(id!=='combat')cards[id].description='Keep in hand: +'+strength+' strength in combat. Conditional effects remain deferred; signature values are provisional.';}
-cards.combat.description='On your turn: heal 1 HP. During combat: contribute +1 strength as your one combat card.';
+cards.combat.description='Heal 1 HP or use in combat for +1 Str.';
+cards['signature-2-1'].description='Use in combat for +2 Str. Or play on your turn to discard one random card from your hand or Dracula’s hand. Then discard Vampire Lore.';
+cards['signature-0-1'].description='Use in combat for +3 Str, then discard.';
 cards['dm-0'].escape='mist';cards['dm-0'].description='Choose as your combat card. If Dracula survives, optionally escape one connection after combat. Destination stays secret. Night action: move 1 connection secretly.';
 cards['dm-1'].escape='bats';cards['dm-1'].description='Choose as your combat card. If Dracula survives, optionally escape up to two connections after combat. Final destination is public. Day action: move 1 connection secretly.';
 
@@ -95,8 +97,8 @@ cards['signature-4-0'].description='Choose another conscious Hunter at your city
 cards['signature-3-0'].healing=2;cards['signature-3-0'].description='Heal yourself or another conscious Hunter at your city for 2 HP, up to full health. Cannot revive a Exhausted Hunter or skip recovery.';
 
 cards['signature-2-0'].description='Day or Night. Exchange one card from your hand with a conscious Hunter anywhere. You may immediately play the exact card you received if it is legal this phase.';
-cards['signature-3-1'].description='Draw two cards, then discard one from your hand. You may immediately play one of the cards you drew. Play by Day or Night.';
-cards['signature-4-1'].description='Privately examine the top encounter of any other city, then return it to the top or bottom of that city’s encounter pile without resolving it.';
+cards['signature-3-1'].description='Choose any city occupied by a Hunter. Reveal its top encounter, then return it to the top or bottom without resolving it.';
+cards['signature-4-1'].description='Move another conscious Hunter one connection closer to your city. This uses no action for that Hunter and adds no Night encounter.';
 
 cards['d-2'].description='Night: first choose whether to move Dracula. If yes, swap Dracula from his actual city with a card in an orthogonally adjacent city. If no, swap non-Dracula cards between any two distinct cities. Shuffle both piles; publicly announce only the cities.';
 
@@ -157,7 +159,7 @@ cards['hm-1'].equipment=false;cards['hm-1'].item=true;cards['hm-1'].strength=2;c
 export const combatOrder=['Lord Godalming','Jonathan Harker','Dr. Seward','Van Helsing','Mina Harker'] as const;
 
 cards['signature-1-0'].description='Privately examine the top two encounters at your city. Choose one to reveal and resolve; shuffle the other back into the remaining pile. With one encounter, resolve that one. An empty pile has no effect.';
-cards['signature-1-1'].description='Move yourself or another conscious Hunter one orthogonally connected city. Does not consume that Hunter’s action or add an encounter from Travel by Carriage at Night.';
+cards['signature-1-1'].description='Move yourself or another conscious Hunter one orthogonally connected city. Does not consume that Hunter’s action or add an encounter from Ready the Carriage at Night.';
 
 function addHunterCopies(copies:string[][]){
  return copies.map(([id,original])=>{

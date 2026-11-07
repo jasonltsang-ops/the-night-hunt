@@ -38,13 +38,13 @@ These values are provisional and primarily defined in `src/data.ts`.
 | Madrid | Munich | Vienna |
 | Marseille | Rome | Athens |
 
-One connection takes you to an orthogonally adjacent city, directly above, below, left, or right on the map. Psychic Connection has its own proximity rule that includes diagonals.
+One connection takes you to an orthogonally adjacent city, directly above, below, left, or right on the map. Hypnosis has its own proximity rule that includes diagonals.
 
 Each selected Hunter chooses their starting city first, in selected-player order. Hunters may share a city without a limit. After all four positions are chosen and visible, Dracula chooses his hidden starting city last. Dracula may choose any city, including one occupied by Hunters. This does not itself trigger combat. All city encounter piles are finalized and shuffled after Dracula chooses, then the first Hunter's Day turn begins. Setup choices do not consume actions. Starting-location setup is saved so it can be resumed; ongoing saves keep their existing positions.
 
 Each city receives four ordinary encounters. Add Dracula's identity card to his starting city and a fifth ordinary encounter to each other city. Shuffle each city independently. Every city starts with five cards: **44 Brush with Darkness encounters and exactly one Dracula identity across the map**. There are no separate decoy identity cards in the current implementation.
 
-A city **becomes permanently consecrated when its encounter pile reaches 0**. Remove all Allies there immediately and lose their Darkness contributions. New encounters and Allies cannot be placed there by any source, including Travel by Carriage at Night, Renfield, Savage Attack or Wraith movement. Hunters can still travel through or stop there, without adding a Night encounter from Travel by Carriage. Consecrated locations cannot host Dracula or be swap/escape destinations.
+A city **becomes permanently consecrated when its encounter pile reaches 0**. Remove all Allies there immediately and lose their Darkness contributions. New encounters and Allies cannot be placed there by any source, including Ready the Carriage at Night, Renfield, Savage Attack or Wraith movement. Hunters can still travel through or stop there, without adding a Night encounter from Ready the Carriage. Consecrated locations cannot host Dracula or be swap/escape destinations.
 
 If the final encounter is Dracula's identity, defer consecration during the showdown: his revealed identity still occupies the location. If he survives without escaping, reshuffle it into that pile; if he escapes, the normal swapped encounter replaces him. If defeated, the game ends and any now-empty city becomes consecrated. This preserves the existing swap/continuation rule without stranding Dracula's identity.
 
@@ -56,8 +56,8 @@ Each Hunter starts with nine cards:
 
 | Card | Copies |
 |---|---:|
-| Travel by Carriage | 2 |
-| Supply | 2 |
+| Ready the Carriage | 2 |
+| Work the Market | 2 |
 | Investigate | 2 |
 | A Lucky Find | 1 |
 | First character-specific card | 1 |
@@ -88,7 +88,7 @@ Each scheduled turn permits one standard card play. Resolve its choices before e
 
 Hunters may pass voluntarily even with playable cards. A Hunter can instead trade or trash equipped counter-equipment to remove an Ally, as described below. Dracula must play an eligible standard-action card when one is available, or pass when no eligible card is available. Combat-only cards are held for combat, not played as standard actions.
 
-Most implemented action cards are eligible by Day and Night. **Shadow Passage is Night only.** Supply works in both phases but has different effects. Other card timing remains configurable and provisional. Additional-play effects are not implemented yet.
+Most implemented action cards are eligible by Day and Night. **Shadow Passage is Night only.** Work the Market works in both phases but has different effects. Other card timing remains configurable and provisional. Additional-play effects are not implemented yet.
 
 ## 5. Shared market and card ownership
 
@@ -98,16 +98,16 @@ Acquisition removes a face-up card and normally places it in the acquiring playe
 
 The display depletes across turns and rounds. **When a removal leaves three or fewer cards, immediately refill toward ten**, even mid-turn. Keep the remaining face-up cards. Refill only as far as available cards permit. Dawn and round changes do not refill the market.
 
-Denied or trashed cards leave the game permanently and never recycle. A market replacement discard, if present, can be reshuffled when the reserve is exhausted. Night Supply replaces its selected slot first, then applies the usual refill check. If three or fewer face-up cards remain, refill toward ten immediately. Debug replacement is a testing tool.
+Denied or trashed cards leave the game permanently and never recycle. A market replacement discard, if present, can be reshuffled when the reserve is exhausted. Work the Market at Night replaces its selected slot first, then applies the usual refill check. If three or fewer face-up cards remain, refill toward ten immediately. Debug replacement is a testing tool.
 
-### Basic Supply — Hunter
+### Work the Market — Hunter
 
 | Timing | Choose one effect |
 |---|---|
 | Day | Acquire one Hunter card OR permanently deny one Dracula card. |
 | Night | Permanently trash any one face-up market card, then refill that slot from the reserve. No acquisition. |
 
-If the display is completely empty, Supply resolves with no market change. If a card remains, its applicable choice must be resolved.
+If the display is completely empty, Work the Market resolves with no market change. If a card remains, its applicable choice must be resolved.
 
 ### Dark Influence — Dracula
 
@@ -126,9 +126,9 @@ Acquire two Hunter market cards, one at a time. Denial is not permitted. Normal 
 
 ### Hunter Travel
 
-Travel by Carriage works by Day or Night: move the Hunter one connection. This becomes their actual location for investigations, combat and other effects. Alternatively, **Wait and Prepare**: stay in your current city and draw one card, then discard Travel by Carriage. This uses the card play, grants no additional play, and adds no encounter.
+Ready the Carriage works by Day or Night: move the Hunter one connection. This becomes their actual location for investigations, combat and other effects. Alternatively, **Wait and Prepare**: stay in your current city and draw one card, then discard Ready the Carriage. This uses the card play, grants no additional play, and adds no encounter.
 
-At Night, after using Travel by Carriage to enter an open city, add one ordinary encounter to the destination and shuffle the entire destination pile, including Dracula if present. No immediate damage is dealt. Travel by Carriage adds nothing by Day.
+At Night, after using Ready the Carriage to enter an open city, add one ordinary encounter to the destination and shuffle the entire destination pile, including Dracula if present. No immediate damage is dealt. Ready the Carriage adds nothing by Day.
 
 Travel by Train moves up to three connections by Day or Night. Fast Horse moves up to two connections by Day or one by Night. Neither card adds an encounter. Discard Fast Horse after play and permanently trash Travel by Train after play. Group Passage moves the acting Hunter and any chosen conscious Hunters in their city up to two connections by Day or Night. Everyone moves to the same destination. No encounter is added, and the card is permanently trashed after play.
 
@@ -175,7 +175,7 @@ Unholy Strength, Mesmerize, and Pride of Dracula go to discard after play. Unhol
 
 ### Hunter exhaustion and recovery
 
-At 0 HP, a Hunter is Exhausted. Dracula gains 1 permanent accumulated Darkness each time a Hunter becomes Exhausted. Count each exhaustion once; a recovered Hunter can award another point if Exhausted again. Existing saves start this counter at zero, without retroactive awards. For Reckless Assault, award the point when deferred exhaustion takes effect after combat; an already resolved Hunter victory remains a Hunter victory. Permanently remove all their equipment and all non-basic cards in their hand, draw and discard. Basic cards are Travel by Carriage, Supply, Investigate and A Lucky Find. Keep their city position. They cannot act or participate in new combat while Exhausted.
+At 0 HP, a Hunter is Exhausted. Dracula gains 1 permanent accumulated Darkness each time a Hunter becomes Exhausted. Count each exhaustion once; a recovered Hunter can award another point if Exhausted again. Existing saves start this counter at zero, without retroactive awards. For Reckless Assault, award the point when deferred exhaustion takes effect after combat; an already resolved Hunter victory remains a Hunter victory. Permanently remove all their equipment and all non-basic cards in their hand, draw and discard. Basic cards are Ready the Carriage, Work the Market, Investigate and A Lucky Find. Keep their city position. They cannot act or participate in new combat while Exhausted.
 
 Their next scheduled Day or Night turn is spent recovering. At the start of their following scheduled turn, they return at full HP; if their hand is empty, draw up to the normal hand size. Healing cannot revive a Exhausted Hunter or bypass recovery. Reckless Assault has the explicit delayed-exhaustion exception above.
 
@@ -230,15 +230,15 @@ Each Hunter receives the following two signature cards. Implemented effects belo
 | Hunter | Card | Current effect / status |
 |---|---|---|
 | Lord Godalming | Family Fortune | Implemented: acquire two Hunter cards as described in section 5. |
-| Lord Godalming | Lucy's Revenge | Partial: +3 combat; signature value provisional, special Dracula condition not implemented. |
+| Lord Godalming | Lucy's Revenge | Use in combat for +3 Strength, then discard. |
 | Jonathan Harker | Methodical Search | Implemented: privately examine the top two encounters at your city, resolve one and shuffle the other back with the remaining pile. With one card, resolve that card; an empty pile does nothing. |
-| Jonathan Harker | Urgent Dispatch | Implemented: move yourself or another conscious Hunter one orthogonal connection, without consuming their action or adding an encounter from Travel by Carriage at Night. |
+| Jonathan Harker | Urgent Dispatch | Implemented: move yourself or another conscious Hunter one orthogonal connection, without consuming their action or adding an encounter from Ready the Carriage at Night. |
 | Van Helsing | Correspondence | Day or Night. Exchange one hand card each with another conscious Hunter anywhere on the map. You may immediately play the exact card you received if legal this phase, or keep it in hand and end your turn. Discard Correspondence after play. |
-| Van Helsing | Vampire Lore | Partial: +2 combat; signature value provisional, target-specific condition not implemented. |
+| Van Helsing | Vampire Lore | Use in combat for +2 Strength. Or play by Day or Night to discard one random card from your remaining hand or Dracula’s hand. The chosen hand must contain a card. Discard Vampire Lore after use. |
 | Dr. Seward | Medical Expertise | Implemented: heal yourself or another conscious Hunter at your city for 2 HP, capped at maximum. Cannot revive or skip recovery. |
-| Dr. Seward | Clinical Assessment | Day or Night. Draw two cards, then choose one card from your hand to discard. You may immediately play one eligible card you drew and kept. Draw as many as available. If your hand is empty after drawing, skip the discard. Clinical Assessment enters the discard after drawing. |
-| Mina Harker | Psychic Connection | Implemented: another conscious Hunter at Mina's city discards one random hand card; then learn whether Dracula is in Mina's city or any surrounding city, including diagonals. Requires an eligible other Hunter with a hand card; does not reveal the exact city. |
-| Mina Harker | Shared Vision | Implemented: privately examine the top encounter of any other nonempty city; return it to the top or bottom without resolving it. |
+| Dr. Seward | Wax Cylinders | Day or Night. Choose a city occupied by any Hunter with a nonempty encounter pile. Reveal the top card and return it to the top or bottom without resolving it. |
+| Mina Harker | Hypnosis | Implemented: another conscious Hunter at Mina's city discards one random hand card; then learn whether Dracula is in Mina's city or any surrounding city, including diagonals. Requires an eligible other Hunter with a hand card; does not reveal the exact city. |
+| Mina Harker | Rally the Hunters | Day or Night. Move another conscious Hunter one orthogonal connection closer to Mina’s city. This uses no action for the moved Hunter and adds no Night encounter. |
 
 Any conscious Hunter may trade instead of their standard card play. They must share a city with another conscious Hunter and discard one hand card as the cost. Then exchange one different remaining hand card OR one equipped item for one hand card OR equipped item belonging to the partner. Both Hunters may offer equipped equipment. The initiator needs a hand card for the discard cost and something else to trade; the partner may have only equipped equipment and no hand cards. Received equipment offers immediate equipping or placement in discard; with full slots, choose a replacement and discard or trash it as normal. Non-equipment received goes to hand. Equipment leaving its owner loses its bonuses; immediate equipping applies bonuses to the new owner. This uses the initiator's standard action but does not consume the partner's later scheduled turn.
 
@@ -311,7 +311,7 @@ At the beginning of Night, resolve existing closures, then Renfield's automatic 
 
 ## 11. Hidden information and playtest tools
 
-Hunter views conceal Dracula's location and city-pile identities. During Dracula's Day or Night turn, selecting Dracula in Player desk shows his true city and a map marker labeled **Dracula (hidden)**. Shadow Passage selection, Shared Vision and Wraith peeks have private controls. Public logs announce only information specified by each effect, such as a placement city or swap city pair.
+Hunter views conceal Dracula's location and city-pile identities. During Dracula's Day or Night turn, selecting Dracula in Player desk shows his true city and a map marker labeled **Dracula (hidden)**. Shadow Passage selection and Wraith peeks have private controls. Public logs announce only information specified by each effect, such as a placement city or swap city pair.
 
 Debug mode reveals city piles, Dracula's location, personal decks and market reserves. It supports forced draws, personal card addition/removal, Hunter relocation, investigations, putting existing encounters on top, market manipulation, phase advancement, reset and save/load. Debug actions bypass normal rules; hidden debug logs are not public action information.
 
@@ -324,7 +324,7 @@ In solo play, a tester can select another player’s view. Local saves and JSON 
 - **Card completion:** placeholder signatures, travel, healing, investigation and Dracula market cards need finalized effects and implementations.
 - **Equipment:** the named Ally counters and their removal actions are implemented; other deferred equipment effects remain planned. Medical Kit remains an Item.
 - **Items:** identify any other cards to reclassify; Do not infer that every healing card is an Item.
-- **Brush with Darkness supply:** the original unlimited acquisition/placement action is not implemented. Current ordinary encounters come from setup, Travel by Carriage at Night or Renfield; Savage Attack adds its own hazard.
+- **Brush with Darkness supply:** the original unlimited acquisition/placement action is not implemented. Current ordinary encounters come from setup, Ready the Carriage at Night or Renfield; Savage Attack adds its own hazard.
 - **Combat balance:** HP, flat bonuses, ally values, strength-difference damage, tie behavior and recovery pacing remain playtest values. Further conditional bonuses are incomplete.
 - **Consecrated cities:** permanent consecration, automatic Ally removal and blocked encounter placement are implemented. Hunter travel remains permitted; Dracula swaps/escapes and Wraith movement cannot enter consecrated cities.
 - **Card timing and extra plays:** timing outside explicit phase rules is provisional; extra-play cards need their own action accounting.

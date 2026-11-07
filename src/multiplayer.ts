@@ -47,7 +47,7 @@ function publicEntry(entry:string,side:Side){
  if(entry.startsWith('Debug:'))return null;
  if(side==='hunter')return entry;
  if(entry.startsWith('Cards permanently removed:'))return 'The Exhausted Hunter’s equipment and non-basic cards were removed.';
- if(entry.startsWith('Psychic Connection:'))return 'Mina resolved Psychic Connection.';
+ if(entry.startsWith('Hypnosis:')||entry.startsWith('Psychic Connection:'))return 'Mina resolved Hypnosis.';
  if(entry.includes('discarded a hand card and traded'))return 'Two Hunters traded cards.';
  return entry;
 }

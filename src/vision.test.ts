@@ -1,11 +1,38 @@
-import {describe,it,expect} from 'vitest';
-import {createGame,reduce,parseSave,visionPeek,visionCities,draculaLocation} from './engine';
-function setup(){const s=createGame([4,0,1,2],8);s.players[0].hand=['signature-4-1'];return s;}
-describe('Shared Vision',()=>{
- it.each(['day','night'] as const)('examines another city privately by %s and leaves the card on top',phase=>{let s=setup();s.phase=phase;s.turn=phase==='day'?0:1;s=reduce(s,{type:'play',index:0});expect(s.played).toBe(true);expect(s.players[0].discard).toContain('signature-4-1');expect(()=>reduce(s,{type:'advance'})).toThrow('Shared Vision');s=reduce(s,{type:'visionCity',city:1});expect(visionPeek(s,'h0')).toBe('encounter');expect(visionPeek(s,'h1')).toBe(null);expect(visionPeek(s,'dracula')).toBe(null);expect(visionPeek(s,'h1',true)).toBe('encounter');expect(parseSave(JSON.stringify(s))).toEqual(s);const before=structuredClone(s.locations[1]);s=reduce(s,{type:'visionReturn',position:'top'});expect(s.locations[1]).toEqual(before);expect(s.pendingVision).toBe(null);expect(s.players.every(p=>p.damage===0)).toBe(true);expect(()=>reduce(s,{type:'advance'})).not.toThrow();});
- it('moves Dracula from the top to the bottom without combat, damage, shuffle or movement',()=>{let s=setup();s=reduce(s,{type:'stack',city:8,card:'dracula'});s=reduce(s,{type:'play',index:0});s=reduce(s,{type:'visionCity',city:8});expect(visionPeek(s,'h0')).toBe('dracula');const deck=[...s.locations[8].deck];s=reduce(s,{type:'visionReturn',position:'bottom'});expect(s.locations[8].deck).toEqual([...deck.slice(1),deck[0]]);expect(s.locations[8].resolved).toEqual([]);expect(s.combat).toBe(null);expect(s.winner).toBe(null);expect(draculaLocation(s)).toBe(8);expect(s.log.slice(-2).join(' ')).not.toMatch(/Athens|bottom|Dracula/);expect(parseSave(JSON.stringify(s))).toEqual(s);});
- it('rejects own city, empty decks, invalid choices and repeated peeking',()=>{let s=setup();s.locations[1].resolved.push(...s.locations[1].deck);s.locations[1].deck=[];s=reduce(s,{type:'play',index:0});for(const city of [0,1,-1,9,0.5])expect(()=>reduce(s,{type:'visionCity',city})).toThrow('another city');expect(()=>reduce(s,{type:'visionReturn',position:'bottom'})).toThrow('Examine');s=reduce(s,{type:'visionCity',city:2});expect(()=>reduce(s,{type:'visionCity',city:3})).toThrow();s=reduce(s,{type:'visionReturn',position:'top'});expect(()=>reduce(s,{type:'visionReturn',position:'top'})).toThrow();});
- it('works on a one-card pile and preserves that card',()=>{let s=setup();s.locations[1].resolved.push(...s.locations[1].deck.splice(1));s=reduce(s,{type:'play',index:0});s=reduce(s,{type:'visionCity',city:1});s=reduce(s,{type:'visionReturn',position:'bottom'});expect(s.locations[1].deck).toEqual(['encounter']);expect(parseSave(JSON.stringify(s))).toEqual(s);});
- it('permits a pass if no other piles contain cards and rejects unusable play',()=>{const s=setup();s.locations.slice(1).forEach(l=>{l.resolved.push(...l.deck);l.deck=[];});expect(visionCities(s,'h0')).toEqual([]);expect(()=>reduce(s,{type:'play',index:0})).toThrow('another city');expect(()=>reduce(s,{type:'advance'})).not.toThrow();});
- it('loads older saves and validates pending visions',()=>{const old=setup() as any;delete old.pendingVision;expect(parseSave(JSON.stringify(old)).pendingVision).toBe(null);old.pendingVision={player:'h0',city:0};expect(()=>parseSave(JSON.stringify(old))).toThrow('Invalid Shared Vision');});
+import {expect,it} from 'vitest';
+import {canPlayStandard,createGame,dispatchDestinations,parseSave,reduce,visionPeek} from './engine';
+
+it('moves another Hunter exactly one connection closer without adding a Night encounter',()=>{
+ const s=createGame([4,0,1,2],8);
+ s.phase='night';
+ s.turn=1;
+ s.players[0].hand=['signature-4-1'];
+ s.players[1].city=4;
+ const pending=parseSave(JSON.stringify(reduce(s,{type:'play',index:0})));
+ expect(dispatchDestinations(pending,pending.players[1])).toEqual([1,3]);
+ for(const city of [0,4,5,7])expect(()=>reduce(pending,{type:'urgentDispatch',player:pending.players[1].id,city})).toThrow();
+ const next=reduce(pending,{type:'urgentDispatch',player:pending.players[1].id,city:3});
+ expect(next.players[1].city).toBe(3);
+ expect(next.locations).toEqual(s.locations);
+ expect(next.pendingDispatch).toBeNull();
+ expect(next.players[0].discard).toContain('signature-4-1');
+});
+
+it('requires a conscious Hunter in a different city',()=>{
+ const s=createGame([4,0,1,2],8);
+ const mina=s.players[0];
+ mina.hand=['signature-4-1'];
+ s.players[1].city=1;
+ s.players[1].recovery='resting';
+ expect(canPlayStandard(s,mina,mina.hand[0])).toBe(false);
+ expect(()=>reduce(s,{type:'play',index:0})).toThrow('Rally the Hunters');
+});
+
+it('finishes a Shared Vision already in progress in an older save',()=>{
+ const s=createGame([4,0,1,2],8);
+ const mina=s.players[0];
+ s.played=true;
+ s.pendingVision={player:mina.id,city:1};
+ const restored=parseSave(JSON.stringify(s));
+ expect(visionPeek(restored,mina.id)).toBe('encounter');
+ expect(reduce(restored,{type:'visionReturn',position:'top'}).pendingVision).toBeNull();
 });
