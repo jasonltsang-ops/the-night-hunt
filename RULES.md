@@ -104,8 +104,8 @@ Denied or trashed cards leave the game permanently and never recycle. A market r
 
 | Timing | Choose one effect |
 |---|---|
-| Day | Acquire one Hunter card OR permanently deny one Dracula card. |
-| Night | Permanently trash any one face-up market card, then refill that slot from the reserve. No acquisition. |
+| Day | Acquire 1 Hunter card or deny 1 Dracula card. |
+| Night | Trash 1 face-up card and refill its slot. |
 
 If the display is completely empty, Work the Market resolves with no market change. If a card remains, its applicable choice must be resolved.
 

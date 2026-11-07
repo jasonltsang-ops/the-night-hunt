@@ -10,7 +10,7 @@ export const cards:Record<string,Card> = {};
 
 function add(id:string,name:string,side:Card['side'],description='Effect reserved for a later stage.') { cards[id]=make(id,name,side,description); return id; }
 
-add('travel','Ready the Carriage','hunter','Move one adjacent city.'); add('supply','Work the Market','hunter','Acquire one Hunter market card OR permanently deny one Dracula market card.'); add('investigate','Investigate','hunter','Reveal and resolve the top encounter at your city.'); add('combat','Combat','hunter','Combat bonus +2 (Stage 4).');
+add('travel','Ready the Carriage','hunter','Move one adjacent city.'); add('supply','Work the Market','hunter',''); add('investigate','Investigate','hunter','Reveal and resolve the top encounter at your city.'); add('combat','Combat','hunter','Combat bonus +2 (Stage 4).');
 
 export const signatures = [['Family Fortune',"Lucy’s Revenge"],['Methodical Search','Urgent Dispatch'],['Correspondence','Vampire Lore'],['Medical Expertise','Wax Cylinders'],['Hypnosis','Rally the Hunters']].map((pair,i)=>pair.map((name,j)=>add(`signature-${i}-${j}`,name,'hunter')));
 
@@ -102,7 +102,8 @@ cards['signature-4-1'].description='Move another conscious Hunter one connection
 
 cards['d-2'].description='Night: first choose whether to move Dracula. If yes, swap Dracula from his actual city with a card in an orthogonally adjacent city. If no, swap non-Dracula cards between any two distinct cities. Shuffle both piles; publicly announce only the cities.';
 
-cards.supply.description='Day: acquire one Hunter market card OR permanently deny one Dracula card. Night: permanently trash any one face-up market card and refill that slot with the top market draw card. No acquisition at Night.';
+export const workTheMarketText={day:'Acquire 1 Hunter card or deny 1 Dracula card.',night:'Trash 1 face-up card and refill its slot.'};
+cards.supply.description='Day: '+workTheMarketText.day+' Night: '+workTheMarketText.night;
 
 // Intended sacrifice targets; ally removal is pending implementation.
 for(const [id,type] of [['hm-0','Vampire'],['hm-1','Undead'],['hm-2','Supernatural'],['hm-3','Beast']] as const)cards[id].removesAllyType=type;
