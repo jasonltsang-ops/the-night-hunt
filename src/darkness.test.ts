@@ -34,17 +34,17 @@ describe('calendar and Darkness',()=>{
   expect(calendar(s)).toEqual({week:5,day:1,weekday:'Sunday'});expect(darkness(s).total).toBe(12);expect(s.winner).toBe('dracula');
   expect(()=>reduce(s,{type:'advance',debug:true})).toThrow('Game over');expect(parseSave(JSON.stringify(s))).toEqual(s);
  });
- it('counts deployed Allies only, loses one when removed, and never compounds them weekly',()=>{
+ it('counts deployed Allies only, loses two when removed, and never compounds them weekly',()=>{
   let s=createGame();s.players[4].discard.push('dm-5');expect(darkness(s).allies).toBe(0);
   s=deploy(s,8);s.phase='day';s.turn=0;s.played=false;
   for(let day=0;day<7;day++)s=endDay(s);
-  expect(darkness(s)).toEqual({weekly:3,events:0,exhaustions:0,accumulated:3,allies:1,total:4});
+  expect(darkness(s)).toEqual({weekly:3,events:0,exhaustions:0,accumulated:3,allies:2,total:5});
   s=reduce(s,{type:'removeAlly',city:8,debug:true});expect(darkness(s).total).toBe(3);
   expect(()=>removeLocationAlly(s,8)).toThrow('with an ally');
  });
- it('ends play immediately when deployment reaches the target, without exposing the Ally identity',()=>{
-  let s=createGame();s.round=22;s=deploy(s,8);
-  expect(darkness(s).total).toBe(10);expect(s.winner).toBe('dracula');expect(s.log.slice(-2).join(' ')).not.toContain('Vampire Bride');
+ it('ends play immediately when deployment reaches the target, and announces the Ally',()=>{
+  let s=createGame();s.round=15;s.eventDarkness=2;s=deploy(s,8);
+  expect(darkness(s).total).toBe(10);expect(s.winner).toBe('dracula');expect(s.log.slice(-2).join(' ')).toContain('Vampire Bride');
   expect(()=>reduce(s,{type:'removeAlly',city:8,debug:true})).toThrow('Game over');expect(parseSave(JSON.stringify(s))).toEqual(s);
  });
  it('supports future event awards, preserves them on reload, and checks event-triggered victory',()=>{
@@ -53,10 +53,10 @@ describe('calendar and Darkness',()=>{
   grantEventDarkness(s,8);expect(s.winner).toBe('dracula');expect(()=>grantEventDarkness(s,1)).toThrow('Game over');
  });
  it('migrates version 5 using elapsed weeks and deployed Allies without duplicate awards',()=>{
-  const old:any=createGame();old.version=5;delete old.eventDarkness;old.round=15;old.locations[8].ally={card:'dm-4',revealed:false};
+  const old:any=createGame();old.version=5;delete old.config.allyDarkness;delete old.eventDarkness;old.round=15;old.locations[8].ally={card:'dm-4',revealed:false};
   const s=parseSave(JSON.stringify(old));expect(s.version).toBe(7);expect(darkness(s).total).toBe(7);expect(calendar(s).week).toBe(3);expect(parseSave(JSON.stringify(s))).toEqual(s);
   old.round=22;expect(parseSave(JSON.stringify(old)).winner).toBe('dracula');
-  old.winner='hunters';old.players[4].damage=10;expect(parseSave(JSON.stringify(old)).winner).toBe('hunters');
+  old.winner='hunters';old.config.draculaHP=10;old.players[4].damage=10;expect(parseSave(JSON.stringify(old)).winner).toBe('hunters');
  });
  it('rejects missing/invalid score data and inconsistent terminal saves',()=>{
   const s:any=createGame();for(const value of [undefined,-1,0.5,'2']){s.eventDarkness=value;expect(()=>parseSave(JSON.stringify(s))).toThrow();}

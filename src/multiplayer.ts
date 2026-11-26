@@ -46,7 +46,6 @@ export function applyOnlineAction(s:State,side:Side,action:OnlineAction){
 function publicEntry(entry:string,side:Side){
  if(entry.startsWith('Debug:'))return null;
  if(side==='hunter')return entry;
- if(entry.startsWith('Cards permanently removed:'))return 'The Exhausted Hunter’s equipment and non-basic cards were removed.';
  if(entry.startsWith('Hypnosis:')||entry.startsWith('Psychic Connection:'))return 'Mina resolved Hypnosis.';
  if(entry.includes('discarded a hand card and traded'))return 'Two Hunters traded cards.';
  return entry;
@@ -82,18 +81,8 @@ export function matchView(s:State,side:Side,revision:number):MatchView{
    const shadowPeek=side==='dracula'&&s.pendingVision?.shadow&&s.pendingVision.city===city&&index===0;
    return reviewing||wraithPeek||shadowPeek?card:'encounter';
   });
-  if(side==='hunter'){
-   if(location.ally&&!location.ally.revealed)location.ally.card='dm-4';
-   if(location.wraith&&!location.wraith.revealed){
-    location.wraith.card='dm-4';
-    if(!location.ally){location.ally=location.wraith;location.wraith=null;}
-   }
-  }
  });
- if(side==='hunter'){
-  if(state.pendingAlly)state.pendingAlly='dm-4';
-  state.pendingWraith=null;
- }
+ if(side==='hunter')state.pendingWraith=null;
  if(state.pendingVision&&((side==='dracula')!==!!state.pendingVision.shadow))state.pendingVision.city=null;
  const filter=(entries:string[])=>entries.flatMap(entry=>publicEntry(entry,side)??[]);
  state.log=filter(state.log);

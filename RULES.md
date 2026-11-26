@@ -12,21 +12,21 @@ One player controls Dracula. Four Hunters are selected from Lord Godalming, Jona
 
 Hunters win by reducing Dracula to 0 HP in combat. Merely discovering Dracula no longer wins the game; it starts a showdown.
 
-Dracula wins immediately at **10 total Darkness**. Total Darkness is accumulated weekly/event/exhaustion points plus one point per Ally currently deployed. When an Ally is removed or defeated, its point is lost; it never generates a recurring weekly point. Reaching the target ends normal play, so removing an Ally afterwards cannot undo a victory.
+Dracula wins immediately at **10 total Darkness**. Total Darkness is accumulated weekly/event/exhaustion points plus two points per Ally currently deployed. When an Ally is removed or defeated, its points are lost; it never generates a recurring weekly point. Reaching the target ends normal play, so removing an Ally afterwards cannot undo a victory.
 
 | Value | Current setting |
 |---|---:|
 | Hunter maximum HP | 4 each; 5 with Smelling Salts |
 | Hunter base combat strength | 1 each |
-| Dracula maximum HP | 10; 12 while Renfield is deployed |
-| Dracula base combat strength | 3 |
+| Dracula maximum HP | 6; 8 while Renfield is deployed |
+| Dracula base combat strength | 2 by Day, 3 by Night |
 | Opening hand / end-of-round draw | 3 cards |
 | Equipment capacity | 1 per Hunter |
 | Brush with Darkness damage | 1 |
-| Savage Attack damage | 2 |
+| Tragic Accident damage | 2 |
 | Darkness victory target | 10 |
 | Darkness per completed week | 3 |
-| Darkness per Ally currently in play | 1 |
+| Darkness per Ally currently in play | 2 |
 
 These values are provisional and primarily defined in `src/data.ts`.
 
@@ -34,9 +34,9 @@ These values are provisional and primarily defined in `src/data.ts`.
 
 | | | |
 |---|---|---|
-| London | Paris | Prague |
-| Madrid | Munich | Vienna |
-| Marseille | Rome | Athens |
+| London | Amsterdam | Prague |
+| Marseille | Munich | Vienna |
+| Madrid | Rome | Athens |
 
 One connection takes you to an orthogonally adjacent city, directly above, below, left, or right on the map. An adjacent city is one connection away. Hypnosis has its own proximity rule that includes diagonals.
 
@@ -44,19 +44,19 @@ Each selected Hunter chooses their starting city first, in selected-player order
 
 Build each city's starting encounter pile as follows.
 
-| Cities | Brush with Darkness | Fog | Savage Attack | Total |
+| Cities | Brush with Darkness | Fog | Tragic Accident | Total |
 |---|---:|---:|---:|---:|
-| London, Prague, Marseille, Athens | 4 | 1 | 0 | 5 |
-| Madrid, Vienna, Paris, Rome | 4 | 0 | 1 | 5 |
-| Munich | 3 | 1 | 1 | 5 |
+| London, Prague, Madrid, Athens | 3 | 1 | 0 | 4 |
+| Marseille, Vienna, Amsterdam, Rome | 3 | 0 | 1 | 4 |
+| Munich | 2 | 1 | 1 | 4 |
 
-Dracula secretly replaces one Brush with Darkness in his chosen starting city with his identity card. Shuffle each city's pile independently. Show the starting mixes during city selection. Once play begins, show only the remaining card counts. The map starts with 45 cards in total, including exactly one Dracula identity.
+Dracula secretly replaces one Brush with Darkness in his chosen starting city with his identity card. Shuffle each city's pile independently. Show the starting mixes during city selection. Once play begins, show only the remaining card counts. The map starts with 36 cards in total, including exactly one Dracula identity.
 
-A city **becomes permanently consecrated when its encounter pile reaches 0**. Remove all Allies there immediately and lose their Darkness contributions. New encounters and Allies cannot be placed there by any source, including Ready the Carriage at Night, Renfield, Savage Attack or Wraith movement. Hunters can still travel through or stop there, without adding a Night encounter from Ready the Carriage. Consecrated locations cannot host Dracula or be swap/escape destinations.
+A city **becomes permanently consecrated when its encounter pile reaches 0**. Remove all Allies there immediately and lose their Darkness contributions. Cultists can be placed as an encounter in a consecrated city. The city stays consecrated and still blocks other encounter placements and Allies. Hunters can still travel through or stop there, without adding a Night encounter from Ready the Carriage. Consecrated locations cannot host Dracula or be swap/escape destinations.
 
 If the final encounter is Dracula's identity, defer consecration during the showdown: his revealed identity still occupies the location. If he survives without escaping, reshuffle it into that pile; if he escapes, the normal swapped encounter replaces him. If defeated, the game ends and any now-empty city becomes consecrated. This preserves the existing swap/continuation rule without stranding Dracula's identity.
 
-The top card is the next card investigated. The interface displays remaining encounter counts, not resolved counts. Added encounters can increase a city's pile beyond five. Exactly one Dracula identity must remain in the game.
+The top card is the next card investigated. The interface displays remaining encounter counts, not resolved counts. Added encounters can increase a city's pile beyond four. Exactly one Dracula identity must remain in the game.
 
 ## 3. Personal starting decks
 
@@ -75,13 +75,13 @@ Dracula starts with nine cards:
 
 | Card | Copies |
 |---|---:|
-| Savage Attack | 2 |
+| Tragic Accident | 2 |
 | Fog | 2 |
 | Shadow Passage | 2 |
 | Dark Influence | 2 |
 | Call of the Night | 1 |
 
-Shuffle personal decks and draw three. The retired card named Delaying Encounter still converts to Savage Attack when loading older saves. Call of the Night grants a bonus Night-effect card play by Day, or heals 1 HP by Night.
+Shuffle personal decks and draw three. The retired card named Delaying Encounter still converts to Tragic Accident when loading older saves. Call of the Night grants a bonus Night-effect card play by Day, or heals 1 HP by Night.
 
 ## 4. Turns, timing and drawing
 
@@ -101,7 +101,7 @@ Most implemented action cards are eligible by Day and Night. Visit the Market wo
 
 ## 5. Shared market and card ownership
 
-There is **one shared market**, not separate faction displays. Shuffle 30 Hunter market cards and 10 Dracula market cards into a combined 40-card pool. Display ten; the remaining 30 form the reserve. Smelling Salts and Renfield are additions to the previous market, rather than replacements for other cards. There is no guaranteed faction mix: the display may contain many Dracula cards or none. There are no costs or currency.
+There is **one shared market**, not separate faction displays. Shuffle 30 Hunter market cards and 13 Dracula market cards into a combined 43-card pool. Display ten; the remaining 33 form the reserve. Smelling Salts and Renfield are additions to the previous market, rather than replacements for other cards. There is no guaranteed faction mix: the display may contain many Dracula cards or none. There are no costs or currency.
 
 Acquisition removes a face-up card and normally places it in the acquiring player's personal discard. Players acquire their own faction's cards. Equipment and Items have acquisition choices described in section 8.
 
@@ -129,7 +129,7 @@ This is one market action; the earlier replace-then-acquire design is superseded
 
 ### Family Fortune — Lord Godalming
 
-Acquire two Hunter market cards, one at a time. Denial is not permitted. Normal equipment/Item acquisition choices apply. Any threshold refill happens between acquisitions, so newly revealed cards can be selected. If no Hunter cards remain available, stop acquiring.
+By Day, acquire two Hunter market cards, one at a time. At Night, acquire one. Denial is not permitted. Normal equipment/Item acquisition choices apply. Any threshold refill happens between acquisitions, so newly revealed cards can be selected. If no Hunter cards remain available, stop acquiring.
 
 ## 6. Movement, investigations and encounters
 
@@ -137,17 +137,17 @@ Acquire two Hunter market cards, one at a time. Denial is not permitted. Normal 
 
 Ready the Carriage works by Day or Night: move the Hunter one connection. This becomes their actual location for investigations, combat and other effects. Alternatively, **Wait and Prepare**: stay in your current city and draw one card, then discard Ready the Carriage. This uses the card play, grants no additional play, and adds no encounter.
 
-At Night, after using Ready the Carriage to enter an open city, add one ordinary encounter to the destination and shuffle the entire destination pile, including Dracula if present. No immediate damage is dealt. Ready the Carriage adds nothing by Day.
+At Night, after using Ready the Carriage to enter an open city, add one ordinary encounter to the destination and shuffle the entire destination pile, including Dracula if present. No immediate damage is dealt. Hunters may enter consecrated cities at Night and skip any encounter placement required by their travel card. Ready the Carriage adds nothing by Day.
 
 Travel by Train moves up to three connections by Day or Night. Fast Horse moves up to two connections by Day or one by Night. Neither card adds an encounter. Discard Fast Horse after play and permanently trash Travel by Train after play. Group Passage moves the acting Hunter and any chosen conscious Hunters in their city up to two connections by Day or Night. Everyone moves to the same destination. No encounter is added, and the card is permanently trashed after play.
 
 ### Basic Investigate
 
-Reveal and remove the top encounter at the acting Hunter's current city. Brush with Darkness deals 1 damage and Savage Attack deals 2 damage when investigated, by Day or Night. Finding Dracula starts combat. An empty pile resolves without damage. Resolved ordinary encounters do not recycle automatically.
+Reveal and remove the top encounter at the acting Hunter's current city. Brush with Darkness deals 1 damage and Tragic Accident deals 2 damage when investigated, by Day or Night. Finding Dracula starts combat. An empty pile resolves without damage. Resolved ordinary encounters do not recycle automatically.
 
-### Savage Attack — Dracula
+### Tragic Accident — Dracula
 
-Playable by Day or Night. Place one new hidden Savage Attack into a chosen city:
+Playable by Day or Night. Place one new hidden Tragic Accident into a chosen city:
 
 - **Day:** An open city within one connection of Dracula, including his current city.
 - **Night:** any open city.
@@ -156,7 +156,7 @@ Publicly announce the chosen city and shuffle its entire pile, including Dracula
 
 ### Fog — Dracula
 
-Fog uses the same placement rules as Savage Attack. When investigated, the investigating Hunter discards one random card from their remaining hand if they have one. Fog deals no damage. By Day, discard Fog from the city pile. At Night, shuffle it back into that city pile.
+Fog uses the same placement rules as Tragic Accident. When investigated, the investigating Hunter discards one random card from their remaining hand if they have one. Fog deals no damage. By Day, discard Fog from the city pile. At Night, shuffle it back into that city pile.
 
 ### Shadow Passage — Dracula
 
@@ -171,9 +171,9 @@ Both selected piles must be open and contain a card. Shuffle both after the swap
 
 ## 7. Combat, damage and exhaustion
 
-Discovering Dracula pauses normal play. All conscious Hunters at that city participate. Each participating Hunter contributes base strength 1, bonuses from one equipped item, and optionally one eligible combat card from hand. Dracula contributes base strength 3, Great Wolf’s +2 bonus if it is at the combat city, and optionally one eligible combat card from hand. Every participant chooses a card or explicitly chooses no card.
+Discovering Dracula pauses normal play. All conscious Hunters at that city participate. Each participating Hunter contributes base strength 1, bonuses from one equipped item, and optionally one eligible combat card from hand. Dracula contributes base strength 2 by Day or 3 by Night, Great Wolf’s +2 bonus if it is at the combat city, and optionally one eligible combat card from hand. Every participant chooses a card or explicitly chooses no card.
 
-Sum each side's strength. Dracula wins ties, but ties deal zero showdown damage. Otherwise, the losing side takes damage equal to the strength difference, plus 3 damage if Dracula wins at Vampire Bride’s city. Played combat cards go to their owners' discards unless another rule removes them.
+Sum each side's strength. Dracula wins ties. The losing side takes damage equal to the strength difference. If Dracula wins at Vampire Bride’s city, the Hunters take 2 additional damage, even on a tie. Played combat cards go to their owners' discards unless another rule removes them.
 
 - When Hunters win, Dracula takes all damage. At 0 HP, Hunters win the game and normal play ends.
 - When Dracula wins, divide damage as evenly as possible among participating Hunters. Dracula chooses which Hunters take one extra point when there is a remainder.
@@ -185,6 +185,8 @@ Combat cards contribute during the showdown rather than using a separate standar
 Planned Ambush resolves after all combat cards are chosen and ends the showdown immediately. Dracula takes 2 damage, his combat card is cancelled, and all chosen cards go to discard. Skip normal strength comparison, equipment effects, other combat card effects at resolution, and escape. HP already lost to Reckless Assault still applies. If multiple Hunters chose Planned Ambush, deal the 2 damage once. If Dracula survives, shuffle his identity back into the city.
 
 Reckless Assault contributes **+2 strength** and deals **1 damage to its Hunter** as soon as the Hunter locks in the card. If this cost brings them to 0 HP, they still contribute their base, equipment and card bonuses and remain part of damage allocation. Their exhaustion waits until combat concludes, including any escape resolution. Apply it even if Dracula is defeated.
+
+Outside combat, Dracula can use a standard Day or Night action to discard any Dracula combat card and draw one card from his personal deck. Reshuffle the existing discard pile if needed. The played card is added to the discard after the draw, and the new card does not grant another play.
 
 Unholy Strength, Mesmerize, and Pride of Dracula go to discard after play. Unholy Strength still grants +1 Str if the Hunters have no equipment. Mesmerize zeroes the chosen Hunter’s Strength, including equipment, combat cards, and Pistol boosts. Pride of Dracula can defeat Dracula before the showdown resolves.
 
@@ -217,12 +219,12 @@ Each Hunter has one equipment slot. When replacing the equipped card, choose whe
 
 ### Counter-equipment
 
-The three equipment counters provide persistent benefits while equipped. To remove the matching revealed Ally, a conscious Hunter must be at its city with that counter **equipped**, and spend their unused standard **Day or Night action**. Permanently **trash** the equipped card; remove the Ally and its 1 Darkness. A card merely in hand does not qualify. This replaces the earlier discard-cost idea and earlier type-wide sacrifice metadata. No other equipment currently removes Allies.
+The three equipment counters provide persistent benefits while equipped. To remove the matching Ally, a conscious Hunter must be at its city with that counter **equipped**, and spend their unused standard **Day or Night action**. Permanently **trash** the equipped card; remove the Ally and its 2 Darkness. A card merely in hand does not qualify. This replaces the earlier discard-cost idea and earlier type-wide sacrifice metadata. No other equipment currently removes Allies.
 
 | Equipment | Persistent benefit | Ally removed |
 |---|---|---|
 | Hunting Rifle | +1 combat strength | Great Wolf |
-| Crucifix | Reduce the equipped Hunter’s ordinary/Savage Attack damage by 1, minimum 0 (normally 0 Day / 1 Night); no combat damage reduction | Wraith |
+| Crucifix | Reduce the equipped Hunter’s ordinary/Tragic Accident damage by 1, minimum 0 (normally 0 Day / 1 Night); no combat damage reduction | Wraith |
 | Smelling Salts | +1 maximum HP; equipping also grants 1 current HP | Renfield |
 
 When Smelling Salts leaves play (replacement or sacrifice), return to the base maximum and cap current HP at that maximum; do not subtract an extra point from a wounded Hunter. Exhaustion removes all equipment and leaves the Hunter at 0 HP until recovery. The HP bonus is applied both when equipping from hand and when equipping immediately on acquisition.
@@ -244,18 +246,20 @@ Each Hunter receives the following two signature cards. Implemented effects belo
 
 | Hunter | Card | Current effect / status |
 |---|---|---|
-| Lord Godalming | Family Fortune | Implemented: acquire two Hunter cards as described in section 5. |
+| Lord Godalming | Family Fortune | Acquire two Hunter market cards by Day or one at Night, as described in section 5. |
 | Lord Godalming | Lucy's Revenge | Use in combat for +3 Strength, then discard. |
 | Jonathan Harker | Methodical Search | Implemented: privately examine the top two encounters at your city, resolve one and shuffle the other back with the remaining pile. With one card, resolve that card; an empty pile does nothing. |
-| Jonathan Harker | Urgent Dispatch | Implemented: move yourself or another conscious Hunter one orthogonal connection, without consuming their action or adding an encounter from Ready the Carriage at Night. |
+| Jonathan Harker | Urgent Dispatch | Move another conscious Hunter one connection without consuming their action. At Night, add a Brush with Darkness and shuffle the destination pile unless the city is consecrated. |
 | Van Helsing | Correspondence | Day or Night. Exchange one hand card each with another conscious Hunter anywhere on the map. You may immediately play the exact card you received if legal this phase, or keep it in hand and end your turn. Discard Correspondence after play. |
-| Van Helsing | Vampire Lore | Use in combat for +2 Strength. Or play by Day or Night to discard one random card from your remaining hand or Dracula’s hand. The chosen hand must contain a card. Discard Vampire Lore after use. |
+| Van Helsing | Vampire Lore | Use in combat for +2 Strength. Or play by Day or Night to discard one random card from Dracula’s hand. Dracula must have a card in hand. Discard Vampire Lore after use. |
 | Dr. Seward | Medical Expertise | Implemented: heal yourself or another conscious Hunter at your city for 2 HP, capped at maximum. Cannot revive or skip recovery. |
 | Dr. Seward | Wax Cylinders | Day or Night. Choose a city occupied by any Hunter with a nonempty encounter pile. Reveal the top card and return it to the top or bottom without resolving it. |
 | Mina Harker | Hypnosis | Implemented: another conscious Hunter at Mina's city discards one random hand card; then learn whether Dracula is in Mina's city or any surrounding city, including diagonals. Requires an eligible other Hunter with a hand card; does not reveal the exact city. |
 | Mina Harker | Rally the Hunters | Day or Night. Move another conscious Hunter one orthogonal connection closer to Mina’s city. This uses no action for the moved Hunter and adds no Night encounter. |
 
-Any conscious Hunter may trade instead of their standard card play. They must share a city with another conscious Hunter and discard one hand card as the cost. Then exchange one different remaining hand card OR one equipped item for one hand card OR equipped item belonging to the partner. Both Hunters may offer equipped equipment. The initiator needs a hand card for the discard cost and something else to trade; the partner may have only equipped equipment and no hand cards. Received equipment offers immediate equipping or placement in discard; with full slots, choose a replacement and discard or trash it as normal. Non-equipment received goes to hand. Equipment leaving its owner loses its bonuses; immediate equipping applies bonuses to the new owner. This uses the initiator's standard action but does not consume the partner's later scheduled turn.
+A conscious Hunter who passes without using their standard action may permanently trash one non-basic card from their hand before ending the turn. Passing without trashing is also allowed.
+
+Any conscious Hunter may trade instead of their standard card play. They must share a city with another conscious Hunter and discard one hand card as the cost. Then exchange one different remaining hand card OR one equipped item for one hand card OR equipped item belonging to the partner. Unique character cards cannot be exchanged, including through Correspondence. Both Hunters may offer equipped equipment. The initiator needs a hand card for the discard cost and something else to trade; the partner may have only equipped equipment and no hand cards. Received equipment offers immediate equipping or placement in discard; with full slots, choose a replacement and discard or trash it as normal. Non-equipment received goes to hand. Equipment leaving its owner loses its bonuses; immediate equipping applies bonuses to the new owner. This uses the initiator's standard action but does not consume the partner's later scheduled turn.
 
 ## 10. Market card reference
 
@@ -265,12 +269,12 @@ One copy of each listed card starts in the combined market pool. Placeholder car
 
 | # | Card | Current implementation |
 |---|---|---|
-| 1 | Wooden Stake | Item. Play as your combat card for +2 Str, then trash. Or trash to remove a revealed Vampire Bride at your city. |
-| 2 | Holy Water | Item. Play as your combat card for +2 Str and trash after use, or trash to remove a revealed Ally at your city. |
+| 1 | Wooden Stake | Item. Play as your combat card for +2 Str, then trash. Or trash to remove Vampire Bride at your city. |
+| 2 | Holy Water | Item. Play as your combat card for +2 Str and trash after use, or trash to remove an Ally at your city. |
 | 3 | Crucifix | Equipment: reduce encounter damage by 1; trash using an action to remove Wraith. |
 | 4 | Hunting Rifle | Equipment: +1 combat; trash using an action to remove Great Wolf. |
 | 5 | Silver Dagger | Equipment, +2 Str in combat. |
-| 6 | Reinforced Coat of Arms | Equipment. +1 Str. Prevent 1 encounter damage. |
+| 6 | Hunting Apparel | Equipment. +1 Str. Prevent 1 encounter damage. |
 | 7 | Medical Kit | Item: heal 2 and trash; immediate-use acquisition option. No combat bonus. |
 | 8 | Pistol | Equipment. +1 Strength in combat, or discard it after combat cards are chosen for +2 Strength in that showdown. |
 | 9 | Medical Kit (second copy) | Item: heal 2 and trash; immediate-use acquisition option. Replaces Medical Assistance. |
@@ -296,13 +300,13 @@ One copy of each listed card starts in the combined market pool. Placeholder car
 | 29 | Smelling Salts | Equipment: +1 maximum/current HP; trash using an action to remove Renfield. |
 | 30 | Quincy Morris | One-use Event: all conscious Hunters heal 2 HP and draw 1 card. |
 
-### Dracula market: 10 cards
+### Dracula market: 13 cards
 
 | # | Card | Current implementation |
 |---|---|---|
 | 1 | Escape as Mist | Combat escape or Night action. Move one connection and keep the destination hidden. |
 | 2 | Escape as Bats | Combat escape up to two connections with the destination announced. As a Day action, move one connection secretly. |
-| 3 | Vampire Bride | +3 total damage on a strict Dracula combat victory at her city. |
+| 3 | Vampire Bride | +2 total damage when Dracula wins at her city, including ties. |
 | 4 | Great Wolf | +2 Dracula strength in combat at its city. |
 | 5 | Wraith | Beginning-of-Night movement and private bottom-encounter control; shares a city with another Ally. |
 | 6 | Renfield | +2 Dracula maximum/current HP on deployment; adds one ordinary encounter to his city at the beginning of each Dracula Night turn. |
@@ -310,14 +314,17 @@ One copy of each listed card starts in the combined market pool. Placeholder car
 | 8 | Unholy Strength | +1 Str. Choose a participating Hunter’s equipped item to discard before comparing Strength. |
 | 9 | Mesmerize | Reduce one participating Hunter’s total Strength to 0 for the showdown. |
 | 10 | Pride of Dracula | +4 Str. Dracula takes 2 damage immediately when chosen. |
+| 11 | Wolf Form | Night action. Use Shadow Passage’s hidden swap with cities up to two connections apart, for movement or a bluff. Discard after play. |
+| 12 | Szgany Bodyguards | Day or Night. Swap Dracula into an adjacent open city and announce the destination. Shuffle the played card into the destination pile. If resolved as an encounter, it deals 1 damage that cannot be modified, then leaves play. |
+| 13 | Cultists | Day or Night. Shuffle the played card into any city, including a consecrated city. When investigated, deal 1 damage by Day or 2 by Night with normal prevention, then remove the encounter. |
 
 ### Location allies
 
 Dracula acquires an Ally into discard, then plays it by Day or Night as a standard action. Deploy it in an open city. One ordinary Ally (Bride, Great Wolf or Renfield) may occupy a city, plus Wraith in a separate sharing slot. The card leaves Dracula's personal deck and stays deployed until removed. There is only one Wraith and one Renfield in the game.
 
-**Reveal immediately whenever any Hunter is present**, including deployment beneath a Hunter, Hunter arrival and Wraith movement into a Hunter's city. Once revealed, it stays revealed. Revealing an Ally never examines or resolves the city's encounters or reveals Dracula's identity. An Ally can be removed with its matching equipped counter, or automatically when its city becomes consecrated. It never returns to Dracula's discard. Each deployed Ally contributes **1 Darkness**, even while face-down, wherever Dracula is. Acquired or pending-deployment cards contribute nothing.
+The Ally’s identity is public when played, and its city is public when placed. An Ally can be removed with its matching equipped counter, or automatically when its city becomes consecrated. It never returns to Dracula’s discard. Each deployed Ally contributes **2 Darkness**, wherever Dracula is. Acquired or pending-deployment cards contribute nothing.
 
-- **Vampire Bride:** no strength bonus. When Dracula wins by strength at her city, add **3 total damage** to the normal Hunter damage pool; distribute the combined total evenly using the existing remainder choice. Ties still deal 0 damage.
+- **Vampire Bride:** no strength bonus. When Dracula wins at her city, including on a tie, add **2 total damage** to the Hunter damage pool. Distribute the combined total evenly using the existing remainder choice.
 - **Great Wolf:** **+2 Dracula strength** only in combat at its city.
 - **Wraith:** no combat bonus. At the beginning of Dracula's Night turn, move one orthogonal connection to an open city, even if another Ally occupies it. Publicly announce movement. Dracula privately examines the destination's bottom encounter, moving it to the top or leaving it on the bottom. Do not reveal the card or placement choice in the log. Resolve this before Dracula plays or ends his normal turn. As an explicit fallback when every adjacent city is consecrated, Wraith stays put and skips its ability; it does not inspect its current pile. Consecrated destinations are never legal.
 - **Renfield:** global **+2 maximum HP** for Dracula, and **+2 current HP on deployment** (normally up to 12). No recurring healing or strength bonus. At the beginning of each Dracula Night turn, add **one ordinary encounter to Renfield's own open city** and shuffle the entire pile, including Dracula if present. If removed, return Dracula to his base maximum, capping current HP without subtracting extra HP from an already wounded Dracula. A consecrated city removes Renfield immediately, before his ability can replenish it.
@@ -339,9 +346,9 @@ In solo play, a tester can select another player’s view. Local saves and JSON 
 - **Card completion:** placeholder signatures, travel, healing, investigation and Dracula market cards need finalized effects and implementations.
 - **Equipment:** the named Ally counters and their removal actions are implemented; other deferred equipment effects remain planned. Medical Kit remains an Item.
 - **Items:** identify any other cards to reclassify; Do not infer that every healing card is an Item.
-- **Brush with Darkness supply:** the original unlimited acquisition/placement action is not implemented. Current ordinary encounters come from setup, Ready the Carriage at Night or Renfield; Savage Attack adds its own hazard.
+- **Brush with Darkness supply:** the original unlimited acquisition/placement action is not implemented. Current ordinary encounters come from setup, Ready the Carriage at Night or Renfield; Tragic Accident adds its own hazard.
 - **Combat balance:** HP, flat bonuses, ally values, strength-difference damage, tie behavior and recovery pacing remain playtest values. Further conditional bonuses are incomplete.
-- **Consecrated cities:** permanent consecration, automatic Ally removal and blocked encounter placement are implemented. Hunter travel remains permitted; Dracula swaps/escapes and Wraith movement cannot enter consecrated cities.
+- **Consecrated cities:** permanent consecration, automatic Ally removal and blocked encounter placement are implemented, with Cultists as a placement exception. Hunter travel remains permitted; Dracula swaps/escapes and Wraith movement cannot enter consecrated cities.
 - **Card timing and extra plays:** timing outside explicit phase rules is provisional; extra-play cards need their own action accounting.
 - **Dracula survival:** current same-city identity reshuffle after combat is a provisional continuation rule.
 - **City abilities, secure hot-seat handoffs, and AI:** remain outside the current prototype.
@@ -360,9 +367,9 @@ Dracula’s current and maximum HP are public information, shown in a health bar
 
 Medical Assistance has been replaced by a second Medical Kit with identical Item behavior. The Hunter market pool contains two Medical Kits. Existing Medical Assistance cards become Medical Kits using the same saved card ID.
 
-Wooden Stake is an Item. Play it as your combat card for +2 Str. Trash it when used in a resolved showdown. Alternatively, trash it to remove a revealed Vampire Bride at your city, immediately on acquisition or as a Day or Night action from hand.
+Wooden Stake is an Item. Play it as your combat card for +2 Str. Trash it when used in a resolved showdown. Alternatively, trash it to remove Vampire Bride at your city, immediately on acquisition or as a Day or Night action from hand.
 
-Holy Water is an Item. Play it from hand as your one combat card for +2 Str and trash it when its effect resolves. Alternatively, use it to remove one revealed Ally at your city, including Wraith in a shared slot. You may do this immediately on acquisition or by playing it from hand as your Day or Night action. Trash it after use.
+Holy Water is an Item. Play it from hand as your one combat card for +2 Str and trash it when its effect resolves. Alternatively, use it to remove one Ally at your city, including Wraith in a shared slot. You may do this immediately on acquisition or by playing it from hand as your Day or Night action. Trash it after use.
 
 ### Combat card selection order
 

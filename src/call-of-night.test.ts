@@ -21,7 +21,7 @@ it('grants exactly one Night-effect play during Day and resolves a distant encou
  expect(()=>reduce(s,{type:'play',index:0})).toThrow();
  s=parseSave(JSON.stringify(s));
  const n=reduce(s,{type:'placeEncounter',city:8});
- expect(n.locations[8].deck).toHaveLength(6);
+ expect(n.locations[8].deck).toHaveLength(5);
  expect(n.nightPlay).toBeUndefined();
  expect(cardPhase(n)).toBe('day');
  expect(n.players[4].discard).toEqual(['d-4','d-0']);
@@ -63,7 +63,7 @@ it.each([0,1,5])('Night play heals up to one HP with %i damage',damage=>{
  expect(s.played).toBe(true);
 });
 it('finishes without a bonus when no eligible card remains',()=>{
- let s=setup(['d-4','dm-1']);
+ let s=setup(['d-4']);
  s=reduce(s,{type:'play',index:0});
  expect(s.nightPlay).toBeUndefined();
  expect(()=>reduce(s,{type:'advance'})).not.toThrow();
@@ -76,4 +76,14 @@ it('a second Call uses its Night healing ability and grants no further play',()=
  expect(s.players[4].damage).toBe(1);
  expect(s.nightPlay).toBeUndefined();
  expect(()=>reduce(s,{type:'play',index:0})).toThrow();
+});
+
+it('allows the bonus action to cycle a combat card',()=>{
+ let s=setup(['d-4','dm-1']);
+ s.players[4].draw=['d-0'];
+ s=reduce(s,{type:'play',index:0});
+ s=reduce(s,{type:'play',index:0,choice:'cycle-combat'});
+ expect(s.players[4].hand).toEqual(['d-0']);
+ expect(s.nightPlay).toBeUndefined();
+ expect(s.pendingSwap).toBe(false);
 });

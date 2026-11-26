@@ -49,3 +49,14 @@ it('allows ending the turn to keep an otherwise playable card',()=>{
  expect(s.correspondence).toBeUndefined();
  expect(s.players[2].hand).toEqual(['hm-18','hm-18']);
 });
+
+it('blocks character-specific starting cards on both sides of the exchange',()=>{
+ const initial=setup();
+ initial.players[2].hand.push('signature-2-1');
+ initial.players[1].hand.push('signature-1-0');
+ const s=reduce(initial,{type:'play',index:0});
+ const exchange={type:'correspondenceTrade',player:'h1',offerIndex:0,receiveIndex:0} as const;
+ expect(()=>reduce(s,{...exchange,offerIndex:2})).toThrow('Unique character cards cannot be traded.');
+ expect(()=>reduce(s,{...exchange,receiveIndex:1})).toThrow('Unique character cards cannot be traded.');
+ expect(reduce(s,exchange).correspondence?.stage).toBe('play');
+});

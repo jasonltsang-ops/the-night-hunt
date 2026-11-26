@@ -2,7 +2,7 @@ import {expect,it} from 'vitest';
 import {addedInvestigationCopies,cards,hunterMarket} from './data';
 import {createGame,investigationReview,parseSave,reduce} from './engine';
 
-it.each([['hm-17b',0],['hm-18b',4]] as const)('places the unchosen card correctly after %s',(id,position)=>{
+it.each([['hm-17b',0],['hm-18b',3]] as const)('places the unchosen card correctly after %s',(id,position)=>{
  const s=createGame(undefined,8);
  s.locations[0].deck.sort();s.locations[0].deck.unshift('damaging');
  s.players[0].hand=[id];
@@ -45,7 +45,7 @@ it('Coordinated Search offers one optional follow-up if another Hunter is presen
  expect(reduce(s,{type:'play',index:0}).pendingInvestigation).toBeUndefined();
 });
 
-it('Uncover Conspiracy discards Savage Attack harmlessly and starts a showdown on Dracula',()=>{
+it('Uncover Conspiracy discards Tragic Accident harmlessly and starts a showdown on Dracula',()=>{
  let s=createGame(undefined,0);
  s.players[0].hand=['hm-22'];
  s.locations[0].deck.sort();s.locations[0].deck.unshift('damaging');

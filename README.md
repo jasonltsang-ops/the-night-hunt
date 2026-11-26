@@ -55,7 +55,7 @@ Documentation records the current implementation without making unresolved desig
 
 The market now has 31 Hunter and 11 Dracula cards: Smelling Salts and Renfield were added. Great Wolf replaces the Wolf Pack name; Wraith replaces Dark Familiar. See RULES.md for each persistent benefit and counter.
 
-Hunters reveal Allies by being at their city. Use the equipped counter’s “Trash … to remove …” button to spend the standard Day/Night action. Wraith shares with one other Ally and resolves its mandatory movement/private bottom-card choice before Dracula’s Night action. Renfield adds an encounter to his own city each Night. A city emptied of encounters closes permanently, removes its Allies and cannot receive more encounters.
+Allies are public when played. Use the equipped counter’s “Trash … to remove …” button to spend the standard Day/Night action. Wraith shares with one other Ally and resolves its mandatory movement/private bottom-card choice before Dracula’s Night action. Renfield adds an encounter to his own city each Night. A city emptied of encounters closes permanently, removes its Allies and cannot receive more encounters.
 
 Version 7 saves preserve pending Wraith choices. Older saves migrate their Ally slots and empty cities, and add the two new cards to the market reserve once. They do not replay beginning-of-Night effects. JSON snapshots still contain hidden information.
 
@@ -63,7 +63,7 @@ New games now begin with starting-city selection: four selected Hunters choose f
 
 ## Two-player online playtest
 
-Open the [hosted playtest](https://the-night-hunt-playtest.ornatehelix2.chatgpt.site/) or run one shared game server and give both players its browser URL. Dracula selects **Play online**, chooses four Hunters, and creates the match. Copy the **Hunter invitation** to your friend, who controls all four Hunters. The invitation grants access to that seat. Keep it between the players.
+Open the [hosted playtest](https://the-night-hunt-playtest.ornatehelix2.chatgpt.site/) or run one shared game server and give both players its browser URL. Select **Play online**, choose four Hunters, and select **Host as Hunters** or **Host as Dracula**. Share the invitation for the other side. The Hunter player controls all four Hunters and chooses their starting cities before Dracula chooses his. The invitation grants access to that seat. Keep it between the players.
 
 For a test on one computer, open the invite in a second browser profile. For two devices on the same network, serve the game on the host’s network address:
 

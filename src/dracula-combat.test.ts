@@ -1,6 +1,6 @@
 import {expect,it} from 'vitest';
 import {draculaMarket,newDraculaCombatCards} from './data';
-import {createGame,draculaCombatTargets,nextCombatPlayer,parseSave,reduce,type State} from './engine';
+import {canPlayStandard,combatCardAllowed,createGame,draculaCombatTargets,nextCombatPlayer,parseSave,reduce,type State} from './engine';
 
 function showdown(card:string,hunterCard?:string,count=1){
  let s=createGame(undefined,0);
@@ -29,11 +29,11 @@ it('Unholy Strength discards a Hunter’s item before computing strengths',()=>{
  expect(n.players[0].discard).toContain('hm-4');
  expect(n.players[4].discard).toContain('dm-unholy');
  expect(n.combat?.hunterStrength).toBe(1);
- expect(n.combat?.draculaStrength).toBe(4);
+ expect(n.combat?.draculaStrength).toBe(3);
 });
 it('Unholy Strength grants +1 without equipment to target',()=>{
  const n=reduce(choose(showdown('dm-unholy')),{type:'resolveCombat'});
- expect(n.combat?.draculaStrength).toBe(4);
+ expect(n.combat?.draculaStrength).toBe(3);
 });
 it('Mesmerize zeroes base, equipment, combat card, and Pistol boost for one Hunter',()=>{
  let s=showdown('dm-mesmerize','hm-26',2);
@@ -44,7 +44,7 @@ it('Mesmerize zeroes base, equipment, combat card, and Pistol boost for one Hunt
  expect(()=>reduce(s,{type:'resolveCombat',target:{player:'h2'}})).toThrow();
  const n=reduce(s,{type:'resolveCombat',target:{player:'h0'}});
  expect(n.combat?.hunterStrength).toBe(1);
- expect(n.combat?.draculaStrength).toBe(3);
+ expect(n.combat?.draculaStrength).toBe(2);
  expect(n.players[0].discard).toEqual(['hm-9','hm-26']);
  expect(n.players[4].discard).toContain('dm-mesmerize');
 });
@@ -58,7 +58,7 @@ it('Pride immediately costs 2 HP, adds 4 Str, and can defeat Dracula',()=>{
  const s=choose(showdown('dm-pride'));
  expect(s.players[4].damage).toBe(2);
  const n=reduce(parseSave(JSON.stringify(s)),{type:'resolveCombat'});
- expect(n.combat?.draculaStrength).toBe(7);
+ expect(n.combat?.draculaStrength).toBe(6);
  expect(n.players[4].damage).toBe(2);
  expect(n.players[4].discard).toContain('dm-pride');
  const wounded=showdown('dm-pride');
@@ -80,7 +80,7 @@ it('updates old Dracula markets once and retires the four placeholders',()=>{
  expect(n.market.draw).not.toContain('dm-3');
  expect(n.market.draw).not.toContain('dm-7');
  for(const id of newDraculaCombatCards)expect(n.market.draw).toContain(id);
- expect(draculaMarket).toHaveLength(10);
+ expect(draculaMarket).toHaveLength(13);
  expect(parseSave(JSON.stringify(n))).toEqual(n);
 });
 
@@ -114,4 +114,37 @@ it.each([['day','dm-1','Bats'],['night','dm-0','Mist']] as const)('allows the %s
  expect(n.players[4].discard).toContain(card);
  expect(n.log.at(-1)).toBe(name==='Mist'?'Dracula moved as Mist. Destination hidden.':'Dracula moved as Bats. Destination hidden.');
  expect(parseSave(JSON.stringify(n))).toEqual(n);
+});
+
+const combatCards=draculaMarket.filter(combatCardAllowed);
+it.each(combatCards.flatMap(id=>(['day','night'] as const).map(phase=>[id,phase] as const)))(
+ 'lets Dracula discard %s to draw during %s without activating its other effects',(id,phase)=>{
+  const s=createGame(undefined,0);
+  s.phase=phase;
+  s.turn=phase==='day'?4:0;
+  const dracula=s.players[4];
+  dracula.hand=[id];
+  dracula.draw=[];
+  dracula.discard=['d-0'];
+  expect(canPlayStandard(s,dracula,id)).toBe(true);
+  const n=reduce(s,{type:'play',index:0,choice:'cycle-combat'});
+  expect(n.players[4].hand).toEqual(['d-0']);
+  expect(n.players[4].discard).toEqual([id]);
+  expect(n.players[4].damage).toBe(0);
+  expect(n.pendingSwap).toBe(false);
+  expect(()=>reduce(n,{type:'play',index:0})).toThrow('already used');
+ });
+it('does not let Dracula redraw the played card when both piles are empty',()=>{
+ const s=createGame(undefined,0);
+ s.turn=4;
+ const dracula=s.players[4];
+ dracula.hand=['dm-pride'];
+ dracula.draw=[];
+ dracula.discard=[];
+ expect(canPlayStandard(s,dracula,'dm-pride')).toBe(false);
+ expect(()=>reduce(s,{type:'play',index:0,choice:'cycle-combat'})).toThrow('another card is available');
+});
+it('cannot use the draw option during a showdown',()=>{
+ const s=showdown('dm-pride');
+ expect(()=>reduce(s,{type:'play',index:0,choice:'cycle-combat'})).toThrow();
 });

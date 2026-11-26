@@ -22,11 +22,14 @@ function setup(){
  return request;
 }
 
-it('keeps both seats synchronized, blocks impersonation, and rejects competing turns',async()=>{
+it.each(['hunter','dracula',undefined] as const)('keeps seats synchronized and blocks impersonation when hosting as %s',async(hostSide)=>{
  const request=setup();
- const created=await request('',{hunters:[0,1,2,3]});
+ const created=await request('',{hunters:[0,1,2,3],hostSide});
  expect(created.status).toBe(201);
- const {id,token,inviteToken}=await created.json();
+ const {id,token:hostToken,inviteToken:guestToken,match}=await created.json();
+ expect(match.side).toBe(hostSide??'dracula');
+ const token=hostSide==='hunter'?guestToken:hostToken;
+ const inviteToken=hostSide==='hunter'?hostToken:guestToken;
  const path='/'+id;
  const play=(revision:number,action:Action,seat:string)=>request(path,{revision,action},seat);
  expect((await request(path)).status).toBe(404);
@@ -56,14 +59,14 @@ it('exposes only the exact encounter cards the Hunter side has reviewed',()=>{
  s.players[4].hand=['dm-pride','dm-bats','d-4'];
  s.players[0].hand=['hm-19'];
  s.locations[0].deck=['dracula','damaging','encounter','encounter','damaging'];
- s.locations[1].ally={card:'dm-renfield',revealed:false};
+ s.locations[1].ally={card:'dm-renfield'};
  const pending=reduce(s,{type:'play',index:0});
  const hunters=matchView(pending,'hunter',1).state;
  const dracula=matchView(pending,'dracula',1).state;
  expect(hunters.players[4].hand).toEqual(['d-0','d-0','d-0']);
  expect(hunters.locations[0].deck).toEqual(['dracula','damaging','encounter','encounter','encounter']);
- expect(hunters.locations[1].ally?.card).toBe('dm-4');
- expect(hunters.publicDraculaMaxHP).toBe(12);
+ expect(hunters.locations[1].ally?.card).toBe('dm-renfield');
+ expect(hunters.publicDraculaMaxHP).toBe(8);
  expect(dracula.locations[0].deck.every(card=>card==='encounter')).toBe(true);
 });
 
@@ -72,6 +75,7 @@ it('lets Hunters finish Pistol choices before Dracula resolves the showdown',()=
  s.players.forEach(p=>p.hand=[]);
  s.players.slice(1,4).forEach(p=>p.city=8);
  s.players[0].equipment=['hm-9'];
+ s.config.draculaBase=3;
  s=reduce(s,{type:'stack',city:0,card:'dracula'});
  s=reduce(s,{type:'investigate',player:'h0',debug:true});
  s=applyOnlineAction(s,'hunter',{type:'combatCard',player:'h0',index:-1});

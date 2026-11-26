@@ -24,12 +24,15 @@ export function createMatchHandler(store:RoomStore){
   if(path==='/api/matches'&&request.method==='POST'){
    const body=await request.json().catch(()=>null);
    if(!body||!Array.isArray(body.hunters))return json({error:'Choose four different Hunters.'},400);
+   const hostSide:unknown=body.hostSide===undefined?'dracula':body.hostSide;
+   if(hostSide!=='hunter'&&hostSide!=='dracula')return json({error:'Choose which side to host.'},400);
+   const guestSide=hostSide==='hunter'?'dracula':'hunter';
    let state:State;
    try{state=createSetup(body.hunters);}
    catch{return json({error:'Choose four different Hunters.'},400);}
    const room:Room={id:randomKey(),tokens:{dracula:randomKey(),hunter:randomKey()},revision:0,state};
    await store.create(room);
-   return json({id:room.id,token:room.tokens.dracula,inviteToken:room.tokens.hunter,match:matchView(state,'dracula',0)},201);
+   return json({id:room.id,token:room.tokens[hostSide],inviteToken:room.tokens[guestSide],match:matchView(state,hostSide,0)},201);
   }
   const route=/^\/api\/matches\/([a-f0-9]{32})$/.exec(path);
   if(!route)return json({error:'Match endpoint not found.'},404);

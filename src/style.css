@@ -44,3 +44,29 @@
 .play-area{border:0;padding:0;margin:0;min-width:0}
 .online-banner input{display:block;width:min(100%,680px);padding:6px;font:inherit}
 .online-banner button{margin-right:8px}
+
+
+.market > .card[data-market-style="dracula"] { --market-accent: #f28c96; }
+.market > .card[data-market-style="hunter"] { --market-accent: #f3d675; }
+.market > .card[data-market-style="equipment"] { --market-accent: #92d5a6; }
+.market > .card { border-color: var(--market-accent, #424c5f); }
+.market > .card > strong { color: var(--market-accent, inherit); }
+
+.market-heading { display: flex; align-items: center; gap: 8px; }
+.market-icon { flex: none; }
+
+.ally-target { color: #f28c96; }
+
+.player-name { display: flex; align-items: center; gap: 8px; }
+.player-portrait { display: block; flex: none; }
+
+.player-health,.hp-circles{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.player-health.hunter{--hp-color:#75c98e}.player-health.dracula{--hp-color:#d17783}
+.hp-circle{box-sizing:border-box;width:12px;height:12px;border:2px solid var(--hp-color);border-radius:50%}
+.hp-circle.filled{background:var(--hp-color)}
+
+.card-name-with-icon{display:inline-flex;align-items:center;gap:5px}
+.card-name-with-icon svg{flex:none}
+
+.portrait-with-status{display:inline-flex;align-items:center;gap:4px;flex:none}
+.exhausted-icon{display:block;flex:none}

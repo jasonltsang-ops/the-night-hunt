@@ -1,6 +1,6 @@
 import React,{useEffect,useRef,useState,type ReactNode} from 'react';
 import {hunters} from './data';
-import type {MatchView,OnlineAction} from './multiplayer';
+import type {MatchView,OnlineAction,Side} from './multiplayer';
 
 type Session={id:string;token:string;inviteToken?:string};
 export type OnlineGame={
@@ -64,10 +64,10 @@ export function OnlinePlay({renderSolo,renderGame}:{
   return ()=>{stopped=true;clearTimeout(timer);};
  },[mode,session]);
 
- async function create(){
+ async function create(hostSide:Side){
   setBusy(true);setError('');
   try{
-   const response=await fetch('/api/matches',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hunters:selected})});
+   const response=await fetch('/api/matches',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hunters:selected,hostSide})});
    const data=await response.json().catch(()=>null);
    if(!response.ok||!data?.match)throw Error(data?.error??'This preview needs a multiplayer server to create matches.');
    setSession({id:data.id,token:data.token,inviteToken:data.inviteToken});
@@ -104,12 +104,13 @@ export function OnlinePlay({renderSolo,renderGame}:{
   <section>
    <h2>Play online</h2>
    {mode==='online'?<p role="status">Connecting to the match…</p>:<>
-    <p>Create a match as Dracula. Share the Hunter invitation with a friend who will control all four Hunters.</p>
+    <p>Choose four Hunters and decide which side to host. Share the invitation with the player on the other side.</p>
     <div>{hunters.map((name,index)=><label className="choice" key={name}>
      <input type="checkbox" checked={selected.includes(index)} disabled={busy} onChange={e=>setSelected(e.target.checked?[...selected,index]:selected.filter(id=>id!==index))}/>{name}
     </label>)}</div>
     <div className="buttons">
-     <button disabled={busy||selected.length!==4} onClick={()=>void create()}>Create match</button>
+     <button disabled={busy||selected.length!==4} onClick={()=>void create('hunter')}>Host as Hunters</button>
+     <button disabled={busy||selected.length!==4} onClick={()=>void create('dracula')}>Host as Dracula</button>
      {session&&<button disabled={busy} onClick={()=>{setError('');setMode('online');}}>Resume match</button>}
     </div>
    </>}
@@ -122,7 +123,7 @@ export function OnlineBanner({game}:{game:OnlineGame}){
  const {side,actingSide,reactionWindow}=game.match;
  return <section className="online-banner">
   <h2>Online match · {side==='hunter'?'Hunters':'Dracula'}</h2>
-  {game.invite&&<label>Hunter invitation <input readOnly value={game.invite} onFocus={e=>e.target.select()}/></label>}
+  {game.invite&&<label>{side==='hunter'?'Dracula invitation':'Hunter invitation'} <input readOnly value={game.invite} onFocus={e=>e.target.select()}/></label>}
   <p role="status">{actingSide===null?'Match complete.':actingSide===side?'Your side can act.':`Waiting for ${actingSide==='hunter'?'the Hunters':'Dracula'}.`}</p>
   {reactionWindow&&side==='hunter'&&<button disabled={game.busy} onClick={()=>game.submit({type:'finishReactions'})}>Finish equipment choices</button>}
   <button onClick={game.leave}>Back to solo play</button>

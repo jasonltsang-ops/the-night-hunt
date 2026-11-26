@@ -1,5 +1,6 @@
 import {expect,it} from 'vitest';
 import {active,createGame,darkness,hurt,nextCombatPlayer,parseSave,reduce} from './engine';
+import {matchView} from './multiplayer';
 
 it('awards one permanent Darkness per exhaustion, including after recovery',()=>{
  let s=createGame();
@@ -27,6 +28,10 @@ it('awards encounter exhaustion Darkness and immediately checks victory',()=>{
  s=reduce(s,{type:'play',index:0});
  expect(s.winner).toBe('dracula');
  expect(darkness(s).total).toBe(10);
+ const dracula=matchView(s,'dracula',1).state;
+ const removed=expect.stringMatching(/Cards permanently removed: Silver Dagger, Fast Horse/);
+ expect(dracula.log).toContainEqual(removed);
+ expect(dracula.latestResolution?.entries).toContainEqual(removed);
  expect(s.latestResolution?.entries.slice(0,4)).toEqual([
   expect.stringContaining('took 1 damage (0 HP remaining)'),
   expect.stringContaining('became Exhausted'),
