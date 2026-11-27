@@ -56,6 +56,17 @@ function onlineMatches():Plugin{
  return {name:'night-hunt-online',configureServer:mount,configurePreviewServer:mount};
 }
 
+const printKit='output/pdf/The Night Hunt - Tabletop Print Kit.pdf';
+function servePrintKit():Plugin{
+ const mount=(server:Parameters<NonNullable<Plugin['configureServer']>>[0]|Parameters<NonNullable<Plugin['configurePreviewServer']>>[0])=>{
+  server.middlewares.use('/print-kit.pdf',(req,res)=>{
+   res.writeHead(200,{'Content-Type':'application/pdf','Cache-Control':'no-cache'});
+   res.end(req.method==='HEAD'?undefined:readFileSync(printKit));
+  });
+ };
+ return {name:'night-hunt-print-kit',configureServer:mount,configurePreviewServer:mount};
+}
+
 function siteAssets():Plugin{
  const name='virtual:night-hunt-assets';
  return {
@@ -64,12 +75,13 @@ function siteAssets():Plugin{
   load(id){
    if(id!=='\0'+name)return;
    const assets:Record<string,{content:string;contentType:string}>={
+    '/print-kit.pdf':{content:readFileSync(printKit).toString('base64'),contentType:'application/pdf'},
     '/':{content:readFileSync('dist/index.html','utf8'),contentType:'text/html; charset=utf-8'},
    };
    for(const file of readdirSync('dist/assets')){
     assets['/assets/'+file]={
-     content:readFileSync('dist/assets/'+file,'utf8'),
-     contentType:file.endsWith('.css')?'text/css; charset=utf-8':'application/javascript; charset=utf-8',
+     content:readFileSync('dist/assets/'+file,file.endsWith('.webp')?'base64':'utf8'),
+     contentType:file.endsWith('.webp')?'image/webp':file.endsWith('.css')?'text/css; charset=utf-8':'application/javascript; charset=utf-8',
     };
    }
    return 'export default '+JSON.stringify(assets);
@@ -78,7 +90,7 @@ function siteAssets():Plugin{
 }
 
 export default defineConfig(({isSsrBuild})=>({
- plugins:[onlineMatches(),siteAssets()],
+ plugins:[onlineMatches(),servePrintKit(),siteAssets()],
  server:{fs:{deny:['.env','.env.*','*.{crt,pem}','**/.git/**','**/.night-hunt-matches/**']}},
  build:isSsrBuild?{rollupOptions:{output:{entryFileNames:'index.js'}}}:undefined,
 }));

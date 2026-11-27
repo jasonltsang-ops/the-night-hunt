@@ -35,9 +35,9 @@ export default {
   if(request.method!=='GET'&&request.method!=='HEAD')return new Response('Method not allowed',{status:405});
   const asset=Object.hasOwn(assets,path)?assets[path]:undefined;
   if(!asset)return new Response('Not found',{status:404});
-  return new Response(request.method==='HEAD'?null:asset.content,{headers:{
+  return new Response(request.method==='HEAD'?null:asset.contentType==='application/pdf'||asset.contentType==='image/webp'?Uint8Array.from(atob(asset.content),char=>char.charCodeAt(0)):asset.content,{headers:{
    'Content-Type':asset.contentType,
-   'Cache-Control':path==='/'?'no-cache':'public, max-age=31536000, immutable',
+   'Cache-Control':(path==='/'||path==='/print-kit.pdf')?'no-cache':'public, max-age=31536000, immutable',
    'Referrer-Policy':'no-referrer',
    'X-Content-Type-Options':'nosniff',
    'Content-Security-Policy':"default-src 'self'; frame-ancestors *",

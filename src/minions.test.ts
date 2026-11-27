@@ -65,13 +65,13 @@ describe('minion powers and equipped counters',()=>{
  it('Great Wolf grants +2 strength only locally and Rifle grants only +1',()=>{
   let s=deploy('dm-5',4);s.players[0].equipment=['hm-3'];s=showdown(s,1);expect(s.combat?.hunterStrength).toBe(2);expect(s.combat?.draculaStrength).toBe(4);
  });
- it('Renfield grants two current and maximum HP only on deployment, then caps health on removal',()=>{
-  let s=createGame(undefined,4);s.players[4].damage=5;s=deploy('dm-renfield',8,s);expect(maxHP(s,s.players[4])).toBe(8);expect(hp(s,s.players[4])).toBe(3);expect(parseSave(JSON.stringify(s))).toEqual(s);
+ it('Renfield heals up to two HP on deployment without changing maximum HP',()=>{
+  let s=createGame(undefined,4);s.players[4].damage=5;s=deploy('dm-renfield',8,s);expect(maxHP(s,s.players[4])).toBe(6);expect(hp(s,s.players[4])).toBe(3);expect(parseSave(JSON.stringify(s))).toEqual(s);
   s=hunterTurn(s);s.players[0].equipment=['hm-salts'];s=reduce(s,{type:'sacrificeEquipment',index:0});expect(maxHP(s,s.players[4])).toBe(6);expect(hp(s,s.players[4])).toBe(3);
   s=deploy('dm-renfield');s=hunterTurn(s);s.players[0].equipment=['hm-salts'];s=reduce(s,{type:'sacrificeEquipment',index:0});expect(hp(s,s.players[4])).toBe(6);
  });
- it('Renfield adds exactly one basic encounter at his own city on Night entry, without healing or consuming the action',()=>{
-  let s=deploy('dm-renfield',8);s.players[4].damage=3;s=night(s);expect(active(s).id).toBe('dracula');expect(s.locations[8].deck).toHaveLength(5);expect(s.locations[4].deck).toHaveLength(4);expect(s.addedBasicEncounters).toBe(1);expect(hp(s,s.players[4])).toBe(5);expect(s.played).toBe(false);s=parseSave(JSON.stringify(s));expect(s.locations[8].deck).toHaveLength(5);s.players[4].hand=[];s=reduce(s,{type:'advance'});expect(s.locations[8].deck).toHaveLength(5);
+ it('Renfield adds exactly one reserve encounter at his own city on Night entry, without healing or consuming the action',()=>{
+  let s=deploy('dm-renfield',8);s.players[4].damage=3;s=night(s);expect(active(s).id).toBe('dracula');expect(s.locations[8].deck).toHaveLength(5);expect(s.locations[4].deck).toHaveLength(4);expect(s.locations[8].ally?.reserve).toHaveLength(2);expect(hp(s,s.players[4])).toBe(3);expect(s.played).toBe(false);s=parseSave(JSON.stringify(s));expect(s.locations[8].deck).toHaveLength(5);s.players[4].hand=[];s=reduce(s,{type:'advance'});expect(s.locations[8].deck).toHaveLength(5);
  });
 });
 describe('permanent closure and Wraith',()=>{

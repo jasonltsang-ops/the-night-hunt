@@ -1,6 +1,6 @@
 # The Night Hunt — Current Rules
 
-Last reviewed: November 6, 2026.
+Last reviewed November 27, 2026.
 
 This is the shared rules reference for development and playtesting across project chats. It describes the current prototype, rather than preserving superseded versions of the design. Numeric balance values remain provisional.
 
@@ -12,7 +12,7 @@ One player controls Dracula. Four Hunters are selected from Lord Godalming, Jona
 
 Hunters win by reducing Dracula to 0 HP in combat. Merely discovering Dracula no longer wins the game; it starts a showdown.
 
-Dracula wins immediately at **10 total Darkness**. Total Darkness is accumulated weekly/event/exhaustion points plus two points per Ally currently deployed. When an Ally is removed or defeated, its points are lost; it never generates a recurring weekly point. Reaching the target ends normal play, so removing an Ally afterwards cannot undo a victory.
+Dracula wins immediately at **10 total Darkness**. Deploying any Ally immediately grants 2 Darkness. One point is permanent and one remains tied to the Ally. Any removal, including equipment counters and consecration, subtracts only the tied point. Moving an existing Ally grants no Darkness. For example, two deployments take Dracula from 0 to 4 Darkness. Removing both Allies leaves 2. Each Hunter exhaustion adds 1 permanent Darkness.
 
 | Value | Current setting |
 |---|---:|
@@ -25,8 +25,8 @@ Dracula wins immediately at **10 total Darkness**. Total Darkness is accumulated
 | Brush with Darkness damage | 1 |
 | Tragic Accident damage | 2 |
 | Darkness victory target | 10 |
-| Darkness per completed week | 3 |
-| Darkness per Ally currently in play | 2 |
+| Permanent Darkness per vampire matured | 3 |
+| Darkness per Ally deployment | 2 (1 permanent, 1 tied to the Ally) |
 
 These values are provisional and primarily defined in `src/data.ts`.
 
@@ -40,7 +40,7 @@ These values are provisional and primarily defined in `src/data.ts`.
 
 One connection takes you to an orthogonally adjacent city, directly above, below, left, or right on the map. An adjacent city is one connection away. Hypnosis has its own proximity rule that includes diagonals.
 
-Each selected Hunter chooses their starting city first, in selected-player order. Hunters may share a city without a limit. After all four positions are chosen and visible, Dracula chooses his hidden starting city last. Dracula may choose any city, including one occupied by Hunters. This does not itself trigger combat. All city encounter piles are finalized and shuffled after Dracula chooses, then the first Hunter's Day turn begins. Setup choices do not consume actions. Starting-location setup is saved so it can be resumed; ongoing saves keep their existing positions.
+Each selected Hunter chooses their starting city first, in selected-player order. Each Hunter after the first in a city adds one Brush with Darkness to its starting pile. This applies only during initial placement. Zero or one Hunter gives 4 encounters, two give 5, three give 6, and four give 7. After all four positions are chosen and visible, Dracula chooses his hidden starting city last. Dracula may choose any city, including one occupied by Hunters. This does not itself trigger combat. All city encounter piles are finalized and shuffled after Dracula chooses, then the first Hunter's Day turn begins. Setup choices do not consume actions. Starting-location setup is saved so it can be resumed; ongoing saves keep their existing positions.
 
 Build each city's starting encounter pile as follows.
 
@@ -50,9 +50,9 @@ Build each city's starting encounter pile as follows.
 | Marseille, Vienna, Amsterdam, Rome | 3 | 0 | 1 | 4 |
 | Munich | 2 | 1 | 1 | 4 |
 
-Dracula secretly replaces one Brush with Darkness in his chosen starting city with his identity card. Shuffle each city's pile independently. Show the starting mixes during city selection. Once play begins, show only the remaining card counts. The map starts with 36 cards in total, including exactly one Dracula identity.
+Dracula secretly replaces one Brush with Darkness in his chosen starting city with his identity card. Shuffle each city's pile independently. Show the starting mixes during city selection. Once play begins, show only the remaining card counts. The map starts with 36 base encounters plus up to 3 from grouped starts and contains exactly one Dracula identity.
 
-A city **becomes permanently consecrated when its encounter pile reaches 0**. Remove all Allies there immediately and lose their Darkness contributions. Cultists can be placed as an encounter in a consecrated city. The city stays consecrated and still blocks other encounter placements and Allies. Hunters can still travel through or stop there, without adding a Night encounter from Ready the Carriage. Consecrated locations cannot host Dracula or be swap/escape destinations.
+A city **becomes permanently consecrated when its encounter pile reaches 0**. Remove all Allies there immediately and lose 1 Darkness per removed Ally. Cultists can be placed as an encounter in a consecrated city. The city stays consecrated and still blocks other encounter placements and Allies. Hunters can still travel through or stop there, without adding a Night encounter from Ready the Carriage. Consecrated locations cannot host Dracula or be swap/escape destinations.
 
 If the final encounter is Dracula's identity, defer consecration during the showdown: his revealed identity still occupies the location. If he survives without escaping, reshuffle it into that pile; if he escapes, the normal swapped encounter replaces him. If defeated, the game ends and any now-empty city becomes consecrated. This preserves the existing swap/continuation rule without stranding Dracula's identity.
 
@@ -85,9 +85,9 @@ Shuffle personal decks and draw three. The retired card named Delaying Encounter
 
 ## 4. Turns, timing and drawing
 
-The game starts **Week 1, day 1 (Sunday), Day phase**, at zero Darkness. One full Day/Night round is one calendar day. After the final scheduled Night turn (including a pass or recovery turn), advance the day. After Saturday (day 7), advance to the next week's Sunday and add **3 accumulated Darkness**. There is no starting award on Week 1 Sunday. Combat and unresolved choices must finish before the calendar advances. Without Allies or events, Dracula reaches 12 Darkness and wins on Week 5 Sunday, after 28 complete days.
+The game starts **Week 1, day 1 (Sunday), Day phase**, at zero Darkness and zero Vampire Maturation. One full Day/Night cycle advances the calendar one day and advances the seven-space Maturation track by 1. Combat and pending choices must resolve before the next turn and day. Each time Maturation reaches 7, Dracula immediately gains **3 permanent Darkness**, and the track resets with excess progress carried over. Advancing by 2 from 6 awards 3 Darkness and leaves 1 progress. The calendar still rolls over after Saturday. Only Maturation awards Darkness for elapsed time.
 
-The display separates accumulated Darkness (weekly points plus event and exhaustion points) from Ally Darkness. Immanuel Hildesheim adds encounters and grants no Darkness. Old saves migrate their existing round to the matching calendar date, count elapsed weeks, and include deployed Allies; a previously completed Hunter victory is preserved.
+The public trackers show permanent Darkness, the points tied to deployed Allies, and separate Maturation progress. Both daily progress and card progress are logged.
 
 1. **Day:** each Hunter in selected-player order, then Dracula.
 2. **Night:** first resolve Dracula’s beginning-of-Night effects (Renfield, then Wraith), then Dracula’s standard turn, then each Hunter in the same order. These effects do not use his standard action.
@@ -95,13 +95,13 @@ The display separates accumulated Darkness (weekly points plus event and exhaust
 
 Each scheduled turn permits one standard card play. Resolve its choices before ending the turn. The turn structure does not automatically draw cards between Day and Night. When a personal draw pile runs out, shuffle its discard into a new draw pile; draw as many cards as available.
 
-Hunters may pass voluntarily even with playable cards. A Hunter can instead trade or trash equipped counter-equipment to remove an Ally, as described below. Dracula must play an eligible standard-action card when one is available, or pass when no eligible card is available. Combat-only cards are held for combat, not played as standard actions.
+Hunters may pass voluntarily even with playable cards. A Hunter can instead activate a Day facility, trade, or trash equipped counter-equipment to remove an Ally, as described below. Dracula must play an eligible standard-action card when one is available, or pass when no eligible card is available. Combat-only cards are held for combat, not played as standard actions.
 
-Most implemented action cards are eligible by Day and Night. Visit the Market works in both phases but has different effects. Other card timing remains configurable and provisional. Additional-play effects are not implemented yet.
+Most implemented action cards are eligible by Day and Night. Visit the Market works in both phases but has different effects. Other card timing remains configurable and provisional. Call of the Night provides an additional play using the selected card’s Night effect.
 
 ## 5. Shared market and card ownership
 
-There is **one shared market**, not separate faction displays. Shuffle 30 Hunter market cards and 13 Dracula market cards into a combined 43-card pool. Display ten; the remaining 33 form the reserve. Smelling Salts and Renfield are additions to the previous market, rather than replacements for other cards. There is no guaranteed faction mix: the display may contain many Dracula cards or none. There are no costs or currency.
+Shuffle **30 Hunter cards and 16 Dracula cards** into one shared 46-card market. Display ten and keep 36 in reserve. There is no guaranteed faction mix or currency cost.
 
 Acquisition removes a face-up card and normally places it in the acquiring player's personal discard. Players acquire their own faction's cards. Equipment and Items have acquisition choices described in section 8.
 
@@ -130,6 +130,34 @@ This is one market action; the earlier replace-then-acquire design is superseded
 ### Family Fortune — Lord Godalming
 
 By Day, acquire two Hunter market cards, one at a time. At Night, acquire one. Denial is not permitted. Normal equipment/Item acquisition choices apply. Any threshold refill happens between acquisitions, so newly revealed cards can be selected. If no Hunter cards remain available, stop acquiring.
+
+### Dracula Maturation cards
+
+Each appears once in the shared market. Acquired copies follow normal deckbuilding rules. Play one as your standard action. Afterwards it goes to your discard pile. No extra cost or discard is required. Only the completed daily cycle and specific card effects advance Maturation.
+
+| Card | Day | Night |
+|---|---|---|
+| Blood Rites | Advance Maturation by 1. | Advance Maturation by 2. |
+| Blood Offering | Advance Maturation by 1. | Advance Maturation by 1 and heal Dracula 1 HP, up to his maximum. |
+| Midnight Ritual | Advance Maturation by 1. | Advance Maturation by 1 and shuffle a Brush with Darkness into any open city Dracula chooses. Consecrated cities are ineligible. |
+
+### City facilities
+
+A conscious Hunter may use the facility in their current city during their Day turn by discarding one card and spending their standard action. Each city facility can be used once per Day, shared across all Hunters. All reset at dawn. A consecrated city retains its facility. Recovery and exhaustion prevent activation. Cancelled selections and invalid choices spend nothing.
+
+| City | Facility | Effect |
+|---|---|---|
+| London | Hospital | Heal yourself 1 HP, up to your normal maximum. |
+| Amsterdam | Archives | Publicly reveal the top encounter, then shuffle it back with the pile. An empty pile cannot be examined. |
+| Prague | Coaching Inn | Move to an orthogonally adjacent city. Add no encounter. |
+| Marseille | Bazaar | Permanently trash one face-up Hunter market card, replace its slot if possible, then apply normal refill rules. |
+| Munich | — | No facility. Munich has four orthogonal connections. |
+| Vienna | Rundown Stables | Move to an orthogonally adjacent city. Shuffle exactly one Tragic Accident into the destination if open. |
+| Madrid | Trading House | Acquire one face-up Hunter market card using normal acquisition, equipment and Item rules. |
+| Rome | Public Square | Draw one card using the normal discard reshuffle rules. The draw grants no extra action. |
+| Athens | Monastery | Permanently trash a different card from your hand. Basic and non-basic cards qualify. |
+
+For playtesting, the Archives publicly reveals Dracula’s identity if it is drawn. Shuffle it back without starting combat. The Archives never resolves an encounter, applies damage or Fog, or removes a card. Its shuffle order stays hidden.
 
 ## 6. Movement, investigations and encounters
 
@@ -219,7 +247,7 @@ Each Hunter has one equipment slot. When replacing the equipped card, choose whe
 
 ### Counter-equipment
 
-The three equipment counters provide persistent benefits while equipped. To remove the matching Ally, a conscious Hunter must be at its city with that counter **equipped**, and spend their unused standard **Day or Night action**. Permanently **trash** the equipped card; remove the Ally and its 2 Darkness. A card merely in hand does not qualify. This replaces the earlier discard-cost idea and earlier type-wide sacrifice metadata. No other equipment currently removes Allies.
+The three equipment counters provide persistent benefits while equipped. To remove the matching Ally, a conscious Hunter must be at its city with that counter **equipped**, and spend their unused standard **Day or Night action**. Permanently **trash** the equipped card; remove the Ally and subtract 1 Darkness. A card merely in hand does not qualify. This replaces the earlier discard-cost idea and earlier type-wide sacrifice metadata. No other equipment currently removes Allies.
 
 | Equipment | Persistent benefit | Ally removed |
 |---|---|---|
@@ -322,12 +350,12 @@ One copy of each listed card starts in the combined market pool. Placeholder car
 
 Dracula acquires an Ally into discard, then plays it by Day or Night as a standard action. Deploy it in an open city. One ordinary Ally (Bride, Great Wolf or Renfield) may occupy a city, plus Wraith in a separate sharing slot. The card leaves Dracula's personal deck and stays deployed until removed. There is only one Wraith and one Renfield in the game.
 
-The Ally’s identity is public when played, and its city is public when placed. An Ally can be removed with its matching equipped counter, or automatically when its city becomes consecrated. It never returns to Dracula’s discard. Each deployed Ally contributes **2 Darkness**, wherever Dracula is. Acquired or pending-deployment cards contribute nothing.
+The Ally’s identity is public when played, and its city is public when placed. An Ally can be removed with its matching equipped counter, or automatically when its city becomes consecrated. It never returns to Dracula’s discard. Each deployment grants **2 Darkness**, wherever Dracula is. Removal costs 1 Darkness. Acquired or pending-deployment cards contribute nothing.
 
 - **Vampire Bride:** no strength bonus. When Dracula wins at her city, including on a tie, add **2 total damage** to the Hunter damage pool. Distribute the combined total evenly using the existing remainder choice.
 - **Great Wolf:** **+2 Dracula strength** only in combat at its city.
 - **Wraith:** no combat bonus. At the beginning of Dracula's Night turn, move one orthogonal connection to an open city, even if another Ally occupies it. Publicly announce movement. Dracula privately examines the destination's bottom encounter, moving it to the top or leaving it on the bottom. Do not reveal the card or placement choice in the log. Resolve this before Dracula plays or ends his normal turn. As an explicit fallback when every adjacent city is consecrated, Wraith stays put and skips its ability; it does not inspect its current pile. Consecrated destinations are never legal.
-- **Renfield:** Heal Dracula 2 HP on deployment, capped at his maximum HP. Reserve one Fog, one Tragic Accident and one Brush with Darkness. At the beginning of each Dracula Night turn, randomly select and remove one remaining reserve encounter and shuffle it into Renfield’s own open city. Once exhausted, the reserve generates no more encounters. Removing Renfield discards unused reserve encounters. Existing deployed Renfield saves migrate with an empty reserve.
+- **Renfield:** Heal Dracula 2 HP on deployment, capped at his maximum HP. Reserve one Fog, one Tragic Accident and one Brush with Darkness. At the beginning of each Dracula Night turn, randomly select and remove one remaining reserve encounter and shuffle it into Renfield’s own open city. Once exhausted, the reserve generates no more encounters. Removing Renfield discards unused reserve encounters. Saved Renfield reserves are preserved. Older saves without reserve data use an empty reserve.
 
 At the beginning of Night, resolve existing closures, then Renfield's automatic encounter placement, then Wraith's movement/examination. These are free scheduled effects; they do not draw or consume cards, use a standard action, or repeat after reload. A newly deployed Ally waits until the next beginning-of-Night trigger.
 
@@ -341,7 +369,7 @@ In solo play, a tester can select another player’s view. Local saves and JSON 
 
 ## 12. Planned mechanics and open decisions
 
-- **Darkness:** calendar, weekly generation, deployed-Ally contributions, and the victory check are implemented. Specific event effects/amounts and balance testing remain planned; target 10 is provisional.
+- **Darkness:** calendar, Vampire Maturation, permanent and tied Ally points, and the victory check are implemented. Specific event effects/amounts and balance testing remain planned; target 10 is provisional.
 - **Call of the Night:** by Day, immediately play one additional card from hand using its Night timing and ability. Resolve all choices before ending the turn. The actual phase and calendar remain Day, so scheduled Night effects do not trigger. If no eligible card remains, the bonus ends. By Night, heal Dracula for 1 HP, capped at maximum. Both played cards enter discard normally. A second Call of the Night used for the bonus heals 1 HP.
 - **Card completion:** placeholder signatures, travel, healing, investigation and Dracula market cards need finalized effects and implementations.
 - **Equipment:** the named Ally counters and their removal actions are implemented; other deferred equipment effects remain planned. Medical Kit remains an Item.

@@ -68,7 +68,7 @@ describe('Encounters and Shadow Passage',()=>{
   expect(parseSave(JSON.stringify(s))).toEqual(s);
  });
  it('migrates old saves and rejects malformed encounter saves',()=>{
-  const s=createGame(undefined,4);const old={...s,version:2};const migrated=parseSave(JSON.stringify(old));expect(migrated.version).toBe(7);expect(migrated.players[0].city).toBe(s.players[0].city);expect(migrated.locations.map(l=>l.deck.length)).toEqual([4,4,4,4,4,4,4,4,4]);
+  const s=createGame(undefined,4);const old={...s,version:2};const migrated=parseSave(JSON.stringify(old));expect(migrated.version).toBe(8);expect(migrated.players[0].city).toBe(s.players[0].city);expect(migrated.locations.map(l=>l.deck.length)).toEqual([4,4,4,4,4,4,4,4,4]);
   s.locations[0].deck.push('dracula');expect(()=>parseSave(JSON.stringify(s))).toThrow();
  });
 });

@@ -66,7 +66,7 @@ it('exposes only the exact encounter cards the Hunter side has reviewed',()=>{
  expect(hunters.players[4].hand).toEqual(['d-0','d-0','d-0']);
  expect(hunters.locations[0].deck).toEqual(['dracula','damaging','encounter','encounter','encounter']);
  expect(hunters.locations[1].ally?.card).toBe('dm-renfield');
- expect(hunters.publicDraculaMaxHP).toBe(8);
+ expect(hunters.publicDraculaMaxHP).toBe(6);
  expect(dracula.locations[0].deck.every(card=>card==='encounter')).toBe(true);
 });
 
