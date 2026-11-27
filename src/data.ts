@@ -96,7 +96,7 @@ cards['hm-21'].description='Combat: cancel Dracula’s combat card, deal 2 damag
 cards['hm-9'].discardStrength=2;
 cards['hm-9'].description='+1 Str, or discard for +2 Str in this showdown.';
 for(const [id,strength] of [['combat',1],['signature-0-1',3],['signature-2-1',2],['hm-25',1],['hm-26',2]] as const){cards[id].strength=strength;if(id!=='combat')cards[id].description='Keep in hand: +'+strength+' strength in combat. Conditional effects remain deferred; signature values are provisional.';}
-cards.combat.description='Heal 1 HP or discard in combat for +1 Str.';
+cards.combat.description='Heal 1 HP or discard in combat for +1 Str. OR discard this card to trash another card in your hand.';
 cards['signature-2-1'].description='Use in combat for +2 Str. Or play on your turn to discard one random card from Dracula’s hand. Then discard Vampire Lore.';
 cards['signature-0-1'].description='Use in combat for +3 Str, then discard.';
 cards['dm-0'].escape='mist';cards['dm-0'].description='Choose as your combat card. If Dracula survives, optionally escape one connection after combat. Destination stays secret. Night action: move 1 connection secretly.';
@@ -165,7 +165,7 @@ cards['dm-renfield'].ally={type:'Human',strength:0};
 cards['dm-4'].description='At this city, Dracula deals +2 damage when he wins a showdown, including ties. +2 Darkness. Vulnerable to Wooden Stake.';
 cards['dm-5'].description='+2 Str for Dracula at this city. +2 Darkness. Vulnerable to Hunting Rifle.';
 cards['dm-6'].description='Start of Dracula’s Night turn: move 1 connection to an open city, even with another Ally. Privately move its bottom encounter to the top or leave it. +2 Darkness. Vulnerable to Crucifix.';
-cards['dm-renfield'].description='+2 max HP for Dracula and heal 2 HP on deployment. Start of Dracula’s Night turn: shuffle a Brush with Darkness into Renfield’s city. +2 Darkness. Vulnerable to Smelling Salts.';
+cards['dm-renfield'].description='Heal Dracula 2 HP on deployment. Reserve 1 Fog, 1 Tragic Accident and 1 Brush with Darkness. At the start of Night, randomly shuffle one remaining reserve encounter into Renfield’s city. +2 Darkness. Vulnerable to Smelling Salts.';
 
 // Medical Assistance becomes a second copy of the Medical Kit Item.
 cards['hm-11']={...cards['hm-7'],id:'hm-11'};
