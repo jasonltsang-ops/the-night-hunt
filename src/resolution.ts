@@ -12,8 +12,8 @@ export function resolutionView(s:State,debug=false){
  else if(s.pendingAssessment){status='Choice needed';next='Choose one card from Dr. Seward’s hand to discard.';}
  else if(s.pendingInvestigation){status='Choice needed';next='Resolve the investigation choice below the map.';}
  else if(s.pendingSearch){status='Choice needed';next='Choose one examined encounter to resolve in Methodical Search.';}
- else if(s.pendingDispatch){status='Choice needed';next=s.pendingRally?'Choose another Hunter and move them one connection closer.':'Choose a Hunter and adjacent destination for Urgent Dispatch.';}
- else if(s.pendingSupply||s.pendingInfluence||s.pendingFortune){status='Choice needed';next=s.pendingFortune?`Acquire ${s.pendingFortune} more Hunter card(s) for Family Fortune.`:s.pendingInfluence?darkInfluenceText[cardPhase(s)]:visitTheMarketText[s.phase];}
+ else if(s.pendingDispatch){status='Choice needed';next=s.pendingRally?'Choose another Hunter and move them one connection closer.':'Choose a Hunter and destination one connection away for Urgent Dispatch.';}
+ else if(s.pendingSupply||s.pendingInfluence||s.pendingFortune){status='Choice needed';next=s.pendingFortune?`Acquire ${s.pendingFortune} more Hunter market card(s).`:s.pendingInfluence?darkInfluenceText[cardPhase(s)]:visitTheMarketText[s.phase];}
  else if(s.pendingTravel){status='Choice needed';next='Choose a valid destination on the map.';}
  else if(s.pendingEncounter||s.pendingAlly||s.pendingSwap||s.pendingWraith){status='Choice needed';next=s.pendingSwap?'Dracula resolves the hidden card swap.':s.pendingWraith?'Dracula resolves Wraith’s ability.':s.pendingAlly?'Dracula chooses a city for the ally.':'Dracula chooses a city for the encounter.';}
  else if(s.pendingVision||s.pendingMedical||s.pendingPsychic){status='Choice needed';next=s.pendingVision?s.pendingVision.shadow?'Resolve the private Shadow Passage peek.':s.pendingVision.wax?'Choose a Hunter’s city or return the revealed card.':'Resolve Shared Vision in the private character controls.':s.pendingMedical?'Choose a Hunter to heal.':'Choose another Hunter to contribute a card to Hypnosis.';}

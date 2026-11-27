@@ -1,28 +1,14 @@
-import { describe, expect, it } from 'vitest';
-import { active, createGame, reduce } from './engine';
+import {expect,it} from 'vitest';
+import {createGame,reduce} from './engine';
 
-describe('Wait and Prepare', () => {
- for (const phase of ['day', 'night'] as const) {
-  it(`draws without moving or adding an encounter during ${phase}`, () => {
-   const state = createGame();
-   state.phase = phase;
-   if (phase === 'night') state.turn = 1;
-   const hunter = active(state);
-   hunter.hand = ['travel'];
-   hunter.draw = [];
-   hunter.discard = ['combat'];
-   const result = reduce(state, { type: 'play', index: 0, choice: 'prepare' });
-   expect(active(result)).toMatchObject({ city: hunter.city, hand: ['combat'], discard: ['travel'] });
-   expect(result.locations).toEqual(state.locations);
-   expect(result.pendingTravel).toBe(0);
-   expect(result.pendingTravelEncounter).toBe(false);
-   expect(() => reduce(result, { type: 'play', index: 0, choice: 'heal' })).toThrow();
-  });
- }
- it('cannot draw the same carriage just played when no other cards are available', () => {
-  const state = createGame();
-  Object.assign(active(state), { hand: ['travel'], draw: [], discard: [] });
-  const result = reduce(state, { type: 'play', index: 0, choice: 'prepare' });
-  expect(active(result)).toMatchObject({ hand: [], discard: ['travel'] });
- });
+it.each(['day','night'] as const)('Ready the Carriage only moves by %s',phase=>{
+ const s=createGame(undefined,8);
+ s.phase=phase;s.turn=phase==='day'?0:1;
+ s.players[0].hand=['travel'];
+ expect(()=>reduce(s,{type:'play',index:0,choice:'prepare'})).toThrow('only moves');
+ const played=reduce(s,{type:'play',index:0});
+ expect(played.players[0].hand).toEqual([]);
+ const moved=reduce(played,{type:'travel',city:1});
+ expect(moved.players[0].city).toBe(1);
+ expect(moved.locations[1].deck).toHaveLength(phase==='night'?5:4);
 });

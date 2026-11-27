@@ -31,5 +31,5 @@ it('lets an in-progress Clinical Assessment from an older save finish',()=>{
  old.players[3].hand=['combat','travel'];
  const next=reduce(parseSave(JSON.stringify(old)),{type:'assessmentDiscard',index:0});
  expect(next.pendingAssessment).toBeUndefined();
- expect(()=>reduce(next,{type:'play',index:0,choice:'prepare'})).not.toThrow();
+ expect(()=>reduce(next,{type:'play',index:0,})).not.toThrow();
 });

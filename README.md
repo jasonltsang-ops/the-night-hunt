@@ -38,7 +38,7 @@ Select the active player in Player desk, play an action or pass where permitted,
 
 Enable Debug mode to inspect hidden information and construct test situations. The prototype supports personal decks, a shared market, Hunter travel and investigations, hidden Dracula swaps, encounters, a seven-day calendar, Vampire Maturation and Ally Darkness and Dracula victory, combat, recovery, equipment, consumable Items, four distinct location Allies, equipped counters that can be trashed to remove them, permanent city closure, and selected character abilities. Some cards remain placeholders; consult the rules reference before testing an effect.
 
-Each action autosaves in the browser. Export JSON before resetting if you want an independent snapshot. Saves contain hidden information and use schema version 8, with migrations for earlier versions. This is a solo testing interface; selecting players is not a secure hot-seat handoff.
+Each action autosaves in the browser. Export JSON before resetting if you want an independent snapshot. Saves contain hidden information and use schema version 9, with migrations for earlier versions. This is a solo testing interface; selecting players is not a secure hot-seat handoff.
 
 ## Project structure
 
@@ -54,19 +54,25 @@ Documentation records the current implementation without making unresolved desig
 ## November 2026 gameplay update
 
 - Every Ally deployment adds 2 Darkness. Any removal subtracts 1. Wraith movement preserves the score. Hunter exhaustion still adds 1 permanent Darkness.
-- Seven spaces of Vampire Maturation award 3 permanent Darkness. Each full Day/Night cycle advances the track, as do Blood Rites, Blood Offering, and Midnight Ritual. The market contains 46 cards.
+- Seven spaces of Vampire Maturation award 3 permanent Darkness. Each full Day/Night cycle advances the track, as do Blood Rites, Blood Offering, and Midnight Ritual. The Maturation release added three Dracula market cards.
 - Each Hunter after the first in a starting city adds one Brush with Darkness. Eight city facilities offer Day actions that cost a card and share a once-per-Day limit.
 - Digital and printable cards use separate timing lines, centered OR separators and a combat symbol. The existing Gothic art was adjusted for print and three illustrations were added. The compact [print kit](output/pdf/The%20Night%20Hunt%20-%20Tabletop%20Print%20Kit.pdf) is served at /print-kit.pdf.
+
+## Equipment and market update
+
+- Careful Preparation and Traveling Merchant add complementary Day and Night trash or acquisition actions. The shared market now has 32 Hunter cards and 16 Dracula cards.
+- Ready the Carriage retains movement in both phases. Wooden Stake and Holy Water now equip, with optional combat sacrifice and equipped Ally counters. Equipment replacement always discards the previous card.
+- Unholy Strength disarms before Hunter Equipment reactions and can heal on a standard action. Mesmerize can acquire Dracula cards by Day. Pride of Dracula can secretly plant a nearby encounter by Night.
 
 ### Saved games
 
 Version 8 keeps the calendar and the existing Darkness total. It banks previously earned calendar Darkness, uses elapsed days in the current week as the initial Maturation progress, and keeps one temporary point per deployed Ally. Any second point already on the scoreboard for a deployed Ally moves into permanent Darkness. Historic removed Allies receive no retroactive points. Facilities begin unused. The three new market cards enter the bottom of the reserve once. Incomplete setup applies grouped-start counts to choices already made. Active games preserve their encounter piles.
 
-Renfield's stored reserve survives reloads. Older saves without a reserve use an empty reserve. Local saves and online rooms use the same migration. Online rooms preserve revision checks and store migrated state with the next accepted action.
+Version 9 adds the two Hunter cards to the bottom of the reserve once. Existing Stake and Holy Water copies keep their zones and become Equipment. An in-progress legacy combat hand selection of either becomes a pass. Renfield's stored reserve survives reloads. Older saves without a reserve use an empty reserve. Local saves and online rooms use the same migration. Online rooms preserve revision checks and store migrated state with the next accepted action.
 
 ### Illustrated print generation
 
-Run the following from the checkout using Node with native TypeScript support and Python with Pillow, ReportLab and pypdf. The original Gothic Edition art directory contains the artwork manifest and originals. The new art directory contains the three new matching card PNGs. Omit the compact flag for a print-quality edition. Add the thumbnails flag to regenerate the digital illustrations.
+Run the following from the checkout using Node with native TypeScript support and Python with Pillow, ReportLab and pypdf. The original Gothic Edition art directory contains the artwork manifest and originals. The new art directory contains the five new matching card PNGs. Omit the compact flag for a print-quality edition. Add the thumbnails flag to regenerate the digital illustrations.
 
 ```sh
 python tools/build-print-edition.py ORIGINAL_ART NEW_ART "output/pdf/The Night Hunt - Tabletop Print Kit.pdf" --compact

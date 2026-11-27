@@ -1,6 +1,33 @@
 import {describe,it,expect} from 'vitest';
 import {createGame,reduce,parseSave,draw} from './engine';
-describe('Replacement equipment disposal',()=>{
- it.each(['discard','trash'] as const)('can %s replaced equipment on acquisition',replacedDestination=>{let s=createGame();s.players[0].equipment=['hm-9'];s.players[0].hand=['supply'];s.market.face=['hm-6','hm-1','hm-2','hm-3'];s=reduce(s,{type:'play',index:0});const n=reduce(s,{type:'market',index:0,mode:'acquire',player:'h0',destination:'equipment',replaceIndex:0,replacedDestination});expect(n.players[0].equipment).toEqual(['hm-6']);expect(n.players[0].discard.includes('hm-9')).toBe(replacedDestination==='discard');expect(n.market.face).toHaveLength(10);expect(n.pendingSupply).toBe(false);expect(n.log.join(' ')).toContain(replacedDestination==='trash'?'trashed permanently':'discarded');expect(parseSave(JSON.stringify(n))).toEqual(n);if(replacedDestination==='trash'){const h=n.players[0];h.draw=[];draw(h,20);expect([...h.hand,...h.draw,...h.discard,...h.equipment]).not.toContain('hm-9');}});
- it.each(['discard','trash'] as const)('can %s the selected equipped item when playing equipment from hand',replacedDestination=>{const s=createGame();s.players[0].equipment=['hm-4'];s.players[0].hand=['hm-6'];const n=reduce(s,{type:'play',index:0,replaceIndex:0,replacedDestination});expect(n.players[0].equipment).toEqual(['hm-6']);expect(n.players[0].discard.includes('hm-4')).toBe(replacedDestination==='discard');expect(s.players[0].equipment).toEqual(['hm-4']);expect(n.played).toBe(true);});
+
+describe('Equipment replacement',()=>{
+ it.each(['discard','trash'] as const)('enforces %s disposal on acquisition',replacedDestination=>{
+  const s=createGame();
+  s.players[0].equipment=['hm-9'];s.players[0].hand=['supply'];
+  s.market.face=['hm-6','hm-1','hm-2','hm-3'];
+  const pending=reduce(s,{type:'play',index:0});
+  const apply=()=>reduce(pending,{type:'market',index:0,mode:'acquire',player:'h0',destination:'equipment',replacedDestination});
+  if(replacedDestination==='trash'){expect(apply).toThrow('must be discarded');return;}
+  const n=apply();
+  expect(n.players[0].equipment).toEqual(['hm-6']);
+  expect(n.players[0].discard).toContain('hm-9');
+  expect(n.market.face).toHaveLength(10);
+  expect(n.pendingSupply).toBe(false);
+  expect(parseSave(JSON.stringify(n))).toEqual(n);
+  n.players[0].draw=[];
+  draw(n.players[0],2);
+  expect(n.players[0].hand).toContain('hm-9');
+ });
+ it.each(['discard','trash'] as const)('enforces %s disposal when equipping from hand',replacedDestination=>{
+  const s=createGame();
+  s.players[0].equipment=['hm-4'];s.players[0].hand=['hm-6'];
+  const apply=()=>reduce(s,{type:'play',index:0,replacedDestination});
+  if(replacedDestination==='trash'){expect(apply).toThrow('must be discarded');return;}
+  const n=apply();
+  expect(n.players[0].equipment).toEqual(['hm-6']);
+  expect(n.players[0].discard).toContain('hm-4');
+  expect(s.players[0].equipment).toEqual(['hm-4']);
+  expect(n.played).toBe(true);
+ });
 });

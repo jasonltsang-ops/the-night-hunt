@@ -21,8 +21,8 @@ function deploy(s:State,id:string,city:number){
 }
 
 describe('Vampire Maturation release',()=>{
- it('has 30 Hunter and 16 Dracula market cards with one copy of each new card',()=>{
-  expect(hunterMarket).toHaveLength(30);expect(draculaMarket).toHaveLength(16);
+ it('has 32 Hunter and 16 Dracula market cards with one copy of each new card',()=>{
+  expect(hunterMarket).toHaveLength(32);expect(draculaMarket).toHaveLength(16);
   for(const id of maturationCards)expect(draculaMarket.filter(card=>card===id)).toHaveLength(1);
  });
  it.each(maturationCards.flatMap(id=>['day','night'].map(phase=>[id,phase] as const)))('plays and discards %s at %s',(id,phase)=>{
@@ -83,7 +83,7 @@ describe('Vampire Maturation release',()=>{
   for(const zone of ['face','draw'] as const)old.market[zone]=old.market[zone].filter(id=>!maturationCards.includes(id));
   const n=parseSave(JSON.stringify(old));
   expect(darkness(n).total).toBe(5);expect(n.maturation).toBe(2);
-  expect([...n.market.face,...n.market.draw]).toHaveLength(46);expect(load(n)).toEqual(n);
+  expect([...n.market.face,...n.market.draw]).toHaveLength(48);expect(load(n)).toEqual(n);
  });
 });
 
@@ -120,7 +120,7 @@ describe('city facilities',()=>{
  });
  it.each([2,5])('moves from %s without a Brush and adds only the Stables accident',city=>{
   const s=hunterAt(city),destination=city===2?1:4;
-  expect(()=>activate(s,0)).toThrow('adjacent');
+  expect(()=>activate(s,0)).toThrow('connected');
   const n=activate(s,destination);expect(n.players[0].city).toBe(destination);
   expect(n.locations[destination].deck.filter(card=>card==='damaging')).toHaveLength(s.locations[destination].deck.filter(card=>card==='damaging').length+(city===5?1:0));
   expect(n.addedBasicEncounters).toBe(0);
@@ -133,11 +133,11 @@ describe('city facilities',()=>{
   expect(n.market.denied).toContain('hm-3');expect(n.players[0].discard).toEqual(['travel']);
  });
  it('Trading House follows normal discard, immediate equipment and Item acquisition',()=>{
-  const s=hunterAt(6);s.market.face=['hm-3','dm-4','hm-1'];s.locations[6].ally={card:'dm-5'};s.permanentAllyDarkness=1;
+  const s=hunterAt(6);s.market.face=['hm-3','dm-4','hm-7'];s.locations[6].ally={card:'dm-5'};s.permanentAllyDarkness=1;
   expect(()=>activate(s,1)).toThrow('Hunter market card');expect(activate(s,0).players[0].discard).toContain('hm-3');
   expect(reduce(s,{type:'facility',discardIndex:0,target:0,destination:'equipment'}).players[0].equipment).toContain('hm-3');
-  const used=reduce(s,{type:'facility',discardIndex:0,target:2,destination:'use',ally:'dm-5'});
-  expect(used.locations[6].ally).toBeNull();expect(darkness(used).total).toBe(1);
+  const used=reduce(s,{type:'facility',discardIndex:0,target:2,destination:'use'});
+  expect(used.locations[6].ally?.card).toBe('dm-5');expect(used.players[0].discard).not.toContain('hm-7');
  });
  it('Public Square draws with a reshuffle and consumes the action',()=>{
   const s=hunterAt(7);s.players[0].draw=[];s.players[0].discard=['investigate'];
