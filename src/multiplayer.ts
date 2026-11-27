@@ -5,7 +5,7 @@ export type OnlineAction=Action|{type:'finishReactions'};
 export type MatchView={state:State;revision:number;side:Side;actingSide:Side|null;reactionWindow:boolean};
 
 const normalActions=new Set([
- 'chooseStart','play','advance','travel','market','trade','sacrificeEquipment','swap','placeEncounter','placeAlly',
+ 'chooseStart','facility','play','advance','travel','market','trade','sacrificeEquipment','swap','placeEncounter','placeAlly',
  'wraithMove','wraithReturn','methodicalSearch','urgentDispatch','visionCity','visionReturn','medicalExpertise',
  'psychicConnection','assessmentDiscard','correspondenceTrade','resolveInvestigation',
 ]);

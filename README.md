@@ -36,9 +36,9 @@ node node_modules/vite/bin/vite.js build
 
 Select the active player in Player desk, play an action or pass where permitted, resolve its choices, then end the turn. Discovery pauses normal play for combat. Select each participant to choose a combat card or no card. Dracula selects damage remainder recipients and any escape destination through his view.
 
-Enable Debug mode to inspect hidden information and construct test situations. The prototype supports personal decks, a shared market, Hunter travel and investigations, hidden Dracula swaps, encounters, a seven-day calendar, weekly/Ally Darkness and Dracula victory, combat, recovery, equipment, consumable Items, four distinct location Allies, equipped counters that can be trashed to remove them, permanent city closure, and selected character abilities. Some cards remain placeholders; consult the rules reference before testing an effect.
+Enable Debug mode to inspect hidden information and construct test situations. The prototype supports personal decks, a shared market, Hunter travel and investigations, hidden Dracula swaps, encounters, a seven-day calendar, Vampire Maturation and Ally Darkness and Dracula victory, combat, recovery, equipment, consumable Items, four distinct location Allies, equipped counters that can be trashed to remove them, permanent city closure, and selected character abilities. Some cards remain placeholders; consult the rules reference before testing an effect.
 
-Each action autosaves in the browser. Export JSON before resetting if you want an independent snapshot. Saves contain hidden information and use schema version 7, with migrations for earlier versions. This is a solo testing interface; selecting players is not a secure hot-seat handoff.
+Each action autosaves in the browser. Export JSON before resetting if you want an independent snapshot. Saves contain hidden information and use schema version 8, with migrations for earlier versions. This is a solo testing interface; selecting players is not a secure hot-seat handoff.
 
 ## Project structure
 
@@ -51,15 +51,26 @@ Each action autosaves in the browser. Export JSON before resetting if you want a
 
 Documentation records the current implementation without making unresolved design decisions permanent. AI opponents remain outside the prototype.
 
-## Ally update
+## November 2026 gameplay update
 
-The market now has 31 Hunter and 11 Dracula cards: Smelling Salts and Renfield were added. Great Wolf replaces the Wolf Pack name; Wraith replaces Dark Familiar. See RULES.md for each persistent benefit and counter.
+- Every Ally deployment adds 2 Darkness. Any removal subtracts 1. Wraith movement preserves the score. Hunter exhaustion still adds 1 permanent Darkness.
+- Seven spaces of Vampire Maturation award 3 permanent Darkness. Each full Day/Night cycle advances the track, as do Blood Rites, Blood Offering, and Midnight Ritual. The market contains 46 cards.
+- Each Hunter after the first in a starting city adds one Brush with Darkness. Eight city facilities offer Day actions that cost a card and share a once-per-Day limit.
+- Digital and printable cards use separate timing lines, centered OR separators and a combat symbol. The existing Gothic art was adjusted for print and three illustrations were added. The compact [print kit](output/pdf/The%20Night%20Hunt%20-%20Tabletop%20Print%20Kit.pdf) is served at /print-kit.pdf.
 
-Allies are public when played. Use the equipped counter’s “Trash … to remove …” button to spend the standard Day/Night action. Wraith shares with one other Ally and resolves its mandatory movement/private bottom-card choice before Dracula’s Night action. Renfield adds an encounter to his own city each Night. A city emptied of encounters closes permanently, removes its Allies and cannot receive more encounters.
+### Saved games
 
-Version 7 saves preserve pending Wraith choices. Older saves migrate their Ally slots and empty cities, and add the two new cards to the market reserve once. They do not replay beginning-of-Night effects. JSON snapshots still contain hidden information.
+Version 8 keeps the calendar and the existing Darkness total. It banks previously earned calendar Darkness, uses elapsed days in the current week as the initial Maturation progress, and keeps one temporary point per deployed Ally. Any second point already on the scoreboard for a deployed Ally moves into permanent Darkness. Historic removed Allies receive no retroactive points. Facilities begin unused. The three new market cards enter the bottom of the reserve once. Incomplete setup applies grouped-start counts to choices already made. Active games preserve their encounter piles.
 
-New games now begin with starting-city selection: four selected Hunters choose first, then Dracula chooses secretly after seeing their positions. Shared starting cities are allowed. Existing ongoing saves keep their positions; use New game / reset to try the new setup.
+Renfield's stored reserve survives reloads. Older saves without a reserve use an empty reserve. Local saves and online rooms use the same migration. Online rooms preserve revision checks and store migrated state with the next accepted action.
+
+### Illustrated print generation
+
+Run the following from the checkout using Node with native TypeScript support and Python with Pillow, ReportLab and pypdf. The original Gothic Edition art directory contains the artwork manifest and originals. The new art directory contains the three new matching card PNGs. Omit the compact flag for a print-quality edition. Add the thumbnails flag to regenerate the digital illustrations.
+
+```sh
+python tools/build-print-edition.py ORIGINAL_ART NEW_ART "output/pdf/The Night Hunt - Tabletop Print Kit.pdf" --compact
+```
 
 ## Two-player online playtest
 

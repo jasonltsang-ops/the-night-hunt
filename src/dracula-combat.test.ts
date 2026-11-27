@@ -80,7 +80,7 @@ it('updates old Dracula markets once and retires the four placeholders',()=>{
  expect(n.market.draw).not.toContain('dm-3');
  expect(n.market.draw).not.toContain('dm-7');
  for(const id of newDraculaCombatCards)expect(n.market.draw).toContain(id);
- expect(draculaMarket).toHaveLength(13);
+ expect(draculaMarket).toHaveLength(16);
  expect(parseSave(JSON.stringify(n))).toEqual(n);
 });
 

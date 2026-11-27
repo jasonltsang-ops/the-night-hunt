@@ -62,7 +62,7 @@ cards['d-2'].timing=['day','night'];
 cards['d-4'].description='Night: Heal 1 HP. Day: Immediately play another card as if it were Night.';
 
 cards['d-3'].timing=['day','night'];
-export const darkInfluenceText={night:'Acquire 1 Dracula card or trash 1 Hunter card from the market.',day:'Trash 1 Hunter card from the market.'};
+export const darkInfluenceText={night:'Acquire 1 Dracula card OR trash 1 Hunter card from the market.',day:'Trash 1 Hunter card from the market.'};
 cards['d-3'].description='Night: '+darkInfluenceText.night+' Day: '+darkInfluenceText.day;
 
 cards['d-0'].timing=['day','night'];
@@ -70,7 +70,7 @@ cards['d-5'].description='Encounter: deals 1 damage when investigated.';
 cards['d-0'].description='Night: Add to any open city. Day: Add to an open city within 1 connection of Dracula, including his city. Announce that city and shuffle its encounter deck. Deals 2 damage when investigated.';
 
 cards.travel.timing=['day','night'];
-cards.travel.description='Move one connection. At Night, add a Brush with Darkness unless the destination is consecrated. Or discard to draw 1 card.';
+cards.travel.description='Day: Move one connection. Night: Move one connection and add a Brush with Darkness unless the destination is consecrated. OR Discard to draw 1 card.';
 
 cards.combat.name='A Lucky Find';
 cards.combat.timing=['day','night'];
@@ -96,7 +96,7 @@ cards['hm-21'].description='Combat: cancel Dracula’s combat card, deal 2 damag
 cards['hm-9'].discardStrength=2;
 cards['hm-9'].description='+1 Str, or discard for +2 Str in this showdown.';
 for(const [id,strength] of [['combat',1],['signature-0-1',3],['signature-2-1',2],['hm-25',1],['hm-26',2]] as const){cards[id].strength=strength;if(id!=='combat')cards[id].description='Keep in hand: +'+strength+' strength in combat. Conditional effects remain deferred; signature values are provisional.';}
-cards.combat.description='Heal 1 HP or discard in combat for +1 Str. OR discard this card to trash another card in your hand.';
+cards.combat.description='Heal 1 HP as a standard action. OR Play in combat for +1 Strength. OR Discard as a standard action to permanently trash another card in your hand.';
 cards['signature-2-1'].description='Use in combat for +2 Str. Or play on your turn to discard one random card from Dracula’s hand. Then discard Vampire Lore.';
 cards['signature-0-1'].description='Use in combat for +3 Str, then discard.';
 cards['dm-0'].escape='mist';cards['dm-0'].description='Choose as your combat card. If Dracula survives, optionally escape one connection after combat. Destination stays secret. Night action: move 1 connection secretly.';
@@ -117,7 +117,7 @@ cards['signature-4-1'].description='Move another conscious Hunter one connection
 
 cards['d-2'].description='Night: Swap Dracula with a card in an adjacent city, or bluff by swapping two non-Dracula cards between adjacent cities. Shuffle both piles and announce only the cities. Day: Privately view the top encounter of any city. You may shuffle that pile.';
 
-export const visitTheMarketText={day:'Acquire 1 Hunter card or trash 1 Dracula card.',night:'Trash 1 card and refill its slot.'};
+export const visitTheMarketText={day:'Acquire 1 Hunter card OR trash 1 Dracula card.',night:'Trash 1 card and refill its slot.'};
 cards.supply.description='Day: '+visitTheMarketText.day+' Night: '+visitTheMarketText.night;
 
 // Intended sacrifice targets; ally removal is pending implementation.
@@ -211,3 +211,24 @@ cards['hm-texas'].description='Event: every conscious Hunter heals 2 HP and draw
 draculaMarket.push(add('dm-hildesheim','Immanuel Hildesheim','dracula'));
 cards['dm-hildesheim'].event={encountersPerCity:1};
 cards['dm-hildesheim'].description='Shuffle 1 Brush with Darkness into each open city, then trash.';
+
+export const maturationCards = [
+ add('dm-blood-rites','Blood Rites','dracula','Day: Advance Vampire Maturation by 1. Night: Advance Vampire Maturation by 2.'),
+ add('dm-blood-offering','Blood Offering','dracula','Day: Advance Vampire Maturation by 1. Night: Advance Vampire Maturation by 1 and heal Dracula 1 HP.'),
+ add('dm-midnight-ritual','Midnight Ritual','dracula','Day: Advance Vampire Maturation by 1. Night: Advance Vampire Maturation by 1 and shuffle a Brush with Darkness into any open city.')
+];
+draculaMarket.push(...maturationCards);
+export const facilities = [
+ {name:'Hospital', icon:'✚', description:'Heal yourself 1 HP.', target:'none'},
+ {name:'Archives', icon:'▤', description:'Reveal the top encounter publicly, then shuffle the pile.', target:'none'},
+ {name:'Coaching Inn', icon:'♘', description:'Move one connection without adding an encounter.', target:'city'},
+ {name:'Bazaar', icon:'⚖', description:'Trash a Hunter market card and refill its slot.', target:'market'},
+ null,
+ {name:'Rundown Stables', icon:'♞', description:'Move one connection and add a Tragic Accident if the city is open.', target:'city'},
+ {name:'Trading House', icon:'♜', description:'Acquire one Hunter market card.', target:'market'},
+ {name:'Public Square', icon:'◈', description:'Draw one card.', target:'none'},
+ {name:'Monastery', icon:'♰', description:'Permanently trash a different card from your hand.', target:'hand'},
+] as const;
+for (const card of Object.values(cards)) {
+ if (card.ally) card.description=card.description.replace('+2 Darkness.', 'Deployment grants 2 Darkness. Removal costs 1 Darkness.');
+}

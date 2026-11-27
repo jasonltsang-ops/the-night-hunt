@@ -1,4 +1,4 @@
-import {createSetup, normalizeEquipmentSlots, type State} from './engine';
+import {createSetup, normalizeEquipmentSlots, parseSave, type State} from './engine';
 import {applyOnlineAction, matchView, type OnlineAction, type Side} from './multiplayer';
 
 export type Room={id:string;tokens:Record<Side,string>;revision:number;state:State};
@@ -13,7 +13,8 @@ const randomKey=()=>crypto.randomUUID().replaceAll('-','');
 
 export function createMatchHandler(store:RoomStore){
  async function getRoom(id:string){
-  const room=await store.get(id);
+  let room=await store.get(id);
+  if(room&&room.state.version!==8)room={...room,state:parseSave(JSON.stringify(room.state))};
   if(!room||!room.state.players.some(p=>p.side==='hunter'&&p.equipment.length>1))return room;
   const state=structuredClone(room.state);
   normalizeEquipmentSlots(state);

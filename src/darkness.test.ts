@@ -20,30 +20,30 @@ describe('calendar and Darkness',()=>{
   for(let i=0;i<5;i++)s=reduce(s,{type:'advance'});
   expect(s.phase).toBe('night');expect(calendar(s).weekday).toBe('Sunday');
   for(let i=0;i<5;i++)s=reduce(s,{type:'advance'});
-  expect(calendar(s)).toEqual({week:1,day:2,weekday:'Monday'});expect(darkness(s).weekly).toBe(0);
+  expect(s.maturation).toBe(1);expect(calendar(s)).toEqual({week:1,day:2,weekday:'Monday'});expect(s.maturationDarkness).toBe(0);
  });
  it('awards 3 only after all seven days, with no repeated awards on Sunday turns or reload',()=>{
   let s=createGame();for(let day=0;day<6;day++)s=endDay(s);
-  expect(calendar(s).weekday).toBe('Saturday');expect(darkness(s).weekly).toBe(0);
-  s=endDay(s);expect(calendar(s)).toEqual({week:2,day:1,weekday:'Sunday'});expect(darkness(s).weekly).toBe(3);
+  expect(calendar(s).weekday).toBe('Saturday');expect(s.maturationDarkness).toBe(0);
+  s=endDay(s);expect(calendar(s)).toEqual({week:2,day:1,weekday:'Sunday'});expect(s.maturationDarkness).toBe(3);
   expect(parseSave(JSON.stringify(s))).toEqual(s);
-  s=reduce(s,{type:'advance'});expect(darkness(s).weekly).toBe(3);
+  s=reduce(s,{type:'advance'});expect(s.maturationDarkness).toBe(3);
  });
  it('wins without Allies/events at Week 5 Sunday and prevents further play',()=>{
   let s=createGame();for(let day=0;day<28;day++)s=endDay(s);
   expect(calendar(s)).toEqual({week:5,day:1,weekday:'Sunday'});expect(darkness(s).total).toBe(12);expect(s.winner).toBe('dracula');
   expect(()=>reduce(s,{type:'advance',debug:true})).toThrow('Game over');expect(parseSave(JSON.stringify(s))).toEqual(s);
  });
- it('counts deployed Allies only, loses two when removed, and never compounds them weekly',()=>{
+ it('counts deployed Allies only, keeps one permanent point when removed',()=>{
   let s=createGame();s.players[4].discard.push('dm-5');expect(darkness(s).allies).toBe(0);
   s=deploy(s,8);s.phase='day';s.turn=0;s.played=false;
   for(let day=0;day<7;day++)s=endDay(s);
-  expect(darkness(s)).toEqual({weekly:3,events:0,exhaustions:0,accumulated:3,allies:2,total:5});
-  s=reduce(s,{type:'removeAlly',city:8,debug:true});expect(darkness(s).total).toBe(3);
+  expect(darkness(s)).toEqual({events:0,exhaustions:0,accumulated:4,allies:1,total:5});
+  s=reduce(s,{type:'removeAlly',city:8,debug:true});expect(darkness(s).total).toBe(4);
   expect(()=>removeLocationAlly(s,8)).toThrow('with an ally');
  });
  it('ends play immediately when deployment reaches the target, and announces the Ally',()=>{
-  let s=createGame();s.round=15;s.eventDarkness=2;s=deploy(s,8);
+  let s=createGame();s.round=15;s.maturationDarkness=6;s.eventDarkness=2;s=deploy(s,8);
   expect(darkness(s).total).toBe(10);expect(s.winner).toBe('dracula');expect(s.log.slice(-2).join(' ')).toContain('Vampire Bride');
   expect(()=>reduce(s,{type:'removeAlly',city:8,debug:true})).toThrow('Game over');expect(parseSave(JSON.stringify(s))).toEqual(s);
  });
@@ -54,7 +54,7 @@ describe('calendar and Darkness',()=>{
  });
  it('migrates version 5 using elapsed weeks and deployed Allies without duplicate awards',()=>{
   const old:any=createGame();old.version=5;delete old.config.allyDarkness;delete old.eventDarkness;old.round=15;old.locations[8].ally={card:'dm-4',revealed:false};
-  const s=parseSave(JSON.stringify(old));expect(s.version).toBe(7);expect(darkness(s).total).toBe(7);expect(calendar(s).week).toBe(3);expect(parseSave(JSON.stringify(s))).toEqual(s);
+  const s=parseSave(JSON.stringify(old));expect(s.version).toBe(8);expect(darkness(s).total).toBe(7);expect(calendar(s).week).toBe(3);expect(parseSave(JSON.stringify(s))).toEqual(s);
   old.round=22;expect(parseSave(JSON.stringify(old)).winner).toBe('dracula');
   old.winner='hunters';old.config.draculaHP=10;old.players[4].damage=10;expect(parseSave(JSON.stringify(old)).winner).toBe('hunters');
  });
