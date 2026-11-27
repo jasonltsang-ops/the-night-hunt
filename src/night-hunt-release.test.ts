@@ -48,7 +48,9 @@ describe('Vampire Maturation release',()=>{
  });
  it('caps Blood Offering and rejects invalid or consecrated Ritual targets',()=>{
   const s=createGame(undefined,8);s.phase='night';s.players[4].hand=['dm-blood-offering'];
-  expect(hp(reduce(s,{type:'play',index:0}),s.players[4])).toBe(s.config.draculaHP);
+  s.players[4].damage=0;
+  const healed=reduce(s,{type:'play',index:0});
+  expect(hp(healed,healed.players[4])).toBe(s.config.draculaHP);
   s.players[4].hand=['dm-midnight-ritual'];s.locations[0].closed=true;
   for(const city of [undefined,0,-1,9,1.5])expect(()=>reduce(s,{type:'play',index:0,city})).toThrow('open city');
   expect(s.players[4].hand).toEqual(['dm-midnight-ritual']);

@@ -14,7 +14,7 @@ const randomKey=()=>crypto.randomUUID().replaceAll('-','');
 export function createMatchHandler(store:RoomStore){
  async function getRoom(id:string){
   let room=await store.get(id);
-  if(room&&room.state.version!==9)room={...room,state:parseSave(JSON.stringify(room.state))};
+  if(room&&room.state.version!==10)room={...room,state:parseSave(JSON.stringify(room.state))};
   if(!room||!room.state.players.some(p=>p.side==='hunter'&&p.equipment.length>1))return room;
   const state=structuredClone(room.state);
   normalizeEquipmentSlots(state);

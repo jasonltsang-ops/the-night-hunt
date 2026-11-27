@@ -51,15 +51,15 @@ it('Mesmerize zeroes base, equipment, combat card, and Pistol boost for one Hunt
 it('Planned Ambush cancels a targeted card without requiring a target',()=>{
  const n=reduce(choose(showdown('dm-mesmerize','hm-21')),{type:'resolveCombat'});
  expect(n.combat).toBeNull();
- expect(n.players[4].damage).toBe(2);
+ expect(n.players[4].damage).toBe(4);
  expect(n.players[4].discard).toContain('dm-mesmerize');
 });
 it('Pride immediately costs 2 HP, adds 4 Str, and can defeat Dracula',()=>{
  const s=choose(showdown('dm-pride'));
- expect(s.players[4].damage).toBe(2);
+ expect(s.players[4].damage).toBe(4);
  const n=reduce(parseSave(JSON.stringify(s)),{type:'resolveCombat'});
  expect(n.combat?.draculaStrength).toBe(6);
- expect(n.players[4].damage).toBe(2);
+ expect(n.players[4].damage).toBe(4);
  expect(n.players[4].discard).toContain('dm-pride');
  const wounded=showdown('dm-pride');
  wounded.players[4].damage=8;
@@ -116,9 +116,8 @@ it.each([['day','dm-1','Bats'],['night','dm-0','Mist']] as const)('allows the %s
  expect(parseSave(JSON.stringify(n))).toEqual(n);
 });
 
-const combatCards=draculaMarket.filter(id=>combatCardAllowed(id)&&!newDraculaCombatCards.includes(id));
-it.each(combatCards.flatMap(id=>(['day','night'] as const).map(phase=>[id,phase] as const)))(
- 'lets Dracula discard %s to draw during %s without activating its other effects',(id,phase)=>{
+it.each([['dm-0','day','night'],['dm-1','night','day']] as const)(
+ 'lets Dracula discard %s to draw during %s without activating its other effects',(id,phase,movePhase)=>{
   const s=createGame(undefined,0);
   s.phase=phase;
   s.turn=phase==='day'?4:0;
@@ -130,9 +129,11 @@ it.each(combatCards.flatMap(id=>(['day','night'] as const).map(phase=>[id,phase]
   const n=reduce(s,{type:'play',index:0,choice:'cycle-combat'});
   expect(n.players[4].hand).toEqual(['d-0']);
   expect(n.players[4].discard).toEqual([id]);
-  expect(n.players[4].damage).toBe(0);
+  expect(n.players[4].damage).toBe(dracula.damage);
   expect(n.pendingSwap).toBe(false);
   expect(()=>reduce(n,{type:'play',index:0})).toThrow('already used');
+  s.phase=movePhase;s.turn=movePhase==='day'?4:0;
+  expect(()=>reduce(s,{type:'play',index:0,choice:'cycle-combat'})).toThrow('for this phase');
  });
 it('does not let Dracula redraw the played card when both piles are empty',()=>{
  const s=createGame(undefined,0);

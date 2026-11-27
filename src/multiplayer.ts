@@ -56,7 +56,7 @@ export function matchView(s:State,side:Side,revision:number):MatchView{
  const actor=active(s);
  const dracula=s.players[4];
  const publicDraculaCard=s.combat?.stage==='cards'&&!nextCombatPlayer(s)?s.combat.choices.dracula:-1;
- const escapeCities=side==='dracula'&&s.combat?.stage==='escape'?escapeDestinations(s):[];
+ const escapeCities=side==='dracula'&&s.combat?.stage==='escape'&&s.combat.escape==='bats'?escapeDestinations(s):[];
  const reviewCount=side==='hunter'?cardsForReview(s):0;
  state.publicDraculaMaxHP=maxHP(s,dracula);
  state.players.forEach(player=>{

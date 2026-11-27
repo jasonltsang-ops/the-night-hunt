@@ -37,7 +37,7 @@ export default {
   if(!asset)return new Response('Not found',{status:404});
   return new Response(request.method==='HEAD'?null:asset.contentType==='application/pdf'||asset.contentType==='image/webp'?Uint8Array.from(atob(asset.content),char=>char.charCodeAt(0)):asset.content,{headers:{
    'Content-Type':asset.contentType,
-   'Cache-Control':(path==='/'||path==='/print-kit.pdf')?'no-cache':'public, max-age=31536000, immutable',
+   'Cache-Control':(path==='/'||asset.contentType==='application/pdf')?'no-cache':'public, max-age=31536000, immutable',
    'Referrer-Policy':'no-referrer',
    'X-Content-Type-Options':'nosniff',
    'Content-Security-Policy':"default-src 'self'; frame-ancestors *",
