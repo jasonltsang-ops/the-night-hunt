@@ -58,6 +58,8 @@ import image55 from './card-art/dm-hildesheim.webp';
 import image56 from './card-art/dm-blood-rites.webp';
 import image57 from './card-art/dm-blood-offering.webp';
 import image58 from './card-art/dm-midnight-ritual.webp';
+import image59 from './card-art/hm-careful-preparation.webp';
+import image60 from './card-art/hm-traveling-merchant.webp';
 
 export const cardArt: Record<string,string> = {
  "travel": image0,
@@ -126,4 +128,6 @@ export const cardArt: Record<string,string> = {
  "dm-blood-rites": image56,
  "dm-blood-offering": image57,
  "dm-midnight-ritual": image58,
+ "hm-careful-preparation": image59,
+ "hm-traveling-merchant": image60,
 };

@@ -28,7 +28,7 @@ describe('minion powers and equipped counters',()=>{
  });
  it('Smelling Salts grants a persistent fifth HP, caps instead of damaging on loss, and is lost on knockout',()=>{
   let s=createGame();s.players[0].damage=2;s.players[0].hand=['hm-salts'];s=reduce(s,{type:'play',index:0});expect(maxHP(s,s.players[0])).toBe(5);expect(hp(s,s.players[0])).toBe(3);
-  s.played=false;s.players[0].hand=['hm-9'];s=reduce(s,{type:'play',index:0,replaceIndex:0,replacedDestination:'trash'});expect(maxHP(s,s.players[0])).toBe(4);expect(hp(s,s.players[0])).toBe(3);
+  s.played=false;s.players[0].hand=['hm-9'];s=reduce(s,{type:'play',index:0,replaceIndex:0,replacedDestination:'discard'});expect(maxHP(s,s.players[0])).toBe(4);expect(hp(s,s.players[0])).toBe(3);
   s.players[0].equipment=['hm-salts'];s.players[0].damage=4;expect(hp(s,s.players[0])).toBe(1);hurt(s,s.players[0],1);expect(s.players[0].equipment).toEqual([]);expect(hp(s,s.players[0])).toBe(0);expect(s.players[0].damage).toBe(4);expect(parseSave(JSON.stringify(s))).toEqual(s);
  });
  it('immediate acquisition grants the Salts HP bonus, and replacement at full health caps to four',()=>{
@@ -39,21 +39,16 @@ describe('minion powers and equipped counters',()=>{
   for(const card of ['encounter','damaging'] as const){let s=createGame(undefined,4);s.phase=phase;s.turn=phase==='day'?0:1;s.players[0].equipment=['hm-2'];s.players[0].hand=['investigate'];if(card==='damaging')s.locations[0].deck.unshift('damaging');else s=reduce(s,{type:'stack',city:0,card:'encounter'});s=reduce(s,{type:'play',index:0});expect(s.players[0].damage).toBe(card==='damaging'?1:0);}
   let s=createGame(undefined,4);s.players[0].equipment=['hm-2'];s=showdown(s,1);s=reduce(s,{type:'allocateDamage',extra:[]});expect(s.players[0].damage).toBe(1);
  });
- it.each([1,3,4])('Stake adds 2 Strength and is trashed with %i Hunters',count=>{
-  const s=showdown(createGame(undefined,4),count,'hm-0');
-  expect(s.log.at(-1)).toContain(`Hunters ${count+2}, Dracula 2`);
-  expect(s.players[4].damage).toBe(count);
-  expect(s.players[0].hand).not.toContain('hm-0');
-  expect(s.players[0].discard).not.toContain('hm-0');
-  expect(parseSave(JSON.stringify(s))).toEqual(s);
- });
- it('can trash a Stake from hand to remove Vampire Bride but not another Ally',()=>{
+ it('requires an equipped Stake and limits its Ally counter to Vampire Bride',()=>{
   let s=hunterTurn(deploy('dm-4',0),0);
   s.locations[0].wraith={card:'dm-6'};
   s.players[0].hand=['hm-0'];
-  expect(()=>reduce(s,{type:'play',index:0,ally:'dm-6'})).toThrow();
-  s=reduce(s,{type:'play',index:0,ally:'dm-4'});
+  expect(()=>reduce(s,{type:'sacrificeEquipment',index:0,ally:'dm-4'})).toThrow();
+  s.players[0].equipment=['hm-0'];s.players[0].hand=[];
+  expect(()=>reduce(s,{type:'sacrificeEquipment',index:0,ally:'dm-6'})).toThrow();
+  s=reduce(s,{type:'sacrificeEquipment',index:0,ally:'dm-4'});
   expect(alliesAt(s,0).map(a=>a.card)).toEqual(['dm-6']);
+  expect(s.players[0].equipment).toEqual([]);
   expect(s.players[0].discard).not.toContain('hm-0');
  });
  it('Bride adds two total damage when Dracula wins at her city, including ties',()=>{

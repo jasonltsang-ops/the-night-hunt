@@ -2,7 +2,7 @@ export const cities = ['London','Amsterdam','Prague','Marseille','Munich','Vienn
 
 export const hunters = ['Lord Godalming','Jonathan Harker','Van Helsing','Dr. Seward','Mina Harker'];
 
-export type Card = { id:string; name:string; side:'hunter'|'dracula'; timing:('day'|'night')[]; description:string; event?:{healAll?:number;drawAll?:number;darkness?:number;encountersPerCity?:number}; travel?:number; nightTravel?:number; trashOnPlay?:boolean; groupTravel?:boolean; healing?:number; healCompanion?:boolean; strength?:number; coordinatedStrength?:number; discardStrength?:number; endsShowdownDamage?:number; selfDamage?:number; combatEffect?:'disarm'|'mesmerize'; equipment?:boolean; trashAfterCombat?:boolean; removesAnyAlly?:boolean; item?:boolean; removesAllyType?:string; removesAlly?:string; maxHP?:number; encounterReduction?:number; investigation?:'top'|'bottom'|'rumors'|'repeat'|'discard'; escape?:'mist'|'bats'; ally?:{type:string;strength:number;victoryDamage?:number} };
+export type Card = { id:string; name:string; side:'hunter'|'dracula'; timing:('day'|'night')[]; description:string; event?:{healAll?:number;drawAll?:number;darkness?:number;encountersPerCity?:number}; travel?:number; nightTravel?:number; trashOnPlay?:boolean; groupTravel?:boolean; healing?:number; healCompanion?:boolean; strength?:number; coordinatedStrength?:number; discardStrength?:number; trashStrength?:number; endsShowdownDamage?:number; selfDamage?:number; combatEffect?:'disarm'|'mesmerize'; equipment?:boolean; trashAfterCombat?:boolean; removesAnyAlly?:boolean; item?:boolean; removesAllyType?:string; removesAlly?:string; maxHP?:number; encounterReduction?:number; investigation?:'top'|'bottom'|'rumors'|'repeat'|'discard'; escape?:'mist'|'bats'; ally?:{type:string;strength:number;victoryDamage?:number} };
 
 const make = (id:string,name:string,side:Card['side'],description:string):Card => ({id,name,side,timing:['day','night'],description});
 
@@ -10,7 +10,7 @@ export const cards:Record<string,Card> = {};
 
 function add(id:string,name:string,side:Card['side'],description='Effect reserved for a later stage.') { cards[id]=make(id,name,side,description); return id; }
 
-add('travel','Ready the Carriage','hunter','Move one adjacent city.'); add('supply','Visit the Market','hunter',''); add('investigate','Investigate','hunter','Reveal and resolve the top encounter at your city.'); add('combat','Combat','hunter','Combat bonus +2 (Stage 4).');
+add('travel','Ready the Carriage','hunter','Move one connection.'); add('supply','Visit the Market','hunter',''); add('investigate','Investigate','hunter','Reveal and resolve the top encounter at your city.'); add('combat','Combat','hunter','Combat bonus +2 (Stage 4).');
 
 export const signatures = [['Family Fortune',"Lucy’s Revenge"],['Methodical Search','Urgent Dispatch'],['Correspondence','Vampire Lore'],['Medical Expertise','Wax Cylinders'],['Hypnosis','Rally the Hunters']].map((pair,i)=>pair.map((name,j)=>add(`signature-${i}-${j}`,name,'hunter')));
 
@@ -22,7 +22,7 @@ export const draculaMarket = ['Escape as Mist','Escape as Bats','Escape as Bats'
 
 ['Tragic Accident','Delaying Encounter','Shadow Passage','Dark Influence','Call of the Night','Brush with Darkness'].forEach((name,i)=>add(`d-${i}`,name,'dracula'));
 
-add('d-fog','Fog','dracula','Night: Add to any open city. Day: Add to an open city within 1 connection of Dracula, including his city. Announce the city and shuffle its pile. When investigated, the Hunter discards a random card. Remove Fog by Day or shuffle it back at Night.');
+add('d-fog','Fog','dracula','Night: Add to any open city. Day: Add to an open city at your location or a connected location. Announce the city and shuffle its pile. When investigated, the Hunter discards a random card. Remove Fog by Day or shuffle it back at Night.');
 export const wolfForm=add('dm-wolf-form','Wolf Form','dracula','Night: Swap Dracula with a card in a city up to 2 connections away, or bluff by swapping two non-Dracula cards between cities up to 2 connections apart. Shuffle both piles and announce only the cities.');
 cards[wolfForm].timing=['night'];
 export const bodyguards='dm-bodyguards';
@@ -67,10 +67,10 @@ cards['d-3'].description='Night: '+darkInfluenceText.night+' Day: '+darkInfluenc
 
 cards['d-0'].timing=['day','night'];
 cards['d-5'].description='Encounter: deals 1 damage when investigated.';
-cards['d-0'].description='Night: Add to any open city. Day: Add to an open city within 1 connection of Dracula, including his city. Announce that city and shuffle its encounter deck. Deals 2 damage when investigated.';
+cards['d-0'].description='Night: Add to any open city. Day: Add to an open city at your location or a connected location. Announce that city and shuffle its encounter deck. Deals 2 damage when investigated.';
 
 cards.travel.timing=['day','night'];
-cards.travel.description='Day: Move one connection. Night: Move one connection and add a Brush with Darkness unless the destination is consecrated. OR Discard to draw 1 card.';
+cards.travel.description='Day: Move one connection. Night: Move one connection and add a Brush with Darkness unless the destination is consecrated.';
 
 cards.combat.name='A Lucky Find';
 cards.combat.timing=['day','night'];
@@ -115,7 +115,7 @@ cards['signature-2-0'].description='Day or Night. Exchange one card from your ha
 cards['signature-3-1'].description='Choose any city occupied by a Hunter. Reveal its top encounter, then return it to the top or bottom without resolving it.';
 cards['signature-4-1'].description='Move another conscious Hunter one connection closer to your city. This uses no action for that Hunter and adds no Night encounter.';
 
-cards['d-2'].description='Night: Swap Dracula with a card in an adjacent city, or bluff by swapping two non-Dracula cards between adjacent cities. Shuffle both piles and announce only the cities. Day: Privately view the top encounter of any city. You may shuffle that pile.';
+cards['d-2'].description='Night: Swap Dracula with a card in a connected location, or bluff by swapping two non-Dracula cards between two directly connected cities. Shuffle both piles and announce only the cities. Day: Privately view the top encounter of any city. You may shuffle that pile.';
 
 export const visitTheMarketText={day:'Acquire 1 Hunter card OR trash 1 Dracula card.',night:'Trash 1 card and refill its slot.'};
 cards.supply.description='Day: '+visitTheMarketText.day+' Night: '+visitTheMarketText.night;
@@ -145,11 +145,11 @@ hunterMarket.push(add('hm-salts','Smelling Salts','hunter'));
 draculaMarket.push(add('dm-renfield','Renfield','dracula'));
 cards['dm-5'].name='Great Wolf';
 cards['dm-6'].name='Wraith';
-cards['hm-0'].strength=2;
-cards['hm-0'].item=true;
-cards['hm-0'].equipment=false;
-cards['hm-0'].trashAfterCombat=true;
-cards['hm-0'].description='Play as your combat card for +2 Str, then trash. Or trash to remove Vampire Bride at your city.';
+
+
+
+
+
 cards['hm-3'].strength=1;
 cards['hm-3'].description='+1 Str. Trash to remove Great Wolf.';
 cards['hm-2'].strength=undefined;cards['hm-2'].encounterReduction=1;
@@ -170,7 +170,7 @@ cards['dm-renfield'].description='Heal Dracula 2 HP on deployment. Reserve 1 Fog
 // Medical Assistance becomes a second copy of the Medical Kit Item.
 cards['hm-11']={...cards['hm-7'],id:'hm-11'};
 
-cards['hm-1'].equipment=false;cards['hm-1'].item=true;cards['hm-1'].strength=2;cards['hm-1'].trashAfterCombat=true;cards['hm-1'].removesAnyAlly=true;cards['hm-1'].description='Play as your combat card for +2 Str, then trash. Or trash to remove an Ally at your city.';
+cards['hm-1'].removesAnyAlly=true;
 
 export const combatOrder=['Lord Godalming','Jonathan Harker','Dr. Seward','Van Helsing','Mina Harker'] as const;
 
@@ -232,3 +232,23 @@ export const facilities = [
 for (const card of Object.values(cards)) {
  if (card.ally) card.description=card.description.replace('+2 Darkness.', 'Deployment grants 2 Darkness. Removal costs 1 Darkness.');
 }
+
+export const preparationCards = [
+ add('hm-careful-preparation','Careful Preparation','hunter','Day: Permanently trash another card from your hand. Night: Acquire one Hunter market card.'),
+ add('hm-traveling-merchant','Traveling Merchant','hunter','Day: Acquire one Hunter market card. Night: Permanently trash another card from your hand.'),
+];
+hunterMarket.push(...preparationCards);
+for(const [id,ally] of [['hm-0','Vampire Bride'],['hm-1','any Ally']] as const){
+ const card=cards[id];
+ card.equipment=true;
+ delete card.strength;
+ card.trashStrength=2;
+ card.description=`Combat: Trash this equipped card for +2 Strength. OR Day or Night: Trash this equipped card to remove ${ally} at your location.`;
+}
+export const equipmentInstructions={
+ acquisition:'When acquired: Equip this card or place it in your discard pile.',
+ play:'Day or Night: Equip this card, discarding previously equipped Equipment.',
+};
+cards['dm-unholy'].description='Combat: +1 Strength. Before Hunter Equipment activations, choose and discard one participating Hunter’s equipped Equipment, if available. OR Day or Night: Heal Dracula 1 HP.';
+cards['dm-mesmerize'].description='Combat: Reduce one participating Hunter’s total Strength to zero. OR Day: Acquire one Dracula market card.';
+cards['dm-pride'].description='Combat: +4 Strength. Dracula immediately loses 2 HP. OR Night: Shuffle one Fog or Brush with Darkness into your location or a connected location. The location must be open.';

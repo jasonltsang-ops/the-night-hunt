@@ -116,7 +116,7 @@ it.each([['day','dm-1','Bats'],['night','dm-0','Mist']] as const)('allows the %s
  expect(parseSave(JSON.stringify(n))).toEqual(n);
 });
 
-const combatCards=draculaMarket.filter(combatCardAllowed);
+const combatCards=draculaMarket.filter(id=>combatCardAllowed(id)&&!newDraculaCombatCards.includes(id));
 it.each(combatCards.flatMap(id=>(['day','night'] as const).map(phase=>[id,phase] as const)))(
  'lets Dracula discard %s to draw during %s without activating its other effects',(id,phase)=>{
   const s=createGame(undefined,0);
@@ -138,10 +138,10 @@ it('does not let Dracula redraw the played card when both piles are empty',()=>{
  const s=createGame(undefined,0);
  s.turn=4;
  const dracula=s.players[4];
- dracula.hand=['dm-pride'];
+ dracula.hand=['dm-0'];
  dracula.draw=[];
  dracula.discard=[];
- expect(canPlayStandard(s,dracula,'dm-pride')).toBe(false);
+ expect(canPlayStandard(s,dracula,'dm-0')).toBe(false);
  expect(()=>reduce(s,{type:'play',index:0,choice:'cycle-combat'})).toThrow('another card is available');
 });
 it('cannot use the draw option during a showdown',()=>{

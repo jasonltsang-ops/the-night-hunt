@@ -20,14 +20,14 @@ from pypdf import PdfReader
 
 parser=argparse.ArgumentParser()
 parser.add_argument('art_directory', type=Path, help='Original Gothic Edition art and art-manifest.json')
-parser.add_argument('new_art_directory', type=Path, help='Blood Rites.png, Blood Offering.png and Midnight Ritual.png')
+parser.add_argument('new_art_directory', type=Path, help='PNGs for the three Maturation cards and two Hunter market additions')
 parser.add_argument('output', type=Path)
 parser.add_argument('--thumbnails', action='store_true', help='Regenerate web card illustrations')
 parser.add_argument('--compact', action='store_true', help='Smaller images for the hosted print kit')
 args=parser.parse_args()
 assets=json.loads((args.art_directory/'art-manifest.json').read_text(encoding='utf-8-sig'))
 sources={name:args.art_directory/Path(value['path']).name for name,value in assets.items()}
-for name in ['Blood Rites','Blood Offering','Midnight Ritual']:
+for name in ['Blood Rites','Blood Offering','Midnight Ritual','Careful Preparation','Traveling Merchant']:
  sources[name]=args.new_art_directory/(name+'.png')
 data=json.loads(subprocess.check_output(['node','--input-type=module','-e',
  'import * as data from "./src/data.ts"; process.stdout.write(JSON.stringify(data))']))
@@ -51,7 +51,8 @@ if args.thumbnails:
    continue
   if name not in images:
    filename=key+'.webp'
-   ImageOps.fit(toned_image(name),(300,148),centering=(.5,.36)).save(thumbnail_dir/filename,'WEBP',quality=76)
+   if not (thumbnail_dir/filename).exists():
+    ImageOps.fit(toned_image(name),(300,148),centering=(.5,.36)).save(thumbnail_dir/filename,'WEBP',quality=76)
    value='image'+str(len(imports))
    imports.append(f"import {value} from './card-art/{filename}';")
    images[name]=value
@@ -111,7 +112,7 @@ heading('Illustrated print edition','Victorian Gothic art  /  US Letter  /  Colo
 sections=[
  ('Print at the correct size','Use US Letter (8.5 x 11 in), Actual Size / 100%, single-sided. Disable Fit to Page. Cards measure exactly 2.5 x 3.5 in along the cut grid. Player boards measure 8.5 x 5.5 in after cutting a sheet across its midpoint.'),
  ('Player boards and map','Pages 2-4 contain all five Hunters and Dracula, two boards per sheet. Pick four Hunters for a game. Page 5 is the Europe reference map. Use coins or tokens for positions, health, Darkness, and consecrated cities.'),
- ('Personal decks and market','Pages 6-10 contain five optional Hunter starter decks, one complete nine-card deck per sheet. Page 11 is Dracula’s nine-card starter deck. The shared market follows the starter decks and contains 46 cards. Shuffle its Hunter and Dracula cards together, display 10, and refill to 10 when only 3 remain.'),
+ ('Personal decks and market','Pages 6-10 contain five optional Hunter starter decks, one complete nine-card deck per sheet. Page 11 is Dracula’s nine-card starter deck. The shared market follows the starter decks and contains 48 cards. Shuffle its Hunter and Dracula cards together, display 10, and refill to 10 when only 3 remain.'),
  ('City piles and standard encounter supply','The remaining sheets contain setup encounters, the Dracula identity, standard encounters, and nine city cards. Use the labels at the foot of the cards to sort the set.'),
  ('Keep the hidden piles hidden','Use matching opaque-backed poker sleeves for every card that can enter a city pile, including Cultists and Szgany Bodyguards. A spare playing card behind each paper card gives it stiffness. Shuffle city piles independently. The pile starts beneath its city card.'),
  ('Setup and play','Hunters choose their starting cities first. Add one Brush with Darkness per additional Hunter in a city. Dracula chooses last, secretly replacing one Brush with Darkness there with his identity. Place the removed Brush in the standard encounter supply. Use the current playtest rules for full timing, combat, recovery and effects. Printed setup mixes match the local prototype.'),
@@ -195,7 +196,7 @@ def rules_markup(description):
  alternatives=re.split(r'\s+(?:OR|Or)\s+',description)
  paragraphs=[]
  for alternative in alternatives:
-  lines=re.split(r'(?<=[.!?])\s+(?=(?:Day|Night): )',alternative)
+  lines=re.split(r'\n|(?<=[.!?])\s+(?=(?:Day|Night): )',alternative)
   styled=[]
   for line in lines:
    match=re.match(r'^(Day|Night|Day or Night)[:.] (.*)$',line)
@@ -213,8 +214,10 @@ printed=[]
 def add(key,group):
  card=cards[key]
  desc=safe(card['description'])
- combat=(('strength' in card and not card.get('equipment')) or card.get('escape') or card.get('combatEffect') or 'endsShowdownDamage' in card)
- if card['side']=='dracula' and combat:desc+=' Outside combat: Play to draw 1 card.'
+ combat=(('strength' in card and not card.get('equipment')) or card.get('escape') or card.get('combatEffect') or 'endsShowdownDamage' in card or card.get('trashStrength') or card.get('discardStrength'))
+ if card['side']=='dracula' and combat and key not in data['newDraculaCombatCards']:desc+=' Outside combat: Play to draw 1 card.'
+ if card.get('equipment'):
+  desc+='\n'+data['equipmentInstructions']['acquisition']+'\n'+data['equipmentInstructions']['play']
  printed.append(dict(name=card['name'],description=desc,side=card['side'],group=group,timing=card['timing'],combat=combat,standard=not combat or card['side']=='dracula' or key in ['combat','signature-2-1'] or card.get('item'),art=card['name'],equipment=card.get('equipment'),ally=card.get('ally')))
 basic=['travel','travel','supply','supply','investigate','investigate','combat']
 for i,name in enumerate(data['hunters']):
@@ -242,7 +245,7 @@ for kind in ['encounter','damaging']:
  for _ in range(18):printed.append(encounter(kind,'Standard Encounter'))
 
 counts=Counter(p['group'] for p in printed if p)
-assert counts['Shared market']==46
+assert counts['Shared market']==48
 for i,p in enumerate(printed):
  slot=i%9
  if p:
@@ -257,7 +260,7 @@ for i,p in enumerate(printed):
   c.setFont('Georgia-Bold',title_size)
   c.setFillColor(HexColor('#FFF0D6'))
   c.drawCentredString(x+90,y+227,p['name'])
-  body_size=9.3
+  body_size=8.6 if p.get('equipment') else 9.3
   body=Paragraph(rules_markup(p['description']),ParagraphStyle('card-body',fontName='Georgia',fontSize=body_size,leading=body_size*1.23,alignment=TA_CENTER,textColor=HexColor(INK)))
   _,bodyheight=body.wrap(154,900)
   artheight=min(96,159-bodyheight)
@@ -270,7 +273,7 @@ for i,p in enumerate(printed):
    c.drawCentredString(x+90,y+202-artheight,timing)
   else:
    marks=[]
-   if p['standard'] and not re.match(r'^(Day|Night|Day or Night)[:.]',p['description']):
+   if p['standard'] and not re.search(r'(?:^| OR |\n)(Day|Night|Day or Night)[:.]',p['description']):
     marks.extend(('☀','#88612E') if t=='day' else ('☾','#533F87') for t in timing)
    if p['combat']:
     marks.append(('⚔',INK))
@@ -295,6 +298,6 @@ reader=PdfReader(str(OUT))
 assert len(reader.pages)==len(page_names)
 assert len(placements)==sum(counts.values())
 assert all((float(p.mediabox.width),float(p.mediabox.height))==(612,792) for p in reader.pages)
-assert sum(page.extract_text().count('Shared market') for page in reader.pages)>=46
+assert sum(page.extract_text().count('Shared market') for page in reader.pages)>=48
 assert 'VAMPIRE MATURATION' in reader.pages[3].extract_text()
 print(OUT, len(reader.pages), 'pages /',len(placements),'cards /',len(set(art_uses)),'illustrations / minimum',round(min_dpi),'DPI')

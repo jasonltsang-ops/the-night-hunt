@@ -1,4 +1,4 @@
-import {active, cardsForReview, escapeDestinations, maxHP, nextCombatPlayer, pistolUsers, reduce, type Action, type State} from './engine';
+import {active, cardsForReview, escapeDestinations, maxHP, nextCombatPlayer, equipmentCombatUsers, reduce, type Action, type State} from './engine';
 
 export type Side='hunter'|'dracula';
 export type OnlineAction=Action|{type:'finishReactions'};
@@ -15,7 +15,7 @@ export function onlineTurn(s:State){
  if(!s.combat)return {actingSide:active(s).side,reactionWindow:false};
  const chooser=nextCombatPlayer(s);
  if(chooser)return {actingSide:chooser.side,reactionWindow:false};
- const reactionWindow=s.combat.stage==='cards'&&!s.combat.onlineReactionsDone&&pistolUsers(s).length>0;
+ const reactionWindow=s.combat.stage==='cards'&&!s.combat.onlineReactionsDone&&equipmentCombatUsers(s).length>0;
  return {actingSide:reactionWindow?'hunter' as const:'dracula' as const,reactionWindow};
 }
 
@@ -33,7 +33,7 @@ export function applyOnlineAction(s:State,side:Side,action:OnlineAction){
    next.combat!.onlineReactionsDone=true;
    return next;
   }
-  if(action.type==='discardPistol')return reduce(s,action);
+  if((action.type==='discardPistol'||action.type==='trashCombatEquipment'))return reduce(s,action);
  }else if(nextCombatPlayer(s)){
   if(action.type==='combatCard')return reduce(s,action);
  }else{

@@ -75,5 +75,5 @@ describe('Combat, health, escape and recovery',()=>{
   const old={...s,config:{...s.config,draculaBase:base,draculaNightBase:undefined}};
   expect(parseSave(JSON.stringify(old)).config).toMatchObject({hunterBase:1,draculaBase:2,draculaNightBase:3});
  });
- it('migrates a version 3 save while retaining decks, turn and locations',()=>{const s=createGame();const old=structuredClone(s) as any;old.version=3;delete old.combat;delete old.config.hunterHP;delete old.config.draculaHP;old.players.forEach((p:any)=>{delete p.equipment;delete p.recovery;});const n=parseSave(JSON.stringify(old));expect(n.version).toBe(8);expect(n.locations).toEqual(s.locations);expect(n.players[0].hand).toEqual(s.players[0].hand);expect(n.turn).toBe(s.turn);});
+ it('migrates a version 3 save while retaining decks, turn and locations',()=>{const s=createGame();const old=structuredClone(s) as any;old.version=3;delete old.combat;delete old.config.hunterHP;delete old.config.draculaHP;old.players.forEach((p:any)=>{delete p.equipment;delete p.recovery;});const n=parseSave(JSON.stringify(old));expect(n.version).toBe(9);expect(n.locations).toEqual(s.locations);expect(n.players[0].hand).toEqual(s.players[0].hand);expect(n.turn).toBe(s.turn);});
 });
