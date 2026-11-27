@@ -57,7 +57,7 @@ describe('Equipment and market release',()=>{
   for(const city of [4,5]){
    const n=applyOnlineAction(s,'dracula',{type:'play',index:0,city,encounter});
    expect(n.locations[city].deck).toHaveLength(s.locations[city].deck.length+1);
-   expect(draculaLocation(n)).toBe(4);expect(n.players[4].damage).toBe(0);expect(n.players[4].discard).toEqual(['dm-pride']);
+   expect(draculaLocation(n)).toBe(4);expect(n.players[4].damage).toBe(s.players[4].damage);expect(n.players[4].discard).toEqual(['dm-pride']);
    expect(reload(n)).toEqual(n);
    const publicState=matchView(n,'hunter',2).state;
    expect(publicState.players[4].city).toBe(-1);
@@ -93,7 +93,7 @@ describe('Equipment and market release',()=>{
   old.players[0].equipment=['hm-0'];old.players[0].discard=['hm-1'];
   for(const zone of ['face','draw'] as const)old.market[zone]=old.market[zone].filter(id=>!preparationCards.includes(id));
   const n=parseSave(JSON.stringify(old));
-  expect(n.version).toBe(9);expect(n.maturation).toBe(5);expect(n.facilitiesUsed).toEqual([7]);
+  expect(n.version).toBe(10);expect(n.maturation).toBe(5);expect(n.facilitiesUsed).toEqual([7]);
   expect(n.players[0].equipment).toEqual(['hm-0']);expect(n.players[0].discard).toEqual(['hm-1']);
   expect([...n.market.face,...n.market.draw]).toHaveLength(48);expect(reload(n)).toEqual(n);
   hurt(n,n.players[0],4);

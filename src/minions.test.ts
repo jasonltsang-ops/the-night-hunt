@@ -61,17 +61,17 @@ describe('minion powers and equipped counters',()=>{
   let s=deploy('dm-5',4);s.players[0].equipment=['hm-3'];s=showdown(s,1);expect(s.combat?.hunterStrength).toBe(2);expect(s.combat?.draculaStrength).toBe(4);
  });
  it('Renfield heals up to two HP on deployment without changing maximum HP',()=>{
-  let s=createGame(undefined,4);s.players[4].damage=5;s=deploy('dm-renfield',8,s);expect(maxHP(s,s.players[4])).toBe(6);expect(hp(s,s.players[4])).toBe(3);expect(parseSave(JSON.stringify(s))).toEqual(s);
-  s=hunterTurn(s);s.players[0].equipment=['hm-salts'];s=reduce(s,{type:'sacrificeEquipment',index:0});expect(maxHP(s,s.players[4])).toBe(6);expect(hp(s,s.players[4])).toBe(3);
-  s=deploy('dm-renfield');s=hunterTurn(s);s.players[0].equipment=['hm-salts'];s=reduce(s,{type:'sacrificeEquipment',index:0});expect(hp(s,s.players[4])).toBe(6);
+  let s=createGame(undefined,4);s.players[4].damage=5;s=deploy('dm-renfield',8,s);expect(maxHP(s,s.players[4])).toBe(8);expect(hp(s,s.players[4])).toBe(5);expect(parseSave(JSON.stringify(s))).toEqual(s);
+  s=hunterTurn(s);s.players[0].equipment=['hm-salts'];s=reduce(s,{type:'sacrificeEquipment',index:0});expect(maxHP(s,s.players[4])).toBe(8);expect(hp(s,s.players[4])).toBe(5);
+  s=deploy('dm-renfield');s=hunterTurn(s);s.players[0].equipment=['hm-salts'];s=reduce(s,{type:'sacrificeEquipment',index:0});expect(hp(s,s.players[4])).toBe(8);
  });
  it('Renfield adds exactly one reserve encounter at his own city on Night entry, without healing or consuming the action',()=>{
-  let s=deploy('dm-renfield',8);s.players[4].damage=3;s=night(s);expect(active(s).id).toBe('dracula');expect(s.locations[8].deck).toHaveLength(5);expect(s.locations[4].deck).toHaveLength(4);expect(s.locations[8].ally?.reserve).toHaveLength(2);expect(hp(s,s.players[4])).toBe(3);expect(s.played).toBe(false);s=parseSave(JSON.stringify(s));expect(s.locations[8].deck).toHaveLength(5);s.players[4].hand=[];s=reduce(s,{type:'advance'});expect(s.locations[8].deck).toHaveLength(5);
+  let s=deploy('dm-renfield',8);s.players[4].damage=3;s=night(s);expect(active(s).id).toBe('dracula');expect(s.locations[8].deck).toHaveLength(5);expect(s.locations[4].deck).toHaveLength(4);expect(s.locations[8].ally?.reserve).toHaveLength(2);expect(hp(s,s.players[4])).toBe(5);expect(s.played).toBe(false);s=parseSave(JSON.stringify(s));expect(s.locations[8].deck).toHaveLength(5);s.players[4].hand=[];s=reduce(s,{type:'advance'});expect(s.locations[8].deck).toHaveLength(5);
  });
 });
 describe('permanent closure and Wraith',()=>{
  it('closes immediately on the final encounter, removes both Allies and their Darkness, and cannot receive new cards',()=>{
-  let s=deploy('dm-renfield',8);s=deploy('dm-6',8,s);s=hunterTurn(s);empty(s,8,1);s.players[0].equipment=['hm-2'];s.players[0].hand=['investigate'];s=reduce(s,{type:'play',index:0});expect(s.locations[8].closed).toBe(true);expect(alliesAt(s,8)).toEqual([]);expect(darkness(s).allies).toBe(0);expect(maxHP(s,s.players[4])).toBe(6);expect(canPlaceEncounter(s,8)).toBe(false);expect(canPlaceAlly(s,'dm-5',8)).toBe(false);expect(parseSave(JSON.stringify(s))).toEqual(s);
+  let s=deploy('dm-renfield',8);s=deploy('dm-6',8,s);s=hunterTurn(s);empty(s,8,1);s.players[0].equipment=['hm-2'];s.players[0].hand=['investigate'];s=reduce(s,{type:'play',index:0});expect(s.locations[8].closed).toBe(true);expect(alliesAt(s,8)).toEqual([]);expect(darkness(s).allies).toBe(0);expect(maxHP(s,s.players[4])).toBe(8);expect(canPlaceEncounter(s,8)).toBe(false);expect(canPlaceAlly(s,'dm-5',8)).toBe(false);expect(parseSave(JSON.stringify(s))).toEqual(s);
   s=night(s);expect(s.locations[8].deck).toEqual([]);expect(s.addedBasicEncounters).toBe(0);
  });
  it('defers closure when the final card is Dracula until the showdown resolves, preserving his identity',()=>{
