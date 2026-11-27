@@ -18,7 +18,7 @@ Dracula wins immediately at **10 total Darkness**. Total Darkness is accumulated
 |---|---:|
 | Hunter maximum HP | 4 each; 5 with Smelling Salts |
 | Hunter base combat strength | 1 each |
-| Dracula maximum HP | 6; 8 while Renfield is deployed |
+| Dracula maximum HP | 6 |
 | Dracula base combat strength | 2 by Day, 3 by Night |
 | Opening hand / end-of-round draw | 3 cards |
 | Equipment capacity | 1 per Hunter |
@@ -238,7 +238,7 @@ Medical Kit is the currently classified consumable Item: heal its user for 2 HP,
 
 ### A Lucky Find
 
-This replaces the starting Combat card. Play it as a normal action by Day or Night to heal yourself for 1 HP, capped at full health, then discard it. Alternatively, keep it in hand and contribute +1 strength as your combat card when a showdown occurs. The combat use does not also heal.
+This replaces the starting Combat card. Play it as a normal action by Day or Night to heal yourself for 1 HP, capped at full health, then discard it. Alternatively, keep it in hand and contribute +1 strength as your combat card when a showdown occurs. The combat use does not also heal. Alternatively, discard A Lucky Find as a standard Day or Night action to permanently trash any other card in your hand, including a basic card.
 
 ## 9. Character cards and trading
 
@@ -309,7 +309,7 @@ One copy of each listed card starts in the combined market pool. Placeholder car
 | 3 | Vampire Bride | +2 total damage when Dracula wins at her city, including ties. |
 | 4 | Great Wolf | +2 Dracula strength in combat at its city. |
 | 5 | Wraith | Beginning-of-Night movement and private bottom-encounter control; shares a city with another Ally. |
-| 6 | Renfield | +2 Dracula maximum/current HP on deployment; adds one ordinary encounter to his city at the beginning of each Dracula Night turn. |
+| 6 | Renfield | Heal Dracula 2 HP on deployment; add one random remaining reserve encounter each Night (three total). |
 | 7 | Immanuel Hildesheim | One-use Event: shuffle one Brush with Darkness into each open city. |
 | 8 | Unholy Strength | +1 Str. Choose a participating Hunter’s equipped item to discard before comparing Strength. |
 | 9 | Mesmerize | Reduce one participating Hunter’s total Strength to 0 for the showdown. |
@@ -327,7 +327,7 @@ The Ally’s identity is public when played, and its city is public when placed.
 - **Vampire Bride:** no strength bonus. When Dracula wins at her city, including on a tie, add **2 total damage** to the Hunter damage pool. Distribute the combined total evenly using the existing remainder choice.
 - **Great Wolf:** **+2 Dracula strength** only in combat at its city.
 - **Wraith:** no combat bonus. At the beginning of Dracula's Night turn, move one orthogonal connection to an open city, even if another Ally occupies it. Publicly announce movement. Dracula privately examines the destination's bottom encounter, moving it to the top or leaving it on the bottom. Do not reveal the card or placement choice in the log. Resolve this before Dracula plays or ends his normal turn. As an explicit fallback when every adjacent city is consecrated, Wraith stays put and skips its ability; it does not inspect its current pile. Consecrated destinations are never legal.
-- **Renfield:** global **+2 maximum HP** for Dracula, and **+2 current HP on deployment** (normally up to 12). No recurring healing or strength bonus. At the beginning of each Dracula Night turn, add **one ordinary encounter to Renfield's own open city** and shuffle the entire pile, including Dracula if present. If removed, return Dracula to his base maximum, capping current HP without subtracting extra HP from an already wounded Dracula. A consecrated city removes Renfield immediately, before his ability can replenish it.
+- **Renfield:** Heal Dracula 2 HP on deployment, capped at his maximum HP. Reserve one Fog, one Tragic Accident and one Brush with Darkness. At the beginning of each Dracula Night turn, randomly select and remove one remaining reserve encounter and shuffle it into Renfield’s own open city. Once exhausted, the reserve generates no more encounters. Removing Renfield discards unused reserve encounters. Existing deployed Renfield saves migrate with an empty reserve.
 
 At the beginning of Night, resolve existing closures, then Renfield's automatic encounter placement, then Wraith's movement/examination. These are free scheduled effects; they do not draw or consume cards, use a standard action, or repeat after reload. A newly deployed Ally waits until the next beginning-of-Night trigger.
 
@@ -363,7 +363,7 @@ Source references: `src/data.ts` contains card definitions and defaults; `src/en
 
 ### Public health display
 
-Dracula’s current and maximum HP are public information, shown in a health bar beside the Darkness tracker for every player view. This display does not reveal Dracula’s location. The maximum includes active ally effects such as Renfield.
+Dracula’s current and maximum HP are public information, shown in a health bar beside the Darkness tracker for every player view. This display does not reveal Dracula’s location. Renfield does not increase maximum HP.
 
 Medical Assistance has been replaced by a second Medical Kit with identical Item behavior. The Hunter market pool contains two Medical Kits. Existing Medical Assistance cards become Medical Kits using the same saved card ID.
 
